@@ -1,26 +1,20 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-// import { CellGrid } from './components/CellGrid/component';
+
+import {
+  CellGrid,
+  FileHeader,
+  FormulaBar,
+  OptionsPane
+} from "./components";
 
 function App() {
   return (
-    // <CellGrid/>
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <FileHeader/>
+      <OptionsPane/>
+      <FormulaBar/>
+      <CellGrid/>
     </div>
   );
 }
