@@ -28,6 +28,8 @@ export const OptionsPane = () => {
 
   return (
     <div className="bg-options-light text-black stroke-2 font-google-sans min-w-full w-fit">
+
+      {/* Function Cluster 1: Save/Load */}
       <header className="flex justify-left gap-1 p-1.5">
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
@@ -57,11 +59,12 @@ export const OptionsPane = () => {
           Load
         </button>
 
-        {/* TODO: repeated code */}
+        {/* Divider between clusters */}
         <div className="flex h-auto p-2">
           <div className="bg-options-stroke-light w-0.5"></div>
         </div>
 
+        {/* Function Cluster 2: Formula */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
@@ -79,6 +82,7 @@ export const OptionsPane = () => {
           <div className="bg-options-stroke-light w-0.5"></div>
         </div>
 
+        {/* Function Cluster 3: Insert/Delete */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
@@ -123,6 +127,7 @@ export const OptionsPane = () => {
           <div className="bg-options-stroke-light w-0.5"></div>
         </div>
 
+        {/* Function Cluster 4: Theme/Screen Reader */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
@@ -149,6 +154,7 @@ export const OptionsPane = () => {
           <ScreenReaderSvg style={{ height: "4em", width: "4em" }} />
           Screen{"\n"}Reader
         </button>
+        
       </header>
     </div>
   );
