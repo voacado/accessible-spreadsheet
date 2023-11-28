@@ -933,5 +933,74 @@ describe('spreadsheet', (): void => {
       });
     })
 
+    describe('Cell Reference', (): void => {
+      it('A cell containing a cell reference should return the same display and value', (): void => {
+        spreadsheet = new Spreadsheet();
+        spreadsheet.setCellAtKeyGivenInput("A1", "1");
+        spreadsheet.setCellAtKeyGivenInput("A2", "2");
+        spreadsheet.setCellAtKeyGivenInput("A3", "3");
+        spreadsheet.setCellAtKeyGivenInput("B1", "=A1");
+        expect(spreadsheet.getRowCount()).toEqual(3);
+        expect(spreadsheet.getColCount()).toEqual(3);
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("1");
+        expect(spreadsheet.getCellAtKeyValue("A1")).toEqual(1);
+        expect(spreadsheet.getCellAtKeyDisplay("B1")).toEqual("1");
+        expect(spreadsheet.getCellAtKeyValue("B1")).toEqual(1);
+      });
+    })
+
+    describe('Cell Reference Changing Value', (): void => {
+      it('A cell containing a cell reference should return the same display and value, even if the cell it references changes', (): void => {
+        spreadsheet = new Spreadsheet();
+        spreadsheet.setCellAtKeyGivenInput("A1", "1");
+        spreadsheet.setCellAtKeyGivenInput("A2", "2");
+        spreadsheet.setCellAtKeyGivenInput("A3", "3");
+        spreadsheet.setCellAtKeyGivenInput("B1", "=A1");
+        expect(spreadsheet.getRowCount()).toEqual(3);
+        expect(spreadsheet.getColCount()).toEqual(3);
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("1");
+        expect(spreadsheet.getCellAtKeyValue("A1")).toEqual(1);
+        expect(spreadsheet.getCellAtKeyDisplay("B1")).toEqual("1");
+        expect(spreadsheet.getCellAtKeyValue("B1")).toEqual(1);
+        spreadsheet.setCellAtKeyGivenInput("A1", "99");
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("99");
+        expect(spreadsheet.getCellAtKeyValue("A1")).toEqual(99);
+        expect(spreadsheet.getCellAtKeyDisplay("B1")).toEqual("99");
+        expect(spreadsheet.getCellAtKeyValue("B1")).toEqual(99);
+      });
+    })
+
+    describe('Cell Reference Chaining', (): void => {
+      it('A cell referencing a cell referencing (etc) should return the same values and displays, even after changes', (): void => {
+        spreadsheet = new Spreadsheet();
+        spreadsheet.setCellAtKeyGivenInput("A1", "1");
+        spreadsheet.setCellAtKeyGivenInput("A2", "2");
+        spreadsheet.setCellAtKeyGivenInput("A3", "3");
+        spreadsheet.setCellAtKeyGivenInput("B1", "=A1");
+        spreadsheet.setCellAtKeyGivenInput("B2", "=B1");
+        spreadsheet.setCellAtKeyGivenInput("B3", "=B2");
+        expect(spreadsheet.getRowCount()).toEqual(3);
+        expect(spreadsheet.getColCount()).toEqual(3);
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("1");
+        expect(spreadsheet.getCellAtKeyValue("A1")).toEqual(1);
+        expect(spreadsheet.getCellAtKeyDisplay("B1")).toEqual("1");
+        expect(spreadsheet.getCellAtKeyValue("B1")).toEqual(1);
+        expect(spreadsheet.getCellAtKeyDisplay("B2")).toEqual("1");
+        expect(spreadsheet.getCellAtKeyValue("B2")).toEqual(1);
+        expect(spreadsheet.getCellAtKeyDisplay("B3")).toEqual("1");
+        expect(spreadsheet.getCellAtKeyValue("B3")).toEqual(1);
+        spreadsheet.setCellAtKeyGivenInput("A1", "99");
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("99");
+        expect(spreadsheet.getCellAtKeyValue("A1")).toEqual(99);
+        expect(spreadsheet.getCellAtKeyDisplay("B1")).toEqual("99");
+        expect(spreadsheet.getCellAtKeyValue("B1")).toEqual(99);
+        expect(spreadsheet.getCellAtKeyDisplay("B2")).toEqual("99");
+        expect(spreadsheet.getCellAtKeyValue("B2")).toEqual(99);
+        expect(spreadsheet.getCellAtKeyDisplay("B3")).toEqual("99");
+        expect(spreadsheet.getCellAtKeyValue("B3")).toEqual(99);
+      });
+    })
+
+
   })
 })
