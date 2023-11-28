@@ -2,8 +2,8 @@ import React from "react";
 
 export const CellGrid = () => {
     // TODO: change all of this lmao
-    const numRows = 50; // Number of rows in the grid
-    const numCols = 60; // Number of columns in the grid
+    const numRows = 70; // Number of rows in the grid
+    const numCols = 70; // Number of columns in the grid
 
     return (
         <table className="table-fixed border-collapse border border-gray-300">

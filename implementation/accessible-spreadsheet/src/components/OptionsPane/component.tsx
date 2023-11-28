@@ -4,10 +4,17 @@ import { ReactComponent as LoadFileSvg } from "../../graphics/LoadFileButton.svg
 import { ReactComponent as FormulaSvg } from "../../graphics/FormulaButton.svg";
 import { ReactComponent as InsertRowSvg } from "../../graphics/InsertRowButton.svg";
 import { ReactComponent as DeleteRowSvg } from "../../graphics/DeleteRowButton.svg";
+import { ReactComponent as InsertColSvg } from "../../graphics/InsertColButton.svg";
+import { ReactComponent as DeleteColSvg } from "../../graphics/DeleteColButton.svg";
 import { ReactComponent as ThemeSvg } from "../../graphics/ThemeButtonButton.svg";
 import { ReactComponent as ScreenReaderSvg } from "../../graphics/ScreenReaderButton.svg";
 
-export const OptionsPane = () => {
+interface OptionsPaneButtonProps {
+  saveButtonOnClick: () => void;
+}
+
+
+export const OptionsPane: React.FC<OptionsPaneButtonProps> = ({saveButtonOnClick}) => {
   // States to handle Formula and Screen Reader buttons
   const [formulaActive, setFormulaActive] = React.useState(false);
   const [screenReaderActive, setScreenReaderActive] = React.useState(false);
@@ -40,6 +47,7 @@ export const OptionsPane = () => {
           }`}
           onMouseDown={() => handleButtonClick("save-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
+          onClick={() => saveButtonOnClick()}
         >
           <SaveFileSvg style={{ height: "4em", width: "4em" }} />
           Save
@@ -86,41 +94,83 @@ export const OptionsPane = () => {
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
-            pressedButton === "insert-button"
+            pressedButton === "insert-row-button"
               ? "bg-options-active-light shadow-lg"
               : "hover:bg-gray-200"
           }`}
-          onMouseDown={() => handleButtonClick("insert-button")}
+          onMouseDown={() => handleButtonClick("insert-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
         >
           <InsertRowSvg
             style={{
               height: "4em",
               width: "4em",
-              transform: "translateX(-7%)",
+              transform: "translateX(-7%) translateY(5%)",
             }}
           />
-          Insert
+          Insert Row
         </button>
 
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
-            pressedButton === "delete-button"
+            pressedButton === "delete-row-button"
               ? "bg-options-active-light shadow-lg"
               : "hover:bg-gray-200"
           }`}
-          onMouseDown={() => handleButtonClick("delete-button")}
+          onMouseDown={() => handleButtonClick("delete-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
         >
           <DeleteRowSvg
             style={{
               height: "4em",
               width: "4em",
-              transform: "translateX(-5%)",
+              transform: "translateX(-5%) translateY(5%)",
             }}
           />
-          Delete
+          Delete Row
+        </button>
+
+        <button
+          className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
+          ${
+            pressedButton === "insert-col-button"
+              ? "bg-options-active-light shadow-lg"
+              : "hover:bg-gray-200"
+          }`}
+          onMouseDown={() => handleButtonClick("insert-col-button")}
+          onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
+        >
+          <InsertColSvg
+            style={{
+              height: "4em",
+              width: "4em",
+              // transform: "translateY(-13%)",
+              transform: "translateY(-8%)",
+            }}
+          />
+          Insert Column
+        </button>
+
+        <button
+          className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
+          ${
+            pressedButton === "delete-col-button"
+              ? "bg-options-active-light shadow-lg"
+              : "hover:bg-gray-200"
+          }`}
+          onMouseDown={() => handleButtonClick("delete-col-button")}
+          onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
+        >
+          <DeleteColSvg
+            style={{
+              height: "4em",
+              width: "4em",
+              // transform: "translateY(-14%)",
+              transform: "translateY(-9%)",
+            }}
+          />
+          Delete Column
         </button>
 
         <div className="flex h-auto p-2">

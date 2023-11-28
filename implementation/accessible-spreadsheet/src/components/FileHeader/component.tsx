@@ -1,3 +1,5 @@
+// TODO: Grab file name from model
+
 export const FileHeader = () => {
         return (
           <div className="bg-file-header-light text-indigo-50 p-[0.4%] min-w-full w-fit">

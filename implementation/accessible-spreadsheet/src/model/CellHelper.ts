@@ -8,19 +8,6 @@ import { CellReference } from "./values/CellReference";
 import { MultiCellReference } from "./values/MultiCellReference";
 
 export class CellHelper {
-    public static setCellValue(cell : Cell, input : string) : void {
-        if (CellHelper.inputIsEmpty(input)) {
-            cell.setCellValue(new EmptyValue());
-        }
-        else if (CellHelper.inputIsNumber(input)) {
-            cell.setCellValue(new NumberValue(Number(input)));
-        }
-        else if (CellHelper.inputIsFormula(input)) {
-            cell.setCellValue(new FormulaValue(input));
-        } else {
-            cell.setCellValue(new StringValue(input));
-        }
-    }
 
     public static inputIsEmpty(input : string) : boolean {
         return input === "" || input === undefined || input === null;
@@ -32,6 +19,20 @@ export class CellHelper {
 
     public static inputIsFormula(input : string) : boolean {
         return input.startsWith("=");
+    }
+
+    public static getValueFromUserInput(input : string) : IValue {
+        if (CellHelper.inputIsEmpty(input)) {
+            return new EmptyValue();
+        }
+        else if (CellHelper.inputIsNumber(input)) {
+            return new NumberValue(Number(input));
+        }
+        else if (CellHelper.inputIsFormula(input)) {
+            return new FormulaValue(input);
+        } else {
+            return new StringValue(input);
+        }
     }
 
     /*public static getCellReferenceRange(cells : Cell[][], ) : Cell {
