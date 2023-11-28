@@ -1,30 +1,41 @@
 import React from "react";
+import { Spreadsheet } from "../../model/Spreadsheet";
 
 export const CellGrid = () => {
-    // TODO: change all of this lmao
-    const numRows = 70; // Number of rows in the grid
-    const numCols = 70; // Number of columns in the grid
+
+    // Singleton Design Pattern - access created instance
+    const spreadsheet = Spreadsheet.getInstance();
+    const numRows = spreadsheet.getRowCount(); // Number of rows in the grid
+    const numCols = spreadsheet.getColCount(); // Number of columns in the grid
+
+    const [activeCell, setActiveCell] = React.useState("A1"); // Active cell
 
     return (
         <table className="table-fixed border-collapse border border-gray-300">
             <thead>
                 <tr>
-                    <th className="w-12 h-8"></th> {/* Empty cell for the top-left corner */}
+                    {/* Empty cell for the top-left corner */}
+                    <th className="w-12 h-8"></th>
+
                     {/* Generate column names/letters */}
                     {Array.from({ length: numCols }, (_, index) => (
                         <th key={index} className="w-12 h-8 border border-gray-300">
-                            {String.fromCharCode(65 + index)}
+                            {spreadsheet.getRowAndColKeyFromIndex(index)[1]}
                         </th>
                     ))}
                 </tr>
             </thead>
+
             <tbody>
                 {/* Generate rows */}
                 {Array.from({ length: numRows }, (_, rowIndex) => (
                     <tr key={rowIndex}>
+
+                        {/* Row number */}
                         <th className="w-12 h-8 border border-gray-300">
                             {rowIndex + 1}
-                        </th> {/* Row number */}
+                        </th>
+
                         {/* Generate cells */}
                         {Array.from({ length: numCols }, (_, colIndex) => (
                             <td
@@ -35,9 +46,9 @@ export const CellGrid = () => {
                     </tr>
                 ))}
             </tbody>
+
         </table>
     );
 };
-
 
 export default CellGrid;

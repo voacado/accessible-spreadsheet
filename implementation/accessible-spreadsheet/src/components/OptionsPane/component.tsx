@@ -9,12 +9,13 @@ import { ReactComponent as DeleteColSvg } from "../../graphics/DeleteColButton.s
 import { ReactComponent as ThemeSvg } from "../../graphics/ThemeButtonButton.svg";
 import { ReactComponent as ScreenReaderSvg } from "../../graphics/ScreenReaderButton.svg";
 
-interface OptionsPaneButtonProps {
-  saveButtonOnClick: () => void;
-}
+// interface OptionsPaneButtonProps {
+//   saveButtonOnClick: () => void;
+// }
 
 
-export const OptionsPane: React.FC<OptionsPaneButtonProps> = ({saveButtonOnClick}) => {
+export const OptionsPane: React.FC = () => {
+// export const OptionsPane: React.FC<OptionsPaneButtonProps> = ({saveButtonOnClick}) => {
   // States to handle Formula and Screen Reader buttons
   const [formulaActive, setFormulaActive] = React.useState(false);
   const [screenReaderActive, setScreenReaderActive] = React.useState(false);
@@ -47,7 +48,7 @@ export const OptionsPane: React.FC<OptionsPaneButtonProps> = ({saveButtonOnClick
           }`}
           onMouseDown={() => handleButtonClick("save-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
-          onClick={() => saveButtonOnClick()}
+          // onClick={() => saveButtonOnClick()}
         >
           <SaveFileSvg style={{ height: "4em", width: "4em" }} />
           Save

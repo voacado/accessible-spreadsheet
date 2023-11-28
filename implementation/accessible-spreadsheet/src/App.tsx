@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './App.css';
 
+import { Spreadsheet } from "./model/Spreadsheet";
+
 import {
   CellGrid,
   FileHeader,
@@ -12,21 +14,21 @@ import {
 
 function App() {
 
+  // Instantiate Spreadsheet model
+  const spreadsheet = Spreadsheet.getInstance();
+
   // const [openSavePopUp, setOpenSavePopUp] = useState(false);
   // const HandleRemoveSavePopUp = () => setOpenSavePopUp(true);
 
   return (
     <div>
-      hi
+      <div className='sticky top-0'>
+        <FileHeader/>
+        <OptionsPane/>
+        <FormulaBar/>
+      </div>
+      <CellGrid/>
     </div>
-    // <div>
-    //   <div className='sticky top-0'>
-    //     <FileHeader/>
-    //     <OptionsPane/>
-    //     <FormulaBar/>
-    //   </div>
-    //   <CellGrid/>
-    // </div>
   );
 }
 

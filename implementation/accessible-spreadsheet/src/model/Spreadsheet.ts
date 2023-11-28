@@ -12,11 +12,6 @@ const initRowCount = 3
 const initColCount = 3
 
 export class Spreadsheet {
-    // private configuration : Configuration;
-    
-    // Array approach
-    // private cells : Cell[][] = [[]];
-
     // Dict approach
     //private cells = new Map<string, Map<string, Cell>>();
     private cells = new Map<string, Cell>();
@@ -25,9 +20,33 @@ export class Spreadsheet {
 
     // private textReader : TextReader;
 
+    // Singleton Design Pattern - only one instance of Spreadsheet
+    private static instance: Spreadsheet;
+    // Observer Design Pattern - observers are notified when spreadsheet changes (like CellGrid)
+    private observers: (() => void)[] = [];
+
     constructor(rowCount :number=initRowCount, colCount : number=initColCount) { 
         // TODO: Implement
         this.initialize(rowCount, colCount);
+    }
+
+    public static getInstance(): Spreadsheet {
+        if (!Spreadsheet.instance) {
+            Spreadsheet.instance = new Spreadsheet(70, 70);
+        }
+        return Spreadsheet.instance;
+    }
+
+    public subscribe(observer: () => void): void {
+        this.observers.push(observer);
+    }
+
+    public unsubscribe(observer: () => void): void {
+        this.observers = this.observers.filter(obs => obs !== observer);
+    }
+
+    public notifyObservers(): void {
+        this.observers.forEach(observer => observer());
     }
 
     private initialize(rowCount :number, colCount : number) : void {
@@ -209,12 +228,46 @@ export class Spreadsheet {
         // TODO: Implement
     }
     
-    public saveSpreadsheet(filename : string) : void {
-        // TODO: Implement
+    public saveSpreadsheet(): void {
+        // TODO: serialize cells
+        console.log('Saving file');
+
+        // Get data from spreadsheet into JSON format
+        const json = JSON.stringify(this.cells);
+        const blob = new Blob([json], {type: "application/json"});
+        const url = URL.createObjectURL(blob);
+      
+        // Create a link to download the file
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'spreadsheet.json';
+        document.body.appendChild(link);
+        link.click();
+      
+        // Clean up created file from memory
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
     }
     
-    public loadSpreadsheet(filename : string) : void {
-        // TODO: Implement
+    public loadSpreadsheet(): void {
+        console.log('Loading file')
+        // Prompt user for file to load
+        var input = document.createElement('input');
+        input.type = 'file';
+
+        // When file selected, read contents of file
+        input.onchange = (e: any) => {
+            var file = e.target.files[0];
+            var reader = new FileReader();
+            reader.readAsText(file, 'UTF-8');
+
+            // When done reading, assign to cells
+            // TODO: actually assign to cells dict
+            reader.onload = readerEvent => {
+            // this.cells = readerEvent.target!.result;
+            }
+        };
+        input.click();
     }
     
     // public getTextReader() : TextReader {
@@ -224,8 +277,12 @@ export class Spreadsheet {
     // TODO Key: A1 + 1 (B1 or A2)
     // TODO: Key A + 1 (B) -> Key
 
-    private getRowAndColFromKey(key : string) : [string, string] {
+    public getRowAndColFromKey(key : string) : [string, string] {
         return [this.getRowFromKey(key), this.getColFromKey(key)];
+    }
+
+    public getRowAndColKeyFromIndex(idx : number) : [string, string] {
+        return [this.getRowKeyFromIndex(idx), this.getColKeyFromIndex(idx)];
     }
 
     private getRowFromKey(key : string): string {
