@@ -28,7 +28,7 @@ export class Cell {
     // }
 
     public getKey() : string {
-        console.log("Cell.getKey() returning " + this.key);
+        // console.log("Cell.getKey() returning " + this.key);
         return this.key;
     }
 
@@ -51,6 +51,7 @@ export class Cell {
     
     public updateCellValue() : void {
         this.value.updateValue();
+        this.updateObservers();
     }
     
     public addObserver(observer : Cell) : void {
@@ -67,6 +68,10 @@ export class Cell {
         }
     }
     
+    public getObservers() : Cell[] {
+        return this.observers
+    }
+
     private updateObservers() : void {
         for (let observer of this.observers) {
             observer.updateCellValue();
@@ -74,8 +79,8 @@ export class Cell {
     }
 
     public deleteCell() : void {
-        for (let observer of this.observers) {
-            observer.updateCellValue(); // TODO: ORDER
-        }
+        // for (let observer of this.observers) {
+        //     observer.updateCellValue(); // TODO: ORDER
+        // }
     }
 }

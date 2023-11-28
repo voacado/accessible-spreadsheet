@@ -17,8 +17,27 @@ export class CellHelper {
         return !isNaN(Number(input));
     }
 
+    public static inputIsCellReference(input : string) : boolean {
+        if (!input.startsWith("=")) {
+            return false
+        }
+        return false // TODO
+    }
+
+    public static inputIsMultiCellReference(input : string) : boolean {
+        if (!input.startsWith("=")) {
+            return false
+        }
+        let [pieces] : string[] = input.split(":")
+        if (pieces.length != 2) {
+            return false
+        }
+
+        return false // TODO
+    }
+
     public static inputIsFormula(input : string) : boolean {
-        return input.startsWith("=");
+        return input.startsWith("=") && !(CellHelper.inputIsMultiCellReference(input) || CellHelper.inputIsCellReference(input));
     }
 
     public static getValueFromUserInput(input : string) : IValue {

@@ -7,6 +7,7 @@ import { FormulaValue } from "./values/FormulaValue";
 import { CellReference } from "./values/CellReference";
 import { MultiCellReference } from "./values/MultiCellReference";
 import { CellHelper } from "./CellHelper";
+import { string } from "yargs";
 
 const initRowCount = 3
 const initColCount = 3
@@ -71,22 +72,27 @@ export class Spreadsheet {
             throw new Error("ERROR: Spreadsheet.addRow() given index greater than rowCount.");
         }
 
-        this.rowCount++;
 
+        this.rowCount++;
         let cellsToChange : Cell[] = this.getCellsGivenRange("A" + this.getRowKeyFromIndex(index), 
                                                             this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(this.rowCount-1),
                                                             false)
+
         if (cellsToChange.length === 0) {
+            // console.log("AddRow cellsToChange.length was 0 given index " + index)
             return;
         }
+        // console.log("AddRow cellsToChange.length was " + cellsToChange.length + " given index " + index)
+        // console.log("RANGE EXPRSSION: " + "A" + this.getRowKeyFromIndex(index) + this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(this.rowCount-1))
 
         let oldKey : string = ""
         let newKey : string = ""
         let changingCell : Cell
-        for (let i = 0; i < this.colCount; i++) {
+        for (let i = 0; i < cellsToChange.length; i++) {
             changingCell = cellsToChange[i];
             oldKey = changingCell.getKey();
-            newKey = this.getColFromKey(oldKey) + this.getRowKeyFromIndex(this.getIndexOfRow(oldKey) + 1);
+            newKey = this.getColFromKey(oldKey) + this.getRowKeyFromIndex(this.getIndexOfRow(this.getRowFromKey(oldKey)) + 1);
+            // console.log("AddRow iteration " + i + " Changing cell at key " + oldKey + " to new key " + newKey)
             cellsToChange[i].setKey(newKey);
             this.cells.set(newKey, changingCell);
             this.cells.delete(oldKey);
@@ -102,20 +108,21 @@ export class Spreadsheet {
         }
 
         this.colCount++
-
         let cellsToChange : Cell[] = this.getCellsGivenRange(this.getColKeyFromIndex(index) + "1", 
                                                             this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(this.rowCount-1),
                                                             false)
+        
+        
         if (cellsToChange.length === 0) {
             return;
         }
         let oldKey : string = ""
         let newKey : string = ""
         let changingCell : Cell
-        for (let i = 0; i < this.rowCount; i++) {
+        for (let i = 0; i < cellsToChange.length; i++) {
             changingCell = cellsToChange[i];
             oldKey = changingCell.getKey();
-            newKey = this.getColKeyFromIndex(this.getIndexOfCol(oldKey) + 1) + this.getRowFromKey(oldKey)
+            newKey = this.getColKeyFromIndex(this.getIndexOfCol(this.getColFromKey(oldKey)) + 1) + this.getRowFromKey(oldKey)
             cellsToChange[i].setKey(newKey);
             this.cells.set(newKey, changingCell);
             this.cells.delete(oldKey);
@@ -127,31 +134,32 @@ export class Spreadsheet {
 
 
         let cellsToRemove : Cell[] = this.getCellsGivenRange("A" + this.getRowKeyFromIndex(index), 
-                                                            this.getColKeyFromIndex(index) + this.getRowKeyFromIndex(this.rowCount-1),
+                                                            this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(index),
                                                             true)
         if (cellsToRemove.length !== 0) {
-            for (let i = 0; i < this.colCount; i++) {
+            for (let i = 0; i < cellsToRemove.length; i++) {
                 this.deleteCell(cellsToRemove[i])
             }
         }
         let cellsToChange : Cell[] = this.getCellsGivenRange("A" + this.getRowKeyFromIndex(index+1), 
                                                             this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(this.rowCount-1),
                                                             true)
+        
+        this.rowCount--;
         if (cellsToChange.length === 0) {
             return;
         }
         let oldKey : string = ""
         let newKey : string = ""
         let changingCell : Cell
-        for (let i = 0; i < this.colCount; i++) {
+        for (let i = 0; i < cellsToChange.length; i++) {
             changingCell = cellsToChange[i];
             oldKey = changingCell.getKey();
-            newKey = this.getColFromKey(oldKey) + this.getRowKeyFromIndex(this.getIndexOfRow(oldKey) - 1);
+            newKey = this.getColFromKey(oldKey) + this.getRowKeyFromIndex(this.getIndexOfRow(this.getRowFromKey(oldKey)) - 1);
             cellsToChange[i].setKey(newKey);
             this.cells.set(newKey, changingCell);
             this.cells.delete(oldKey);
         }
-        this.rowCount--;
 
         // GET LIST LEFT TO RIGHT
 
@@ -170,7 +178,7 @@ export class Spreadsheet {
                                                             this.getColKeyFromIndex(index) + this.getRowKeyFromIndex(this.rowCount-1),
                                                             true)
         if (cellsToRemove.length !== 0) {
-            for (let i = 0; i < this.rowCount; i++) {
+            for (let i = 0; i < cellsToRemove.length; i++) {
                 this.deleteCell(cellsToRemove[i]);
             }
         }
@@ -180,21 +188,22 @@ export class Spreadsheet {
         let cellsToChange : Cell[] = this.getCellsGivenRange(this.getColKeyFromIndex(index+1) + "1", 
                                                             this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(this.rowCount-1),
                                                             true)
+        
+        this.colCount--
         if (cellsToChange.length === 0) {
             return;
         }
         let oldKey : string = ""
         let newKey : string = ""
         let changingCell : Cell
-        for (let i = 0; i < this.rowCount; i++) {
+        for (let i = 0; i < cellsToChange.length; i++) {
             changingCell = cellsToChange[i];
             oldKey = changingCell.getKey();
-            newKey = this.getColKeyFromIndex(this.getIndexOfCol(oldKey) - 1) + this.getRowFromKey(oldKey)
+            newKey = this.getColKeyFromIndex(this.getIndexOfCol(this.getColFromKey(oldKey)) - 1) + this.getRowFromKey(oldKey)
             cellsToChange[i].setKey(newKey);
             this.cells.set(newKey, changingCell);
             this.cells.delete(oldKey);
         }
-        this.colCount--
 
         // GET LIST LEFT TO RIGHT
         // DELETE 
@@ -209,7 +218,7 @@ export class Spreadsheet {
         if (cellsToChange.length === 0) {
             return;
         }
-        for (let i = 0; i < this.colCount; i++) {
+        for (let i = 0; i < cellsToChange.length; i++) {
             cellsToChange[i].setCellValue(new EmptyValue());
         }
         // TODO: Implement
@@ -222,7 +231,7 @@ export class Spreadsheet {
         if (cellsToChange.length === 0) {
             return;
         }
-        for (let i = 0; i < this.colCount; i++) {
+        for (let i = 0; i < cellsToChange.length; i++) {
             cellsToChange[i].setCellValue(new EmptyValue());
         }
         // TODO: Implement
@@ -341,8 +350,9 @@ export class Spreadsheet {
         let cell : Cell = this.cells.get(key)!;
 
         if (cell === undefined) {
-            // console.log("Creating new cell at key: " + key  + " with empty value")
-            return new Cell(key, new EmptyValue()) // TODO
+            // console.log("getCellAtKey found undefined. Creating new cell at key: " + key  + " with empty value")
+            cell = new Cell(key, new EmptyValue())
+            this.cells.set(key, cell);
         }
         return cell;
     }
@@ -353,12 +363,14 @@ export class Spreadsheet {
         let endRowIndex = this.getIndexOfRow(this.getRowFromKey(endKey));
         let endColIndex = this.getIndexOfCol(this.getColFromKey(endKey));
         let cells : Cell[] = [];
-
+        // console.log("Start getCellsGivenRange")
         for (let i = startRowIndex; i <= endRowIndex; i++) {
             for (let j = startColIndex; j <= endColIndex; j++) {
                 let key : string = this.getColKeyFromIndex(j) + this.getRowKeyFromIndex(i);
+                // console.log("Checking key " + key + " in getCellsGivenRange")
                 let cell : Cell | undefined = this.getCellAtKeyIfExists(key);
                 if (cell !== undefined) {
+                    // console.log("Found cell at key " + key + " in getCellsGivenRange")
                     cells.push(cell);
                 } 
                 else {
@@ -372,13 +384,13 @@ export class Spreadsheet {
         if (leftToRight) {
             return cells;
         }
-
         return cells.reverse();
     }
 
     public setCellAtKeyGivenInput(key : string, userInput : string) : void {
         let cell : Cell = this.getCellAtKey(key);
         let value : IValue = CellHelper.getValueFromUserInput(userInput);
+        // console.log("Setting cell at " + key + " value to " + value.display())
         cell.setCellValue(value);
     }
 
@@ -394,8 +406,21 @@ export class Spreadsheet {
 
     private deleteCell(cell : Cell) : void {
         // TODO
+        let oldKey : string = cell.getKey()
         cell.deleteCell();
+        this.cells.delete(oldKey);
         // Observesr
+    }
+
+    public spreadsheetAsString() : string {
+        let orderedCells : Cell[] = this.getCellsGivenRange("A1", 
+                                                            this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(this.rowCount-1),
+                                                            true)
+        let outputString : string = ""
+        for (let i = 0; i < orderedCells.length; i++) {
+            outputString += orderedCells[i].getKey() + " : " + orderedCells[i].getCellValue().display() + "\n"
+        }
+        return outputString
     }
 
 }
