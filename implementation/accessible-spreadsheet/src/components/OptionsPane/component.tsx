@@ -4,10 +4,32 @@ import { ReactComponent as LoadFileSvg } from "../../graphics/LoadFileButton.svg
 import { ReactComponent as FormulaSvg } from "../../graphics/FormulaButton.svg";
 import { ReactComponent as InsertRowSvg } from "../../graphics/InsertRowButton.svg";
 import { ReactComponent as DeleteRowSvg } from "../../graphics/DeleteRowButton.svg";
+import { ReactComponent as InsertColSvg } from "../../graphics/InsertColButton.svg";
+import { ReactComponent as DeleteColSvg } from "../../graphics/DeleteColButton.svg";
+import { ReactComponent as ClearRowSvg } from "../../graphics/ClearRowButton.svg";
+import { ReactComponent as ClearColSvg } from "../../graphics/ClearColumnButton.svg";
 import { ReactComponent as ThemeSvg } from "../../graphics/ThemeButtonButton.svg";
 import { ReactComponent as ScreenReaderSvg } from "../../graphics/ScreenReaderButton.svg";
 
-export const OptionsPane = () => {
+import { Spreadsheet } from "../../model/Spreadsheet";
+
+// TODO: move this interface to separate file
+interface UserProps {
+  activeCell: string;
+  setActiveCell?: (cell: string) => void;
+  activeEditCell?: string;
+  setActiveEditCell?: (cell: string) => void;
+  editValue?: string | number;
+  setEditValue: (value: string | number) => void;
+  fileName: string;
+  setFileName: (name: string) => void;
+}
+
+export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, fileName, setFileName}) => {
+
+    // Singleton Design Pattern - access created instance
+    const spreadsheet = Spreadsheet.getInstance();
+
   // States to handle Formula and Screen Reader buttons
   const [formulaActive, setFormulaActive] = React.useState(false);
   const [screenReaderActive, setScreenReaderActive] = React.useState(false);
@@ -40,6 +62,7 @@ export const OptionsPane = () => {
           }`}
           onMouseDown={() => handleButtonClick("save-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
+          onClick={() => spreadsheet.saveSpreadsheet(fileName)}
         >
           <SaveFileSvg style={{ height: "4em", width: "4em" }} />
           Save
@@ -54,6 +77,7 @@ export const OptionsPane = () => {
           }`}
           onMouseDown={() => handleButtonClick("load-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
+          onClick={() => spreadsheet.loadSpreadsheet()}
         >
           <LoadFileSvg style={{ height: "4em", width: "4em" }} />
           Load
@@ -72,7 +96,10 @@ export const OptionsPane = () => {
               ? "bg-options-active-light shadow-lg"
               : "hover:bg-gray-200"
           }`}
-          onClick={toggleFormula}
+          onClick={() => {
+            toggleFormula();
+            setEditValue("=");
+          }}
         >
           <FormulaSvg style={{ height: "4em", width: "4em" }} />
           Formula
@@ -86,41 +113,152 @@ export const OptionsPane = () => {
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
-            pressedButton === "insert-button"
+            pressedButton === "insert-row-button"
               ? "bg-options-active-light shadow-lg"
               : "hover:bg-gray-200"
           }`}
-          onMouseDown={() => handleButtonClick("insert-button")}
+          onMouseDown={() => handleButtonClick("insert-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
+          onClick={() => {
+            const curPos = spreadsheet.getRowAndColFromKey(activeCell);
+            const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
+            spreadsheet.addRow(activeCellIdx[0]);
+          }}
         >
           <InsertRowSvg
             style={{
               height: "4em",
               width: "4em",
-              transform: "translateX(-7%)",
+              transform: "translateX(-7%) translateY(5%)",
             }}
           />
-          Insert
+          Insert Row
         </button>
 
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
-            pressedButton === "delete-button"
+            pressedButton === "delete-row-button"
               ? "bg-options-active-light shadow-lg"
               : "hover:bg-gray-200"
           }`}
-          onMouseDown={() => handleButtonClick("delete-button")}
+          onMouseDown={() => handleButtonClick("delete-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
+          onClick={() => {
+            const curPos = spreadsheet.getRowAndColFromKey(activeCell);
+            const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
+            spreadsheet.removeRow(activeCellIdx[0]);
+          }}
         >
           <DeleteRowSvg
             style={{
               height: "4em",
               width: "4em",
-              transform: "translateX(-5%)",
+              transform: "translateX(-5%) translateY(5%)",
             }}
           />
-          Delete
+          Delete Row
+        </button>
+
+        <button
+          className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
+          ${
+            pressedButton === "clear-row-button"
+              ? "bg-options-active-light shadow-lg"
+              : "hover:bg-gray-200"
+          }`}
+          onMouseDown={() => handleButtonClick("clear-row-button")}
+          onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
+          onClick={() => {
+            const curPos = spreadsheet.getRowAndColFromKey(activeCell);
+            const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
+            spreadsheet.clearRow(activeCellIdx[0]);
+          }}
+        >
+          <ClearRowSvg
+            style={{
+              height: "4em",
+              width: "4em",
+              transform: "translateX(-7%) translateY(5%)",
+            }}
+          />
+          Clear Row
+        </button>
+
+        <button
+          className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
+          ${
+            pressedButton === "insert-col-button"
+              ? "bg-options-active-light shadow-lg"
+              : "hover:bg-gray-200"
+          }`}
+          onMouseDown={() => handleButtonClick("insert-col-button")}
+          onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
+          onClick={() => {
+            const curPos = spreadsheet.getRowAndColFromKey(activeCell);
+            const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
+            spreadsheet.addColumn(activeCellIdx[1]);
+          }}
+        >
+          <InsertColSvg
+            style={{
+              height: "4em",
+              width: "4em",
+              // transform: "translateY(-13%)",
+              transform: "translateY(-8%)",
+            }}
+          />
+          Insert Column
+        </button>
+
+        <button
+          className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
+          ${
+            pressedButton === "delete-col-button"
+              ? "bg-options-active-light shadow-lg"
+              : "hover:bg-gray-200"
+          }`}
+          onMouseDown={() => handleButtonClick("delete-col-button")}
+          onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
+          onClick={() => {
+            const curPos = spreadsheet.getRowAndColFromKey(activeCell);
+            const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
+            spreadsheet.removeColumn(activeCellIdx[1]);
+          }}
+        >
+          <DeleteColSvg
+            style={{
+              height: "4em",
+              width: "4em",
+              transform: "translateY(-9%)",
+            }}
+          />
+          Delete Column
+        </button>
+
+        <button
+          className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
+          ${
+            pressedButton === "clear-col-button"
+              ? "bg-options-active-light shadow-lg"
+              : "hover:bg-gray-200"
+          }`}
+          onMouseDown={() => handleButtonClick("clear-col-button")}
+          onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
+          onClick={() => {
+            const curPos = spreadsheet.getRowAndColFromKey(activeCell);
+            const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
+            spreadsheet.clearColumn(activeCellIdx[1]);
+          }}
+        >
+          <ClearColSvg
+            style={{
+              height: "4em",
+              width: "4em",
+              transform: "translateY(-9%)",
+            }}
+          />
+          Clear Column
         </button>
 
         <div className="flex h-auto p-2">

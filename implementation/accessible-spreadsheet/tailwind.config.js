@@ -12,6 +12,7 @@ module.exports = {
         'options-stroke-light': '#CCCCCC',
         'options-hover-light': '#D9D9D9',
         'options-active-light': '#C8C8C8',
+        'cell-grid-active-light': '#1973E8'
       },  
       fontFamily: {
         'google-sans': ['Google Sans', 'sans-serif'],
