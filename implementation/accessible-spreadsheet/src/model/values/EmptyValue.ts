@@ -5,6 +5,9 @@ export class EmptyValue {
     public display() : string {
         return "";
     }
+    public formulaBarDisplay() : string {
+        return "";
+    }
     public updateValue() : void {
         // Do nothing
     }

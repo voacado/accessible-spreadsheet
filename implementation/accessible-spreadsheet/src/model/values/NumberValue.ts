@@ -11,6 +11,9 @@ export class NumberValue {
     public display() : string {
         return this.value.toString();
     }
+    public formulaBarDisplay() : string {
+        return this.display();
+    }
     public updateValue() : void {
         // Do nothing
     }

@@ -19,6 +19,10 @@ export class MultiCellReferenceChild {
         // TODO: Implement
         throw new Error("MultiCellReferenceChild.display() not implemented");
     }
+    public formulaBarDisplay() : string {
+        // TODO: Implement
+        throw new Error("MultiCellReferenceChild.formulaBarDisplay() not implemented");
+    }
     public updateValue() : void {
         // TODO: Implement
         throw new Error("MultiCellReferenceChild.updateValue() not implemented");
