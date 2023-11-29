@@ -354,7 +354,7 @@ export class Spreadsheet {
         return this.cells.get(key);
     }
     
-    private getCellAtKey(key : string) : Cell {
+    public getCellAtKey(key : string) : Cell {
         // TODO if spreadsheet does not reach this key, ?
 
         let cell : Cell = this.cells.get(key)!;
@@ -399,7 +399,7 @@ export class Spreadsheet {
 
     public setCellAtKeyGivenInput(key : string, userInput : string) : void {
         let cell : Cell = this.getCellAtKey(key);
-        let value : IValue = CellHelper.getValueFromUserInput(userInput);
+        let value : IValue = CellHelper.getValueFromUserInput(userInput, this);
         // console.log("Setting cell at " + key + " value to " + value.display())
         cell.setCellValue(value);
     }
