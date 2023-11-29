@@ -33,7 +33,7 @@ export class Spreadsheet {
 
     public static getInstance(): Spreadsheet {
         if (!Spreadsheet.instance) {
-            Spreadsheet.instance = new Spreadsheet(70, 70);
+            Spreadsheet.instance = new Spreadsheet(100, 100);
         }
         return Spreadsheet.instance;
     }
@@ -97,6 +97,7 @@ export class Spreadsheet {
             this.cells.set(newKey, changingCell);
             this.cells.delete(oldKey);
         }
+        this.notifyObservers();
     }
     
     public addColumn(index : number) : void {
@@ -127,6 +128,7 @@ export class Spreadsheet {
             this.cells.set(newKey, changingCell);
             this.cells.delete(oldKey);
         }
+        this.notifyObservers();
     }
     
     public removeRow(index : number) : void {
@@ -168,6 +170,7 @@ export class Spreadsheet {
         // SHIFT
 
         // TODO: OBSERVERS
+        this.notifyObservers();
     }
     
     public removeColumn(index : number) : void {
@@ -209,6 +212,7 @@ export class Spreadsheet {
         // DELETE 
         // SHIFT
         // TODO: OBSERVERS
+        this.notifyObservers();
     }
     
     public clearRow(index : number) : void {
@@ -222,6 +226,7 @@ export class Spreadsheet {
             cellsToChange[i].setCellValue(new EmptyValue());
         }
         // TODO: Implement
+        this.notifyObservers();
     }
     
     public clearColumn(index : number) : void {
@@ -235,9 +240,10 @@ export class Spreadsheet {
             cellsToChange[i].setCellValue(new EmptyValue());
         }
         // TODO: Implement
+        this.notifyObservers();
     }
     
-    public saveSpreadsheet(): void {
+    public saveSpreadsheet(fileName: string): void {
         // TODO: serialize cells
         console.log('Saving file');
 
@@ -249,7 +255,7 @@ export class Spreadsheet {
         // Create a link to download the file
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'spreadsheet.json';
+        link.download = `${fileName}.json`;
         document.body.appendChild(link);
         link.click();
       
@@ -292,6 +298,10 @@ export class Spreadsheet {
 
     public getRowAndColKeyFromIndex(idx : number) : [string, string] {
         return [this.getRowKeyFromIndex(idx), this.getColKeyFromIndex(idx)];
+    }
+
+    public getIndexFromRowAndCol(row : string, col : string) : [number, number] {
+        return [this.getIndexOfRow(row), this.getIndexOfCol(col)]
     }
 
     private getRowFromKey(key : string): string {

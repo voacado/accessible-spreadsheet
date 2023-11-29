@@ -2,12 +2,44 @@
 
 import React from "react";
 import { ReactComponent as FxSvg } from "../../graphics/fxIcon.svg";
+import { Spreadsheet } from "../../model/Spreadsheet";
 
-export const FormulaBar = () => {
+// TODO: move this interface to separate file
+interface UserProps {
+  activeCell?: string;
+  setActiveCell?: (cell: string) => void;
+  activeEditCell: string;
+  setActiveEditCell?: (cell: string) => void;
+  editValue: string | number;
+  setEditValue: (value: string | number) => void;
+  fileName?: string;
+  setFileName?: (name: string) => void;
+}
+
+export const FormulaBar: React.FC<UserProps> = ({activeEditCell, editValue, setEditValue}) => {
   // Handle state of formula bar
-  const [formula, setFormula] = React.useState("");
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormula(e.target.value);
+  // const [formula, setFormula] = React.useState("");
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setFormula(e.target.value);
+  // };
+
+  // Singleton Design Pattern - access created spreadsheet instance
+  const spreadsheet = Spreadsheet.getInstance();
+
+    // TODO: duplicate funcs b/t here and CellGrid
+    // Handle editing cell value
+    const handleEditCellValue = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setEditValue(event.target.value);
+      // console.log(editValue)
+      // spreadsheet.setCellAtKeyGivenInput(activeEditCell, editValue.toString());
+  };
+
+    // Handle sending edit value to Spreadsheet
+    const handleSendEditValue = () => {
+      // TODO: editValue shouldn't just be a string or something
+      spreadsheet.setCellAtKeyGivenInput(activeEditCell, editValue.toString());
+      console.log(spreadsheet.getCellAtKeyValue(activeEditCell))
+      // setActiveEditCell(""); // TODO: check if this works here
   };
 
   return (
@@ -25,8 +57,11 @@ export const FormulaBar = () => {
       {/* Input box */}
       <input
         type="text"
-        value={formula}
-        onChange={handleChange}
+        value={editValue}
+        onChange={handleEditCellValue}
+        // onChange={handleChange}
+        onBlur={handleSendEditValue}
+        // onBlur={handleSendEditValue}
         className="flex-grow bg-transparent outline-none text-gray-700"
         placeholder="Enter formula or data..."
       />
