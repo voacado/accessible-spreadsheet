@@ -17,6 +17,10 @@ export class FormulaValue {
         // TODO: Implement
         throw new Error("FormulaValue.display() not implemented");
     }
+    public formulaBarDisplay() : string {
+        // TODO: Implement
+        throw new Error("FormulaValue.formulaBarDisplay() not implemented");
+    }
     public updateValue() : void {
         // TODO: Implement
         throw new Error("FormulaValue.updateValue() not implemented");
