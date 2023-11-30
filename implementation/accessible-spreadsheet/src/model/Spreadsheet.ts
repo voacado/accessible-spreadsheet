@@ -1,11 +1,11 @@
 import { Cell } from "./Cell";
-import { IValue } from "./values/IValue";
-import { EmptyValue } from "./values/EmptyValue";
-import { NumberValue } from "./values/NumberValue";
-import { StringValue } from "./values/StringValue";
-import { FormulaValue } from "./values/FormulaValue";
-import { CellReference } from "./values/CellReference";
-import { MultiCellReference } from "./values/MultiCellReference";
+// import { IValue } from "./values/IValue";
+// import { EmptyValue } from "./values/EmptyValue";
+// import { NumberValue } from "./values/NumberValue";
+// import { StringValue } from "./values/StringValue";
+// import { FormulaValue } from "./values/FormulaValue";
+// import { CellReference } from "./values/CellReference";
+// import { MultiCellReference } from "./values/MultiCellReference";
 import { CellHelper } from "./CellHelper";
 import { string } from "yargs";
 
@@ -51,7 +51,6 @@ export class Spreadsheet {
     }
 
     private initialize(rowCount :number, colCount : number) : void {
-        // TODO: Implement
         this.rowCount = rowCount;
         this.colCount = colCount;
     }
@@ -62,6 +61,12 @@ export class Spreadsheet {
 
     public getColCount() : number {
         return this.colCount;
+    }
+
+    public keyExists(key : string) : boolean {
+        return CellHelper.stringIsValidKey(key) && 
+                this.getIndexOfCol(this.getColFromKey(key)) < this.colCount &&
+                this.getIndexOfRow(this.getRowFromKey(key)) < this.rowCount
     }
     
     public addRow(index : number) : void {
@@ -223,7 +228,7 @@ export class Spreadsheet {
             return;
         }
         for (let i = 0; i < cellsToChange.length; i++) {
-            cellsToChange[i].setCellValue(new EmptyValue());
+            cellsToChange[i].setCellValue("");
         }
         // TODO: Implement
         this.notifyObservers();
@@ -237,7 +242,7 @@ export class Spreadsheet {
             return;
         }
         for (let i = 0; i < cellsToChange.length; i++) {
-            cellsToChange[i].setCellValue(new EmptyValue());
+            cellsToChange[i].setCellValue("");
         }
         // TODO: Implement
         this.notifyObservers();
@@ -361,13 +366,13 @@ export class Spreadsheet {
 
         if (cell === undefined) {
             // console.log("getCellAtKey found undefined. Creating new cell at key: " + key  + " with empty value")
-            cell = new Cell(key, new EmptyValue())
+            cell = new Cell(key, "", this)
             this.cells.set(key, cell);
         }
         return cell;
     }
 
-    private getCellsGivenRange(startKey : string, endKey : string, leftToRight : boolean=true) : Cell[] {
+    public getCellsGivenRange(startKey : string, endKey : string, leftToRight : boolean=true) : Cell[] {
         let startRowIndex = this.getIndexOfRow(this.getRowFromKey(startKey));
         let startColIndex = this.getIndexOfCol(this.getColFromKey(startKey));
         let endRowIndex = this.getIndexOfRow(this.getRowFromKey(endKey));
@@ -399,25 +404,25 @@ export class Spreadsheet {
 
     public setCellAtKeyGivenInput(key : string, userInput : string) : void {
         let cell : Cell = this.getCellAtKey(key);
-        let value : IValue = CellHelper.getValueFromUserInput(userInput, this);
+        // let value : IValue = CellHelper.getValueFromUserInput(userInput, this);
         // console.log("Setting cell at " + key + " value to " + value.display())
-        cell.setCellValue(value);
+        cell.setCellValue(userInput);
     }
 
     public getCellAtKeyDisplay(key : string) : string {
         let cell : Cell = this.getCellAtKey(key);
-        return cell.getCellValue().display();
+        return cell.getDisplayValue();
     }
 
     public getCellAtKeyFormulaBarDisplay(key : string) : string {
         let cell : Cell = this.getCellAtKey(key);
-        return cell.getCellValue().formulaBarDisplay();
+        return cell.getFormulaBarDisplayValue();
     }
 
-    public getCellAtKeyValue(key : string) : number | string {
-        let cell : Cell = this.getCellAtKey(key);
-        return cell.getCellValue().getValue();
-    }
+    // public getCellAtKeyValue(key : string) : number | string {
+    //     let cell : Cell = this.getCellAtKey(key);
+    //     return cell.getDisplayValue();
+    // }
 
     private deleteCell(cell : Cell) : void {
         // TODO
@@ -433,7 +438,7 @@ export class Spreadsheet {
                                                             true)
         let outputString : string = ""
         for (let i = 0; i < orderedCells.length; i++) {
-            outputString += orderedCells[i].getKey() + " : " + orderedCells[i].getCellValue().display() + "\n"
+            outputString += orderedCells[i].getKey() + " : " + orderedCells[i].getDisplayValue() + "\n"
         }
         return outputString
     }
