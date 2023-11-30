@@ -1,8 +1,9 @@
 // TODO: connect to model, implement functionality
 
 import React from "react";
-import { ReactComponent as FxSvg } from "../../graphics/fxIcon.svg";
-import { Spreadsheet } from "../../model/Spreadsheet";
+import { ReactComponent as FxSvg } from "graphics/fxIcon.svg";
+import { Spreadsheet } from "model/Spreadsheet";
+import { SpeechReader } from "model/SpeechReader";
 
 // TODO: move this interface to separate file
 interface UserProps {
@@ -35,7 +36,8 @@ export const FormulaBar: React.FC<UserProps> = ({activeEditCell, editValue, setE
     const handleSendEditValue = () => {
       // TODO: editValue shouldn't just be a string or something
       spreadsheet.setCellAtKeyGivenInput(activeEditCell, editValue.toString());
-      console.log(spreadsheet.getCellAtKeyValue(activeEditCell))
+      console.log(spreadsheet.getCellAtKeyValue(activeEditCell));
+      SpeechReader.getInstance().speak(spreadsheet.getCellAtKeyValue(activeEditCell).toString());
       // setActiveEditCell(""); // TODO: check if this works here
   };
 

@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import './App.css';
 
 import { Spreadsheet } from "./model/Spreadsheet";
+import { SpeechReader } from './model/SpeechReader';
 
 import {
   CellGrid,
   FileHeader,
   FormulaBar,
   OptionsPane,
-  ThemeModal,
   ScreenReader
 } from "./components";
 
@@ -16,6 +16,7 @@ function App() {
 
   // Instantiate Spreadsheet model (Singleton Design Pattern)
   const spreadsheet = Spreadsheet.getInstance();
+  const speechReader = new SpeechReader();
 
   // User states: selected cell, cell being edited, and edit value
   const [activeCell, setActiveCell] = React.useState<string>("A1"); // Active cell
@@ -23,12 +24,13 @@ function App() {
   const [editValue, setEditValue] = React.useState<number|string>(""); // Value of the cell being edited
   const [fileName, setFileName] = useState<string>("Untitled Spreadsheet"); // Name of the file when saving and loading
   const [theme, setTheme] = useState<string>("defaultTheme"); // Theme of the app
+  const [screenReaderActive, setScreenReaderActive] = useState<boolean>(false); // Whether screen reader is active
 
   return (
     <div className={`flex flex-col h-screen ${theme}`}>
         <div className="sticky top-0 z-10">
             <FileHeader fileName={fileName} setFileName={setFileName} />
-            <OptionsPane activeCell={activeCell} setEditValue={setEditValue} fileName={fileName} setFileName={setFileName} theme={theme} setTheme={setTheme}/>
+            <OptionsPane activeCell={activeCell} setEditValue={setEditValue} fileName={fileName} setFileName={setFileName} theme={theme} setTheme={setTheme} screenReaderActive={screenReaderActive} setScreenReaderActive={setScreenReaderActive}/>
             <FormulaBar activeEditCell={activeEditCell} editValue={editValue} setEditValue={setEditValue} />
         </div>
         <div className="flex-grow overflow-auto">

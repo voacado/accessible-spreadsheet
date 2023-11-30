@@ -1,17 +1,18 @@
 import React from "react";
-import { ReactComponent as SaveFileSvg } from "../../graphics/SaveFileButton.svg";
-import { ReactComponent as LoadFileSvg } from "../../graphics/LoadFileButton.svg";
-import { ReactComponent as FormulaSvg } from "../../graphics/FormulaButton.svg";
-import { ReactComponent as InsertRowSvg } from "../../graphics/InsertRowButton.svg";
-import { ReactComponent as DeleteRowSvg } from "../../graphics/DeleteRowButton.svg";
-import { ReactComponent as InsertColSvg } from "../../graphics/InsertColButton.svg";
-import { ReactComponent as DeleteColSvg } from "../../graphics/DeleteColButton.svg";
-import { ReactComponent as ClearRowSvg } from "../../graphics/ClearRowButton.svg";
-import { ReactComponent as ClearColSvg } from "../../graphics/ClearColumnButton.svg";
-import { ReactComponent as ThemeSvg } from "../../graphics/ThemeButtonButton.svg";
-import { ReactComponent as ScreenReaderSvg } from "../../graphics/ScreenReaderButton.svg";
+import { ReactComponent as SaveFileSvg } from "graphics/SaveFileButton.svg";
+import { ReactComponent as LoadFileSvg } from "graphics/LoadFileButton.svg";
+import { ReactComponent as FormulaSvg } from "graphics/FormulaButton.svg";
+import { ReactComponent as InsertRowSvg } from "graphics/InsertRowButton.svg";
+import { ReactComponent as DeleteRowSvg } from "graphics/DeleteRowButton.svg";
+import { ReactComponent as InsertColSvg } from "graphics/InsertColButton.svg";
+import { ReactComponent as DeleteColSvg } from "graphics/DeleteColButton.svg";
+import { ReactComponent as ClearRowSvg } from "graphics/ClearRowButton.svg";
+import { ReactComponent as ClearColSvg } from "graphics/ClearColumnButton.svg";
+import { ReactComponent as ThemeSvg } from "graphics/ThemeButtonButton.svg";
+import { ReactComponent as ScreenReaderSvg } from "graphics/ScreenReaderButton.svg";
 
-import { Spreadsheet } from "../../model/Spreadsheet";
+import { Spreadsheet } from "model/Spreadsheet";
+import { SpeechReader } from "model/SpeechReader";
 
 // TODO: move this interface to separate file
 interface UserProps {
@@ -25,16 +26,17 @@ interface UserProps {
   setFileName: (name: string) => void;
   theme: string;
   setTheme: (theme: string) => void;
+  screenReaderActive: boolean;
+  setScreenReaderActive: (screenReaderActive: boolean) => void;
 }
 
-export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, fileName, setFileName, theme, setTheme}) => {
+export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, fileName, setFileName, theme, setTheme, screenReaderActive, setScreenReaderActive}) => {
 
-    // Singleton Design Pattern - access created instance
-    const spreadsheet = Spreadsheet.getInstance();
+  // Singleton Design Pattern - access created instance
+  const spreadsheet = Spreadsheet.getInstance();
 
   // States to handle Formula and Screen Reader buttons
   const [formulaActive, setFormulaActive] = React.useState(false);
-  const [screenReaderActive, setScreenReaderActive] = React.useState(false);
   // Handler for the Formula button
   const toggleFormula = () => {
     setFormulaActive(!formulaActive);
@@ -42,6 +44,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
   // Handler for the Screen Reader button
   const toggleScreenReader = () => {
     setScreenReaderActive(!screenReaderActive);
+    SpeechReader.getInstance().toggleSpeechReader();
   };
 
   // State to handle button press animation
@@ -74,7 +77,10 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           }`}
           onMouseDown={() => handleButtonClick("save-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
-          onClick={() => spreadsheet.saveSpreadsheet(fileName)}
+          onClick={() => {
+            spreadsheet.saveSpreadsheet(fileName)
+            SpeechReader.getInstance().speak("Save");
+          }}
         >
           <SaveFileSvg style={{ height: "4em", width: "4em" }} />
           Save
@@ -89,7 +95,10 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           }`}
           onMouseDown={() => handleButtonClick("load-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
-          onClick={() => spreadsheet.loadSpreadsheet()}
+          onClick={() => {
+            spreadsheet.loadSpreadsheet()
+            SpeechReader.getInstance().speak("Load");
+          }}
         >
           <LoadFileSvg style={{ height: "4em", width: "4em" }} />
           Load
@@ -110,7 +119,8 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           }`}
           onClick={() => {
             toggleFormula();
-            setEditValue("=");
+            // setEditValue("=");
+            SpeechReader.getInstance().speak("Formula");
           }}
         >
           <FormulaSvg style={{ height: "4em", width: "4em" }} />
@@ -135,6 +145,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
             const curPos = spreadsheet.getRowAndColFromKey(activeCell);
             const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
             spreadsheet.addRow(activeCellIdx[0]);
+            SpeechReader.getInstance().speak("Insert Row");
           }}
         >
           <InsertRowSvg
@@ -161,6 +172,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
             const curPos = spreadsheet.getRowAndColFromKey(activeCell);
             const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
             spreadsheet.removeRow(activeCellIdx[0]);
+            SpeechReader.getInstance().speak("Delete Row");
           }}
         >
           <DeleteRowSvg
@@ -187,6 +199,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
             const curPos = spreadsheet.getRowAndColFromKey(activeCell);
             const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
             spreadsheet.clearRow(activeCellIdx[0]);
+            SpeechReader.getInstance().speak("Clear Row");
           }}
         >
           <ClearRowSvg
@@ -213,6 +226,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
             const curPos = spreadsheet.getRowAndColFromKey(activeCell);
             const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
             spreadsheet.addColumn(activeCellIdx[1]);
+            SpeechReader.getInstance().speak("Insert Column");
           }}
         >
           <InsertColSvg
@@ -240,6 +254,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
             const curPos = spreadsheet.getRowAndColFromKey(activeCell);
             const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
             spreadsheet.removeColumn(activeCellIdx[1]);
+            SpeechReader.getInstance().speak("Delete Column");
           }}
         >
           <DeleteColSvg
@@ -266,6 +281,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
             const curPos = spreadsheet.getRowAndColFromKey(activeCell);
             const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
             spreadsheet.clearColumn(activeCellIdx[1]);
+            SpeechReader.getInstance().speak("Clear Column");
           }}
         >
           <ClearColSvg
@@ -294,7 +310,10 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
             }`}
             onMouseDown={() => handleButtonClick("theme-button")}
             onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
-            onClick={toggleThemeDropdown}
+            onClick={() => {
+              toggleThemeDropdown();
+              SpeechReader.getInstance().speak("Theme");
+            }}
           >
             <ThemeSvg style={{ height: "4em", width: "4em" }} />
             Theme
@@ -317,7 +336,10 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
               ? "bg-options-btn-active-color shadow-lg"
               : "hover:bg-options-btn-hover-color"
           }`}
-          onClick={toggleScreenReader}
+          onClick={() => {
+            toggleScreenReader();
+            SpeechReader.getInstance().speak("Screen Reader");
+          }}
         >
           <ScreenReaderSvg style={{ height: "4em", width: "4em" }} />
           Screen{"\n"}Reader

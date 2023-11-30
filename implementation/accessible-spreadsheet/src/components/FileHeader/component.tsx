@@ -1,4 +1,4 @@
-// TODO: Grab file name from model
+import { SpeechReader } from "model/SpeechReader";
 
 // TODO: move this interface to separate file
 interface UserProps {
@@ -21,6 +21,11 @@ export const FileHeader: React.FC<UserProps> = ({fileName, setFileName}) => {
       setFileName(event.target.value);
   };
 
+  // Handle text-to-speech on de-select
+  const handleEditFileNameBlur = () => {
+    SpeechReader.getInstance().speak(fileName);
+  };
+
     return (
       <div className="bg-file-header-color text-file-header-font-color p-[0.4%] min-w-full w-fit">
         <header>
@@ -30,6 +35,7 @@ export const FileHeader: React.FC<UserProps> = ({fileName, setFileName}) => {
                   className="w-full h-full text-center font-google-sans border-none outline-none bg-transparent"
                   value={fileName}
                   onChange={handleEditFileName}
+                  onBlur={handleEditFileNameBlur}
                   autoFocus
               />
           </div>
