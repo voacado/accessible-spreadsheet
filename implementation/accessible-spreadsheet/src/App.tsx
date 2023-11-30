@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
 import './App.css';
 
-import { Spreadsheet } from "./model/Spreadsheet";
-import { SpeechReader } from './model/SpeechReader';
+// import { Spreadsheet } from "./model/Spreadsheet";
+// import { ScreenReader } from './model/ScreenReader';
 
 import {
   CellGrid,
   FileHeader,
   FormulaBar,
   OptionsPane,
-  ScreenReader
+  // ScreenReader
 } from "./components";
 
 function App() {
 
   // Instantiate Spreadsheet model (Singleton Design Pattern)
-  const spreadsheet = Spreadsheet.getInstance();
-  const speechReader = new SpeechReader();
+  // const spreadsheet = Spreadsheet.getInstance();
+  // const screenReader = new ScreenReader();
 
   // User states: selected cell, cell being edited, and edit value
   const [activeCell, setActiveCell] = React.useState<string>("A1"); // Active cell

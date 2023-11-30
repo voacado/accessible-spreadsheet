@@ -1,4 +1,4 @@
-import { SpeechReader } from "model/SpeechReader";
+import { ScreenReader } from "model/ScreenReader";
 
 // TODO: move this interface to separate file
 interface UserProps {
@@ -23,7 +23,7 @@ export const FileHeader: React.FC<UserProps> = ({fileName, setFileName}) => {
 
   // Handle text-to-speech on de-select
   const handleEditFileNameBlur = () => {
-    SpeechReader.getInstance().speak(fileName);
+    ScreenReader.getInstance().speak(fileName);
   };
 
     return (

@@ -3,7 +3,7 @@
 import React from "react";
 import { ReactComponent as FxSvg } from "graphics/fxIcon.svg";
 import { Spreadsheet } from "model/Spreadsheet";
-import { SpeechReader } from "model/SpeechReader";
+import { ScreenReader } from "model/ScreenReader";
 
 // TODO: move this interface to separate file
 interface UserProps {
@@ -37,7 +37,7 @@ export const FormulaBar: React.FC<UserProps> = ({activeEditCell, editValue, setE
       // TODO: editValue shouldn't just be a string or something
       spreadsheet.setCellAtKeyGivenInput(activeEditCell, editValue.toString());
       console.log(spreadsheet.getCellAtKeyValue(activeEditCell));
-      SpeechReader.getInstance().speak(spreadsheet.getCellAtKeyValue(activeEditCell).toString());
+      ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyValue(activeEditCell).toString());
       // setActiveEditCell(""); // TODO: check if this works here
   };
 

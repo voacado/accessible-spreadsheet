@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Spreadsheet } from "model/Spreadsheet";
-import { SpeechReader } from "model/SpeechReader";
+import { ScreenReader } from "model/ScreenReader";
 
 // TODO: move this interface to separate file
 interface UserProps {
@@ -37,7 +37,7 @@ export const CellGrid: React.FC<UserProps> = ({activeCell, setActiveCell, active
     // Single click on cell to set is activeCell
     const handleSingleCellClick = (cellKey: string) => {
         setActiveCell(cellKey);
-        SpeechReader.getInstance().speak(spreadsheet.getCellAtKeyValue(cellKey).toString());
+        ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyValue(cellKey).toString());
         setEditValue(spreadsheet.getCellAtKeyFormulaBarDisplay(cellKey) || "");
     };
 
@@ -56,7 +56,7 @@ export const CellGrid: React.FC<UserProps> = ({activeCell, setActiveCell, active
     const handleSendEditValue = () => {
         // TODO: editValue shouldn't just be a string or something
         spreadsheet.setCellAtKeyGivenInput(activeEditCell, editValue.toString());
-        SpeechReader.getInstance().speak(spreadsheet.getCellAtKeyValue(activeEditCell).toString());
+        ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyValue(activeEditCell).toString());
         setActiveEditCell("");
     };
     
