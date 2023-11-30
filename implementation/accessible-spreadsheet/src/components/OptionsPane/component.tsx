@@ -1,17 +1,18 @@
-import React from "react";
-import { ReactComponent as SaveFileSvg } from "../../graphics/SaveFileButton.svg";
-import { ReactComponent as LoadFileSvg } from "../../graphics/LoadFileButton.svg";
-import { ReactComponent as FormulaSvg } from "../../graphics/FormulaButton.svg";
-import { ReactComponent as InsertRowSvg } from "../../graphics/InsertRowButton.svg";
-import { ReactComponent as DeleteRowSvg } from "../../graphics/DeleteRowButton.svg";
-import { ReactComponent as InsertColSvg } from "../../graphics/InsertColButton.svg";
-import { ReactComponent as DeleteColSvg } from "../../graphics/DeleteColButton.svg";
-import { ReactComponent as ClearRowSvg } from "../../graphics/ClearRowButton.svg";
-import { ReactComponent as ClearColSvg } from "../../graphics/ClearColumnButton.svg";
-import { ReactComponent as ThemeSvg } from "../../graphics/ThemeButtonButton.svg";
-import { ReactComponent as ScreenReaderSvg } from "../../graphics/ScreenReaderButton.svg";
+import React, { useState } from "react";
+import { ReactComponent as SaveFileSvg } from "graphics/SaveFileButton.svg";
+import { ReactComponent as LoadFileSvg } from "graphics/LoadFileButton.svg";
+import { ReactComponent as FormulaSvg } from "graphics/FormulaButton.svg";
+import { ReactComponent as InsertRowSvg } from "graphics/InsertRowButton.svg";
+import { ReactComponent as DeleteRowSvg } from "graphics/DeleteRowButton.svg";
+import { ReactComponent as InsertColSvg } from "graphics/InsertColButton.svg";
+import { ReactComponent as DeleteColSvg } from "graphics/DeleteColButton.svg";
+import { ReactComponent as ClearRowSvg } from "graphics/ClearRowButton.svg";
+import { ReactComponent as ClearColSvg } from "graphics/ClearColumnButton.svg";
+import { ReactComponent as ThemeSvg } from "graphics/ThemeButtonButton.svg";
+import { ReactComponent as ScreenReaderSvg } from "graphics/ScreenReaderButton.svg";
 
-import { Spreadsheet } from "../../model/Spreadsheet";
+import { Spreadsheet } from "model/Spreadsheet";
+import { ScreenReader } from "model/ScreenReader";
 
 // TODO: move this interface to separate file
 interface UserProps {
@@ -25,33 +26,35 @@ interface UserProps {
   setFileName: (name: string) => void;
   theme: string;
   setTheme: (theme: string) => void;
+  screenReaderUIActive: boolean;
+  setScreenReaderUIActive: (screenReaderActive: boolean) => void;
 }
 
-export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, fileName, setFileName, theme, setTheme}) => {
+export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, fileName, setFileName, theme, setTheme, screenReaderUIActive, setScreenReaderUIActive}) => {
 
-    // Singleton Design Pattern - access created instance
-    const spreadsheet = Spreadsheet.getInstance();
+  // Singleton Design Pattern - access created instance
+  const spreadsheet = Spreadsheet.getInstance();
 
   // States to handle Formula and Screen Reader buttons
-  const [formulaActive, setFormulaActive] = React.useState(false);
-  const [screenReaderActive, setScreenReaderActive] = React.useState(false);
+  const [formulaActive, setFormulaActive] = useState(false);
   // Handler for the Formula button
   const toggleFormula = () => {
     setFormulaActive(!formulaActive);
   };
   // Handler for the Screen Reader button
   const toggleScreenReader = () => {
-    setScreenReaderActive(!screenReaderActive);
+    setScreenReaderUIActive(!screenReaderUIActive);
+    ScreenReader.getInstance().toggleScreenReader();
   };
 
   // State to handle button press animation
-  const [pressedButton, setPressedButton] = React.useState<string | null>(null);
+  const [pressedButton, setPressedButton] = useState<string | null>(null);
   const handleButtonClick = (buttonId: string) => {
     setPressedButton(buttonId);
   };
 
   // State to handle Theme dropdown
-  const [themeDropdown, setThemeDropdown] = React.useState(false);
+  const [themeDropdown, setThemeDropdown] = useState(false);
   const toggleThemeDropdown = () => setThemeDropdown(!themeDropdown);
 
   // Handler for changing themes
@@ -74,7 +77,10 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           }`}
           onMouseDown={() => handleButtonClick("save-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
-          onClick={() => spreadsheet.saveSpreadsheet(fileName)}
+          onClick={() => {
+            spreadsheet.saveSpreadsheet(fileName)
+            ScreenReader.getInstance().speak("Save");
+          }}
         >
           <SaveFileSvg style={{ height: "4em", width: "4em" }} />
           Save
@@ -89,7 +95,10 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           }`}
           onMouseDown={() => handleButtonClick("load-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
-          onClick={() => spreadsheet.loadSpreadsheet()}
+          onClick={() => {
+            spreadsheet.loadSpreadsheet()
+            ScreenReader.getInstance().speak("Load");
+          }}
         >
           <LoadFileSvg style={{ height: "4em", width: "4em" }} />
           Load
@@ -110,7 +119,8 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           }`}
           onClick={() => {
             toggleFormula();
-            setEditValue("=");
+            // setEditValue("=");
+            ScreenReader.getInstance().speak("Formula");
           }}
         >
           <FormulaSvg style={{ height: "4em", width: "4em" }} />
@@ -135,6 +145,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
             const curPos = spreadsheet.getRowAndColFromKey(activeCell);
             const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
             spreadsheet.addRow(activeCellIdx[0]);
+            ScreenReader.getInstance().speak("Insert Row");
           }}
         >
           <InsertRowSvg
@@ -161,6 +172,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
             const curPos = spreadsheet.getRowAndColFromKey(activeCell);
             const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
             spreadsheet.removeRow(activeCellIdx[0]);
+            ScreenReader.getInstance().speak("Delete Row");
           }}
         >
           <DeleteRowSvg
@@ -187,6 +199,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
             const curPos = spreadsheet.getRowAndColFromKey(activeCell);
             const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
             spreadsheet.clearRow(activeCellIdx[0]);
+            ScreenReader.getInstance().speak("Clear Row");
           }}
         >
           <ClearRowSvg
@@ -213,6 +226,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
             const curPos = spreadsheet.getRowAndColFromKey(activeCell);
             const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
             spreadsheet.addColumn(activeCellIdx[1]);
+            ScreenReader.getInstance().speak("Insert Column");
           }}
         >
           <InsertColSvg
@@ -240,6 +254,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
             const curPos = spreadsheet.getRowAndColFromKey(activeCell);
             const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
             spreadsheet.removeColumn(activeCellIdx[1]);
+            ScreenReader.getInstance().speak("Delete Column");
           }}
         >
           <DeleteColSvg
@@ -266,6 +281,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
             const curPos = spreadsheet.getRowAndColFromKey(activeCell);
             const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
             spreadsheet.clearColumn(activeCellIdx[1]);
+            ScreenReader.getInstance().speak("Clear Column");
           }}
         >
           <ClearColSvg
@@ -294,7 +310,10 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
             }`}
             onMouseDown={() => handleButtonClick("theme-button")}
             onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
-            onClick={toggleThemeDropdown}
+            onClick={() => {
+              toggleThemeDropdown();
+              ScreenReader.getInstance().speak("Theme");
+            }}
           >
             <ThemeSvg style={{ height: "4em", width: "4em" }} />
             Theme
@@ -302,9 +321,18 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           {themeDropdown && (
           <div className="origin-top-right absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
             <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-              <button onClick={() => handleThemeChange('defaultTheme')} className={`block px-4 py-2 text-sm ${theme === 'defaultTheme' ? 'bg-gray-300' : 'hover:bg-gray-100'} text-gray-700 w-full text-left`}>Light Mode (Default)</button>
-              <button onClick={() => handleThemeChange('darkTheme')} className={`block px-4 py-2 text-sm ${theme === 'darkTheme' ? 'bg-gray-300' : 'hover:bg-gray-100'} text-gray-700 w-full text-left`}>Dark Mode</button>
-              <button onClick={() => handleThemeChange('highContrastTheme')} className={`block px-4 py-2 text-sm ${theme === 'highContrastTheme' ? 'bg-gray-300' : 'hover:bg-gray-100'} text-gray-700 w-full text-left`}>High Contrast Mode</button>
+              <button onClick={() => {
+                handleThemeChange('defaultTheme');
+                ScreenReader.getInstance().speak("Light Mode");
+            }} className={`block px-4 py-2 text-sm ${theme === 'defaultTheme' ? 'bg-gray-300' : 'hover:bg-gray-100'} text-gray-700 w-full text-left`}>Light Mode (Default)</button>
+              <button onClick={() => {
+                handleThemeChange('darkTheme');
+                ScreenReader.getInstance().speak("Dark Mode");
+                }} className={`block px-4 py-2 text-sm ${theme === 'darkTheme' ? 'bg-gray-300' : 'hover:bg-gray-100'} text-gray-700 w-full text-left`}>Dark Mode</button>
+              <button onClick={() => {
+                handleThemeChange('highContrastTheme');
+                ScreenReader.getInstance().speak("High Contrast Mode");
+            }} className={`block px-4 py-2 text-sm ${theme === 'highContrastTheme' ? 'bg-gray-300' : 'hover:bg-gray-100'} text-gray-700 w-full text-left`}>High Contrast Mode</button>
             </div>
           </div>
         )}
@@ -313,11 +341,14 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
-            screenReaderActive
+            screenReaderUIActive
               ? "bg-options-btn-active-color shadow-lg"
               : "hover:bg-options-btn-hover-color"
           }`}
-          onClick={toggleScreenReader}
+          onClick={() => {
+            toggleScreenReader();
+            ScreenReader.getInstance().speak("Screen Reader");
+          }}
         >
           <ScreenReaderSvg style={{ height: "4em", width: "4em" }} />
           Screen{"\n"}Reader
