@@ -1,34 +1,26 @@
-import { IValue } from "./values/IValue";
-import { EmptyValue } from "./values/EmptyValue";
-import { NumberValue } from "./values/NumberValue";
-import { StringValue } from "./values/StringValue";
-import { FormulaValue } from "./values/FormulaValue";
-import { CellReference } from "./values/CellReference";
-import { MultiCellReference } from "./values/MultiCellReference";
+import { Spreadsheet } from "./Spreadsheet";
+import { CellHelper } from "./CellHelper";
 
 export class Cell {
     private key : string;
-    // private row = -1;
-    // private column = -1;
-    private value : IValue = new EmptyValue();
+    private displayValue : string;
+    private inputValue : string;
     private observers : Cell[] = [];
+    private mySpreadsheet : Spreadsheet;
 
-    constructor(key : string, value : IValue) {
-        // row : number, column : number,
-        // this.row = row;
-        // this.column = column;
+    constructor(key : string, input : string, spreadsheet : Spreadsheet) {
         this.key = key;
-        this.value = value
-        // this.observers = [];
+        this.inputValue = input;
+        this.mySpreadsheet = spreadsheet;
+        let processedData = CellHelper.getValueFromUserInput(this.inputValue, this.mySpreadsheet)
+        this.displayValue = processedData[0]
+        for (let observeeKey of processedData[1]) {
+            this.mySpreadsheet.getCellAtKey(observeeKey);
+        }
+        this.updateCellValue()
     }
 
-    // public setPosition(row : number, column : number) : void {
-    //     this.row = row;
-    //     this.column = column;
-    // }
-
     public getKey() : string {
-        // console.log("Cell.getKey() returning " + this.key);
         return this.key;
     }
 
@@ -37,24 +29,36 @@ export class Cell {
     }
 
     public clearCell() : void {
-        this.value = new EmptyValue();
+        this.inputValue = "";
+        this.updateCellValue()
     }
     
-    public getCellValue() : IValue {
-        return this.value;
+    public getDisplayValue() : string {
+        return this.displayValue;
     }
     
-    public setCellValue(givenValue : IValue) : void {
-        this.value = givenValue;
-        this.updateObservers();
+    public getFormulaBarDisplayValue() : string {
+        return this.inputValue;
     }
     
-    public updateCellValue() : void {
-        this.value.updateValue();
+    public setCellValue(input : string) : void {
+        this.inputValue = input;
+        this.updateCellValue();
+    }
+    
+    public updateCellValue() {
+        let processedData = CellHelper.getValueFromUserInput(this.inputValue, this.mySpreadsheet)
+        this.displayValue = processedData[0]
+        for (let observeeKey of processedData[1]) {
+            this.mySpreadsheet.getCellAtKey(observeeKey).addObserver(this);
+        }
         this.updateObservers();
     }
     
     public addObserver(observer : Cell) : void {
+        if (this.observers.includes(observer)) {
+            return;
+        }
         this.observers.push(observer);
         // TODO: CONFIRM ACYCLICITY
     }
