@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ReactComponent as SaveFileSvg } from "graphics/SaveFileButton.svg";
 import { ReactComponent as LoadFileSvg } from "graphics/LoadFileButton.svg";
 import { ReactComponent as FormulaSvg } from "graphics/FormulaButton.svg";
@@ -26,35 +26,35 @@ interface UserProps {
   setFileName: (name: string) => void;
   theme: string;
   setTheme: (theme: string) => void;
-  screenReaderActive: boolean;
-  setScreenReaderActive: (screenReaderActive: boolean) => void;
+  screenReaderUIActive: boolean;
+  setScreenReaderUIActive: (screenReaderActive: boolean) => void;
 }
 
-export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, fileName, setFileName, theme, setTheme, screenReaderActive, setScreenReaderActive}) => {
+export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, fileName, setFileName, theme, setTheme, screenReaderUIActive, setScreenReaderUIActive}) => {
 
   // Singleton Design Pattern - access created instance
   const spreadsheet = Spreadsheet.getInstance();
 
   // States to handle Formula and Screen Reader buttons
-  const [formulaActive, setFormulaActive] = React.useState(false);
+  const [formulaActive, setFormulaActive] = useState(false);
   // Handler for the Formula button
   const toggleFormula = () => {
     setFormulaActive(!formulaActive);
   };
   // Handler for the Screen Reader button
   const toggleScreenReader = () => {
-    setScreenReaderActive(!screenReaderActive);
+    setScreenReaderUIActive(!screenReaderUIActive);
     ScreenReader.getInstance().toggleScreenReader();
   };
 
   // State to handle button press animation
-  const [pressedButton, setPressedButton] = React.useState<string | null>(null);
+  const [pressedButton, setPressedButton] = useState<string | null>(null);
   const handleButtonClick = (buttonId: string) => {
     setPressedButton(buttonId);
   };
 
   // State to handle Theme dropdown
-  const [themeDropdown, setThemeDropdown] = React.useState(false);
+  const [themeDropdown, setThemeDropdown] = useState(false);
   const toggleThemeDropdown = () => setThemeDropdown(!themeDropdown);
 
   // Handler for changing themes
@@ -341,7 +341,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
-            screenReaderActive
+            screenReaderUIActive
               ? "bg-options-btn-active-color shadow-lg"
               : "hover:bg-options-btn-hover-color"
           }`}

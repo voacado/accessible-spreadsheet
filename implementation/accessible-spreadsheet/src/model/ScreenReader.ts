@@ -2,9 +2,14 @@ export class ScreenReader {
 
     // Singleton Design Pattern - only one instance of ScreenReader
     private static instance: ScreenReader;
+
+    // Observer Design Pattern - observers are notified when screen reader log changes (like ScreenReaderLog component)
+    private observers: (() => void)[] = [];
+
     private textToSpeech: SpeechSynthesisUtterance = new SpeechSynthesisUtterance();
     private speechLog: string[] = [];
     private isScreenReaderActive: boolean = false;
+    private maxLogSize = 5;
 
     constructor() {
         if (ScreenReader.instance) {
@@ -20,6 +25,18 @@ export class ScreenReader {
         return ScreenReader.instance;
     }
 
+    public subscribe(observer: () => void): void {
+        this.observers.push(observer);
+    }
+
+    public unsubscribe(observer: () => void): void {
+        this.observers = this.observers.filter(subscriber => subscriber !== observer);
+    }
+
+    public notifyObservers(): void {
+        this.observers.forEach(observer => observer());
+    }
+
     public toggleScreenReader(): void {
         this.isScreenReaderActive = !this.isScreenReaderActive;
     }
@@ -31,16 +48,19 @@ export class ScreenReader {
             }
             this.textToSpeech.text = text;
             window.speechSynthesis.speak(this.textToSpeech);
-            this.speechLog.push(text);
-            console.log(this.speechLog);
+            this.addToSpeechLog(text);
         }
+    }
+
+    private addToSpeechLog(text: string): void {
+        if (this.speechLog.length >= this.maxLogSize) {
+            this.speechLog.shift();
+        }
+        this.speechLog.push(text);
+        this.notifyObservers();
     }
 
     public getSpeechLog(): string[] {
         return this.speechLog;
-    }
-
-    public clearSpeechLog(): void {
-        this.speechLog = [];
     }
 }

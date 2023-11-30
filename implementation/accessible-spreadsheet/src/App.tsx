@@ -9,7 +9,7 @@ import {
   FileHeader,
   FormulaBar,
   OptionsPane,
-  // ScreenReader
+  ScreenReaderLog
 } from "./components";
 
 function App() {
@@ -24,18 +24,19 @@ function App() {
   const [editValue, setEditValue] = React.useState<number|string>(""); // Value of the cell being edited
   const [fileName, setFileName] = useState<string>("Untitled Spreadsheet"); // Name of the file when saving and loading
   const [theme, setTheme] = useState<string>("defaultTheme"); // Theme of the app
-  const [screenReaderActive, setScreenReaderActive] = useState<boolean>(false); // Whether screen reader is active
+  const [screenReaderUIActive, setScreenReaderUIActive] = useState<boolean>(false); // Whether screen reader is active
 
   return (
     <div className={`flex flex-col h-screen ${theme}`}>
         <div className="sticky top-0 z-10">
             <FileHeader fileName={fileName} setFileName={setFileName} />
-            <OptionsPane activeCell={activeCell} setEditValue={setEditValue} fileName={fileName} setFileName={setFileName} theme={theme} setTheme={setTheme} screenReaderActive={screenReaderActive} setScreenReaderActive={setScreenReaderActive}/>
+            <OptionsPane activeCell={activeCell} setEditValue={setEditValue} fileName={fileName} setFileName={setFileName} theme={theme} setTheme={setTheme} screenReaderUIActive={screenReaderUIActive} setScreenReaderUIActive={setScreenReaderUIActive}/>
             <FormulaBar activeEditCell={activeEditCell} editValue={editValue} setEditValue={setEditValue} />
         </div>
         <div className="flex-grow overflow-auto">
             <CellGrid activeCell={activeCell} setActiveCell={setActiveCell} activeEditCell={activeEditCell} setActiveEditCell={setActiveEditCell} editValue={editValue} setEditValue={setEditValue} />
         </div>
+        {screenReaderUIActive && <ScreenReaderLog />}
     </div>
   );
 }
