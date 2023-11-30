@@ -7,7 +7,7 @@ import { ScreenReader } from "model/ScreenReader";
 
 // TODO: move this interface to separate file
 interface UserProps {
-  activeCell?: string;
+  activeCell: string;
   setActiveCell?: (cell: string) => void;
   activeEditCell: string;
   setActiveEditCell?: (cell: string) => void;
@@ -19,7 +19,7 @@ interface UserProps {
   setTheme?: (theme: string) => void;
 }
 
-export const FormulaBar: React.FC<UserProps> = ({activeEditCell, editValue, setEditValue}) => {
+export const FormulaBar: React.FC<UserProps> = ({activeCell, activeEditCell, editValue, setEditValue}) => {
 
   // Singleton Design Pattern - access created spreadsheet instance
   const spreadsheet = Spreadsheet.getInstance();
@@ -35,9 +35,10 @@ export const FormulaBar: React.FC<UserProps> = ({activeEditCell, editValue, setE
     // Handle sending edit value to Spreadsheet
     const handleSendEditValue = () => {
       // TODO: editValue shouldn't just be a string or something
-      spreadsheet.setCellAtKeyGivenInput(activeEditCell, editValue.toString());
-      console.log(spreadsheet.getCellAtKeyValue(activeEditCell));
-      ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyValue(activeEditCell).toString());
+      // spreadsheet.setCellAtKeyGivenInput(activeEditCell, editValue.toString());
+      spreadsheet.setCellAtKeyGivenInput(activeCell, editValue.toString());
+      console.log(spreadsheet.getCellAtKeyDisplay(activeEditCell));
+      ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyDisplay(activeEditCell).toString());
       // setActiveEditCell(""); // TODO: check if this works here
   };
 

@@ -31,7 +31,7 @@ function App() {
         <div className="sticky top-0 z-10">
             <FileHeader fileName={fileName} setFileName={setFileName} />
             <OptionsPane activeCell={activeCell} setEditValue={setEditValue} fileName={fileName} setFileName={setFileName} theme={theme} setTheme={setTheme} screenReaderUIActive={screenReaderUIActive} setScreenReaderUIActive={setScreenReaderUIActive}/>
-            <FormulaBar activeEditCell={activeEditCell} editValue={editValue} setEditValue={setEditValue} />
+            <FormulaBar activeCell={activeCell} activeEditCell={activeEditCell} editValue={editValue} setEditValue={setEditValue} />
         </div>
         <div className="flex-grow overflow-auto">
             <CellGrid activeCell={activeCell} setActiveCell={setActiveCell} activeEditCell={activeEditCell} setActiveEditCell={setActiveEditCell} editValue={editValue} setEditValue={setEditValue} />

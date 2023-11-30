@@ -1,5 +1,5 @@
 import { Spreadsheet } from '../model/Spreadsheet';
-import { Cell } from "./Cell";
+// import { Cell } from "./Cell";
 // import { IValue } from "./values/IValue";
 // import { EmptyValue } from "./values/EmptyValue";
 // import { NumberValue } from "./values/NumberValue";
@@ -7,7 +7,7 @@ import { Cell } from "./Cell";
 // import { FormulaValue } from "./values/FormulaValue";
 // import { CellReference } from "./values/CellReference";
 // import { MultiCellReference } from "./values/MultiCellReference";
-import { CellHelper } from "./CellHelper";
+// import { CellHelper } from "./CellHelper";
 
 describe('spreadsheet', (): void => {
   describe('Spreadsheet', (): void => {
@@ -19,7 +19,7 @@ describe('spreadsheet', (): void => {
 
     afterEach((): void => {
       jest.clearAllMocks();
-      spreadsheet = null;
+      // spreadsheet = null;
     });
 
     describe('Default Spreadsheet Constructor Values', (): void => {

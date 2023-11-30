@@ -37,7 +37,7 @@ export const CellGrid: React.FC<UserProps> = ({activeCell, setActiveCell, active
     // Single click on cell to set is activeCell
     const handleSingleCellClick = (cellKey: string) => {
         setActiveCell(cellKey);
-        ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyValue(cellKey).toString());
+        ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyDisplay(cellKey).toString());
         setEditValue(spreadsheet.getCellAtKeyFormulaBarDisplay(cellKey) || "");
     };
 
@@ -56,7 +56,7 @@ export const CellGrid: React.FC<UserProps> = ({activeCell, setActiveCell, active
     const handleSendEditValue = () => {
         // TODO: editValue shouldn't just be a string or something
         spreadsheet.setCellAtKeyGivenInput(activeEditCell, editValue.toString());
-        ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyValue(activeEditCell).toString());
+        ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyDisplay(activeEditCell).toString());
         setActiveEditCell("");
     };
     
