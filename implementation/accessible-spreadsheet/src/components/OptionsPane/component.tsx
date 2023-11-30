@@ -23,9 +23,11 @@ interface UserProps {
   setEditValue: (value: string | number) => void;
   fileName: string;
   setFileName: (name: string) => void;
+  theme: string;
+  setTheme: (theme: string) => void;
 }
 
-export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, fileName, setFileName}) => {
+export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, fileName, setFileName, theme, setTheme}) => {
 
     // Singleton Design Pattern - access created instance
     const spreadsheet = Spreadsheet.getInstance();
@@ -48,17 +50,27 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
     setPressedButton(buttonId);
   };
 
+  // State to handle Theme dropdown
+  const [themeDropdown, setThemeDropdown] = React.useState(false);
+  const toggleThemeDropdown = () => setThemeDropdown(!themeDropdown);
+
+  // Handler for changing themes
+  const handleThemeChange = (theme: string) => {
+    setTheme(theme);  // Update the global theme
+    setThemeDropdown(false);  // Close the dropdown
+  };
+
   return (
-    <div className="bg-options-light text-black stroke-2 font-google-sans min-w-full w-fit">
+    <div className="bg-options-bg-color text-options-font-color stroke-2 font-google-sans min-w-full w-fit">
 
       {/* Function Cluster 1: Save/Load */}
       <header className="flex justify-left gap-1 p-1.5">
         <button
-          className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
+          className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
             pressedButton === "save-button"
-              ? "bg-options-active-light shadow-lg"
-              : "hover:bg-gray-200"
+              ? "bg-options-btn-active-color shadow-lg"
+              : "hover:bg-options-btn-hover-color"
           }`}
           onMouseDown={() => handleButtonClick("save-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
@@ -69,11 +81,11 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
         </button>
 
         <button
-          className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
+          className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
             pressedButton === "load-button"
-              ? "bg-options-active-light shadow-lg"
-              : "hover:bg-gray-200"
+              ? "bg-options-btn-active-color shadow-lg"
+              : "hover:bg-options-btn-hover-color"
           }`}
           onMouseDown={() => handleButtonClick("load-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
@@ -85,16 +97,16 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
 
         {/* Divider between clusters */}
         <div className="flex h-auto p-2">
-          <div className="bg-options-stroke-light w-0.5"></div>
+          <div className="bg-options-stroke-color w-0.5"></div>
         </div>
 
         {/* Function Cluster 2: Formula */}
         <button
-          className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
+          className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
             formulaActive
-              ? "bg-options-active-light shadow-lg"
-              : "hover:bg-gray-200"
+              ? "bg-options-btn-active-color shadow-lg"
+              : "hover:bg-options-btn-hover-color"
           }`}
           onClick={() => {
             toggleFormula();
@@ -106,16 +118,16 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
         </button>
 
         <div className="flex h-auto p-2">
-          <div className="bg-options-stroke-light w-0.5"></div>
+          <div className="bg-options-stroke-color w-0.5"></div>
         </div>
 
         {/* Function Cluster 3: Insert/Delete */}
         <button
-          className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
+          className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
             pressedButton === "insert-row-button"
-              ? "bg-options-active-light shadow-lg"
-              : "hover:bg-gray-200"
+              ? "bg-options-btn-active-color shadow-lg"
+              : "hover:bg-options-btn-hover-color"
           }`}
           onMouseDown={() => handleButtonClick("insert-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
@@ -126,6 +138,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           }}
         >
           <InsertRowSvg
+            className="text-options-btn-icon-border-color fill-current"
             style={{
               height: "4em",
               width: "4em",
@@ -136,11 +149,11 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
         </button>
 
         <button
-          className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
+          className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
             pressedButton === "delete-row-button"
-              ? "bg-options-active-light shadow-lg"
-              : "hover:bg-gray-200"
+              ? "bg-options-btn-active-color shadow-lg"
+              : "hover:bg-options-btn-hover-color"
           }`}
           onMouseDown={() => handleButtonClick("delete-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
@@ -151,6 +164,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           }}
         >
           <DeleteRowSvg
+            className="text-options-btn-icon-border-color fill-current"
             style={{
               height: "4em",
               width: "4em",
@@ -161,11 +175,11 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
         </button>
 
         <button
-          className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
+          className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
             pressedButton === "clear-row-button"
-              ? "bg-options-active-light shadow-lg"
-              : "hover:bg-gray-200"
+              ? "bg-options-btn-active-color shadow-lg"
+              : "hover:bg-options-btn-hover-color"
           }`}
           onMouseDown={() => handleButtonClick("clear-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
@@ -176,6 +190,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           }}
         >
           <ClearRowSvg
+            className="text-options-btn-icon-border-color fill-current"
             style={{
               height: "4em",
               width: "4em",
@@ -186,11 +201,11 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
         </button>
 
         <button
-          className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
+          className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
             pressedButton === "insert-col-button"
-              ? "bg-options-active-light shadow-lg"
-              : "hover:bg-gray-200"
+              ? "bg-options-btn-active-color shadow-lg"
+              : "hover:bg-options-btn-hover-color"
           }`}
           onMouseDown={() => handleButtonClick("insert-col-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
@@ -201,6 +216,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           }}
         >
           <InsertColSvg
+            className="text-options-btn-icon-border-color fill-current"
             style={{
               height: "4em",
               width: "4em",
@@ -212,11 +228,11 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
         </button>
 
         <button
-          className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
+          className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
             pressedButton === "delete-col-button"
-              ? "bg-options-active-light shadow-lg"
-              : "hover:bg-gray-200"
+              ? "bg-options-btn-active-color shadow-lg"
+              : "hover:bg-options-btn-hover-color"
           }`}
           onMouseDown={() => handleButtonClick("delete-col-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
@@ -227,6 +243,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           }}
         >
           <DeleteColSvg
+            className="text-options-btn-icon-border-color fill-current"
             style={{
               height: "4em",
               width: "4em",
@@ -237,11 +254,11 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
         </button>
 
         <button
-          className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
+          className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
             pressedButton === "clear-col-button"
-              ? "bg-options-active-light shadow-lg"
-              : "hover:bg-gray-200"
+              ? "bg-options-btn-active-color shadow-lg"
+              : "hover:bg-options-btn-hover-color"
           }`}
           onMouseDown={() => handleButtonClick("clear-col-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
@@ -252,6 +269,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           }}
         >
           <ClearColSvg
+            className="text-options-btn-icon-border-color fill-current"
             style={{
               height: "4em",
               width: "4em",
@@ -262,30 +280,42 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
         </button>
 
         <div className="flex h-auto p-2">
-          <div className="bg-options-stroke-light w-0.5"></div>
+          <div className="bg-options-stroke-color w-0.5"></div>
         </div>
 
         {/* Function Cluster 4: Theme/Screen Reader */}
-        <button
-          className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
-          ${
-            pressedButton === "theme-button"
-              ? "bg-options-active-light shadow-lg"
-              : "hover:bg-gray-200"
-          }`}
-          onMouseDown={() => handleButtonClick("theme-button")}
-          onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
-        >
-          <ThemeSvg style={{ height: "4em", width: "4em" }} />
-          Theme
-        </button>
+        <div className="relative inline-block text-left">
+          <button
+            className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
+            ${
+              pressedButton === "theme-button"
+                ? "bg-options-btn-active-color shadow-lg"
+                : "hover:bg-options-btn-hover-color"
+            }`}
+            onMouseDown={() => handleButtonClick("theme-button")}
+            onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
+            onClick={toggleThemeDropdown}
+          >
+            <ThemeSvg style={{ height: "4em", width: "4em" }} />
+            Theme
+          </button>
+          {themeDropdown && (
+          <div className="origin-top-right absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+            <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+              <button onClick={() => handleThemeChange('defaultTheme')} className={`block px-4 py-2 text-sm ${theme === 'defaultTheme' ? 'bg-gray-300' : 'hover:bg-gray-100'} text-gray-700 w-full text-left`}>Light Mode (Default)</button>
+              <button onClick={() => handleThemeChange('darkTheme')} className={`block px-4 py-2 text-sm ${theme === 'darkTheme' ? 'bg-gray-300' : 'hover:bg-gray-100'} text-gray-700 w-full text-left`}>Dark Mode</button>
+              <button onClick={() => handleThemeChange('highContrastTheme')} className={`block px-4 py-2 text-sm ${theme === 'highContrastTheme' ? 'bg-gray-300' : 'hover:bg-gray-100'} text-gray-700 w-full text-left`}>High Contrast Mode</button>
+            </div>
+          </div>
+        )}
+      </div>
 
         <button
-          className={`flex flex-col items-center justify-between focus:outline-none font-sans border-gray-300 px-4 py-2 rounded transition duration-200 ease-in-out 
+          className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
             screenReaderActive
-              ? "bg-options-active-light shadow-lg"
-              : "hover:bg-gray-200"
+              ? "bg-options-btn-active-color shadow-lg"
+              : "hover:bg-options-btn-hover-color"
           }`}
           onClick={toggleScreenReader}
         >
