@@ -222,7 +222,7 @@ export class Spreadsheet {
     
     public clearRow(index : number) : void {
         let cellsToChange : Cell[] = this.getCellsGivenRange("A" + this.getRowKeyFromIndex(index), 
-                                                            this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(this.rowCount-1),
+                                                            this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(index),
                                                             true)
         if (cellsToChange.length === 0) {
             return;
@@ -236,7 +236,7 @@ export class Spreadsheet {
     
     public clearColumn(index : number) : void {
         let cellsToChange : Cell[] = this.getCellsGivenRange(this.getColKeyFromIndex(index) + "1", 
-                                                            this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(this.rowCount-1),
+                                                            this.getColKeyFromIndex(index) + this.getRowKeyFromIndex(this.rowCount-1),
                                                             true)
         if (cellsToChange.length === 0) {
             return;
