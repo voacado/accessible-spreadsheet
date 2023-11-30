@@ -14,7 +14,7 @@ export class CellReference {
         return this.referencedCell.getCellValue().display();
     }
     public formulaBarDisplay() : string {
-        return this.referencedCell.getCellValue().formulaBarDisplay();
+        return "=" + this.referencedCell.getKey();
     }
     public updateValue() : void {
         this.referencedCell.updateCellValue();

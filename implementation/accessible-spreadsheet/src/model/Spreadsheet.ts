@@ -409,6 +409,11 @@ export class Spreadsheet {
         return cell.getCellValue().display();
     }
 
+    public getCellAtKeyFormulaBarDisplay(key : string) : string {
+        let cell : Cell = this.getCellAtKey(key);
+        return cell.getCellValue().formulaBarDisplay();
+    }
+
     public getCellAtKeyValue(key : string) : number | string {
         let cell : Cell = this.getCellAtKey(key);
         return cell.getCellValue().getValue();

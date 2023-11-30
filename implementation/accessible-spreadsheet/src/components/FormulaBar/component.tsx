@@ -14,14 +14,11 @@ interface UserProps {
   setEditValue: (value: string | number) => void;
   fileName?: string;
   setFileName?: (name: string) => void;
+  theme?: string;
+  setTheme?: (theme: string) => void;
 }
 
 export const FormulaBar: React.FC<UserProps> = ({activeEditCell, editValue, setEditValue}) => {
-  // Handle state of formula bar
-  // const [formula, setFormula] = React.useState("");
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setFormula(e.target.value);
-  // };
 
   // Singleton Design Pattern - access created spreadsheet instance
   const spreadsheet = Spreadsheet.getInstance();
@@ -43,15 +40,15 @@ export const FormulaBar: React.FC<UserProps> = ({activeEditCell, editValue, setE
   };
 
   return (
-    <div className="bg-options-light border-options-stroke-light p-1.5 gap-2 flex items-center border-2 border-x-0">
+    <div className="bg-formula-bar-bg-color p-1.5 gap-2 flex items-center border-2 border-x-0 border-formula-bar-border-color">
       {/* "fx" button - onClick begins formula (appends "=") */}
       <button className="h-6 w-10 flex items-center justify-center">
-        <FxSvg style={{ height: "1.5em", width: "1.5em" }} />
+        <FxSvg className="text-fx-button-color fill-current" style={{ height: "1.5em", width: "1.5em" }} />
       </button>
 
       {/* Divider between "fx" and input */}
       <div className="flex h-6 w-2.5">
-        <div className="bg-options-stroke-light w-0.5"></div>
+        <div className="bg-options-stroke-color w-0.5"></div>
       </div>
 
       {/* Input box */}
@@ -62,7 +59,7 @@ export const FormulaBar: React.FC<UserProps> = ({activeEditCell, editValue, setE
         // onChange={handleChange}
         onBlur={handleSendEditValue}
         // onBlur={handleSendEditValue}
-        className="flex-grow bg-transparent outline-none text-gray-700"
+        className="flex-grow bg-transparent outline-none text-formula-bar-font-color"
         placeholder="Enter formula or data..."
       />
     </div>
