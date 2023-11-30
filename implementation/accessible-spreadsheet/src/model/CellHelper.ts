@@ -333,11 +333,13 @@ export class CellHelper {
                         let highestValue : number = Number(elements[0]);
                         let lowestValue : number = Number(elements[0]);
                         elements.forEach(function (element) {
-                            if (highestValue < Number(element)) {
-                                highestValue = Number(element)
-                            }
-                            if (lowestValue > Number(element)) {
-                                lowestValue = Number(element)
+                            if (element != "" && Number(element) != undefined && !isNaN(Number(element))) {
+                                if (highestValue < Number(element)) {
+                                    highestValue = Number(element)
+                                }
+                                if (lowestValue > Number(element)) {
+                                    lowestValue = Number(element)
+                                }
                             }
                         });
                         parsedList.push((highestValue - lowestValue).toString());
@@ -354,8 +356,10 @@ export class CellHelper {
                         }
                         let highestValue : number = Number(elements[0]);
                         elements.forEach(function (element) {
-                            if (highestValue < Number(element)) {
-                                highestValue = Number(element)
+                            if (element != "" && Number(element) != undefined && !isNaN(Number(element))) {
+                                if (highestValue < Number(element)) {
+                                    highestValue = Number(element)
+                                }
                             }
                         });
                         parsedList.push((highestValue).toString());
@@ -372,15 +376,16 @@ export class CellHelper {
                         }
                         let lowestValue : number = Number(elements[0]);
                         elements.forEach(function (element) {
-                            if (lowestValue > Number(element)) {
-                                lowestValue = Number(element)
+                            if (element != "" && Number(element) != undefined && !isNaN(Number(element))) {
+                                if (lowestValue > Number(element)) {
+                                    lowestValue = Number(element)
+                                }
                             }
                         });
                         parsedList.push((lowestValue).toString());
                         i += functionName.length + parenthesisGroup.length - 1
                         break;
                     }
-
                 }
             }
             // Check for Cell Key 
@@ -392,7 +397,6 @@ export class CellHelper {
                 }
             }
         }
-
         // console.log("each element in parsedList:")
         // parsedList.forEach(function (element) {
         //     console.log(element);

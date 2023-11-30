@@ -76,15 +76,17 @@ export class Cell {
         return this.observers
     }
 
-    private updateObservers() : void {
+    public updateObservers() : void {
         for (let observer of this.observers) {
             observer.updateCellValue();
         }
     }
 
     public deleteCell() : void {
-        // for (let observer of this.observers) {
-        //     observer.updateCellValue(); // TODO: ORDER
-        // }
+        this.inputValue = "";
+        this.displayValue = "";
+        for (let observer of this.observers) {
+            observer.updateCellValue(); // TODO: ORDER?
+        }
     }
 }

@@ -102,7 +102,9 @@ export class Spreadsheet {
             this.cells.set(newKey, changingCell);
             this.cells.delete(oldKey);
         }
-        this.notifyObservers();
+        for (let i = 0; i < cellsToChange.length; i++) {
+            cellsToChange[i].updateObservers();
+        }
     }
     
     public addColumn(index : number) : void {
@@ -133,6 +135,9 @@ export class Spreadsheet {
             this.cells.set(newKey, changingCell);
             this.cells.delete(oldKey);
         }
+        for (let i = 0; i < cellsToChange.length; i++) {
+            cellsToChange[i].updateObservers();
+        }
         this.notifyObservers();
     }
     
@@ -154,6 +159,7 @@ export class Spreadsheet {
         
         this.rowCount--;
         if (cellsToChange.length === 0) {
+            this.notifyObservers();
             return;
         }
         let oldKey : string = ""
@@ -166,6 +172,9 @@ export class Spreadsheet {
             cellsToChange[i].setKey(newKey);
             this.cells.set(newKey, changingCell);
             this.cells.delete(oldKey);
+        }
+        for (let i = 0; i < cellsToChange.length; i++) {
+            cellsToChange[i].updateObservers();
         }
 
         // GET LIST LEFT TO RIGHT
@@ -199,6 +208,7 @@ export class Spreadsheet {
         
         this.colCount--
         if (cellsToChange.length === 0) {
+            this.notifyObservers();
             return;
         }
         let oldKey : string = ""
@@ -211,6 +221,9 @@ export class Spreadsheet {
             cellsToChange[i].setKey(newKey);
             this.cells.set(newKey, changingCell);
             this.cells.delete(oldKey);
+        }
+        for (let i = 0; i < cellsToChange.length; i++) {
+            cellsToChange[i].updateObservers();
         }
 
         // GET LIST LEFT TO RIGHT
@@ -230,6 +243,9 @@ export class Spreadsheet {
         for (let i = 0; i < cellsToChange.length; i++) {
             cellsToChange[i].setCellValue("");
         }
+        for (let i = 0; i < cellsToChange.length; i++) {
+            cellsToChange[i].updateObservers();
+        }
         // TODO: Implement
         this.notifyObservers();
     }
@@ -243,6 +259,9 @@ export class Spreadsheet {
         }
         for (let i = 0; i < cellsToChange.length; i++) {
             cellsToChange[i].setCellValue("");
+        }
+        for (let i = 0; i < cellsToChange.length; i++) {
+            cellsToChange[i].updateObservers();
         }
         // TODO: Implement
         this.notifyObservers();
@@ -429,7 +448,6 @@ export class Spreadsheet {
         let oldKey : string = cell.getKey()
         cell.deleteCell();
         this.cells.delete(oldKey);
-        // Observesr
     }
 
     public spreadsheetAsString() : string {
