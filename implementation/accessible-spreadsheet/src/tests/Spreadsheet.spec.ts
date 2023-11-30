@@ -1000,6 +1000,7 @@ describe('spreadsheet', (): void => {
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B2")).toEqual("SUM(A1..A3)");
         expect(spreadsheet.getCellAtKeyDisplay("B3")).toEqual("2");
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B3")).toEqual("AVERAGE(A1..A3)");
+        
         spreadsheet.setCellAtKeyGivenInput("A1", "10");
         expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("10");
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("10");
@@ -1008,6 +1009,16 @@ describe('spreadsheet', (): void => {
         expect(spreadsheet.getCellAtKeyDisplay("B2")).toEqual("15");
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B2")).toEqual("SUM(A1..A3)");
         expect(spreadsheet.getCellAtKeyDisplay("B3")).toEqual("5");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B3")).toEqual("AVERAGE(A1..A3)");
+        
+        spreadsheet.setCellAtKeyGivenInput("A1", "");
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("");
+        expect(spreadsheet.getCellAtKeyDisplay("B1")).toEqual("");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B1")).toEqual("REF(A1)");
+        expect(spreadsheet.getCellAtKeyDisplay("B2")).toEqual("5");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B2")).toEqual("SUM(A1..A3)");
+        expect(spreadsheet.getCellAtKeyDisplay("B3")).toEqual("2.5");
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B3")).toEqual("AVERAGE(A1..A3)");
       });
     })

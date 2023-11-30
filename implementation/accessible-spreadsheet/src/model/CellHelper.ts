@@ -298,10 +298,14 @@ export class CellHelper {
                         let parameters = processed[0].replace(" ", "");
                         let elements = parameters.split(",")
                         let runningSum : number = 0;
+                        let numberCount : number = 0;
                         elements.forEach(function (element) {
-                            runningSum += Number(element)
+                            if (element != "" && Number(element) != undefined && !isNaN(Number(element))) {
+                                runningSum += Number(element)
+                                numberCount++;
+                            }
                         });
-                        parsedList.push((runningSum / elements.length).toString());
+                        parsedList.push((runningSum / numberCount).toString());
                         i += functionName.length + parenthesisGroup.length - 1
                         break;
                     }
