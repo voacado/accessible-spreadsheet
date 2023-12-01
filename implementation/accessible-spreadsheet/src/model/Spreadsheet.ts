@@ -285,7 +285,13 @@ export class Spreadsheet {
         // console.log('Saving file');
 
         // Get data from spreadsheet into JSON format
-        const json = JSON.stringify(this.cells);
+        let cellData : any;
+        cellData.set("RowCount", this.rowCount);
+        cellData.set("ColCount", this.colCount);
+        this.cells.forEach((cell : Cell, key : string) => {
+            cellData.set(key, cell.getFormulaBarDisplayValue());
+        });
+        const json = JSON.stringify(cellData);
         const blob = new Blob([json], {type: "application/json"});
         const url = URL.createObjectURL(blob);
       
@@ -304,6 +310,7 @@ export class Spreadsheet {
     public loadSpreadsheet(): void {
         // console.log('Loading file')
         // Prompt user for file to load
+        this.cells = new Map<string, Cell>();
         var input = document.createElement('input');
         input.type = 'file';
 
@@ -312,11 +319,24 @@ export class Spreadsheet {
             var file = e.target.files[0];
             var reader = new FileReader();
             reader.readAsText(file, 'UTF-8');
-
+            let newCell;
             // When done reading, assign to cells
             // TODO: actually assign to cells dict
             reader.onload = readerEvent => {
-            // this.cells = readerEvent.target!.result;
+                let readValue : any = JSON.parse(readerEvent.target!.result!?.toString());
+                readValue.array.forEach((element: string[]) => {
+                    if (element[0] == "RowCount") {
+                        this.rowCount = Number(element[1]);
+                    }
+                    else if (element[0] == "ColumnCount") {
+                        this.colCount = Number(element[1]);
+                    }
+                    else {
+                        newCell = new Cell(element[0], "", this);
+                        this.cells.set(element[0], newCell);
+                        newCell.setCellValue(element[1])
+                    }
+                });
             }
         };
         input.click();
