@@ -267,7 +267,7 @@ export class CellHelper {
             // Quotation Mark
             if (input.charAt(i) == "\"") {
                 if (input.substring(i+1).length < 1 || !input.substring(i+1).includes("\"")) {
-                    throw new Error("UNCLOSED QUOTATION MARK"); // TODO 
+                    return [["#ERR: Unclosed quotation mark."], []]; 
                 }
                 parsedList.push(input.substring(i, i+2+input.substring(i+1).indexOf("\"")));
                 i += input.substring(i, i+2+input.substring(i+1).indexOf("\"")).length - 1
@@ -275,7 +275,7 @@ export class CellHelper {
             }
             // Closed Parenthesis
             if (input.charAt(i) == ")") {
-                throw new Error("SINGLE CLOSED PARENTHESIS FOUND");
+                return [["#ERR: Unmatched closed parenthesis."], []];
             }
             // Open Parenthesis
             if (input.charAt(i) == "(") {
@@ -307,17 +307,17 @@ export class CellHelper {
                 if (input.length > i + j && functionFormula.includes(input.substring(i, i + j))) {
                     let functionName : string = input.substring(i, i + j)
                     if (input.length <= i + j + 1) {
-                        throw new Error("Function " + functionName + "not given arguments! ");
+                        return [["#ERR: Function " + functionName + "not given arguments."], []];
                     }
                     if (input.substring(i + j).charAt(0) != "(") {
-                        throw new Error("Function " + functionName + " not given parenthesis for arguments!");
+                        return [["#ERR: Function " + functionName + "not given parenthesis."], []];
                     }
                     let parenthesisGroup = CellHelper.getParenthesisGroup(input.substring(i+j))
                     // REF
                     if (functionName == "REF") {
                         let parameter = CellHelper.processInputString(parenthesisGroup, spreadsheet, knownObservees)[0];
                         if (!CellHelper.stringIsValidKey(parameter.toString())) {
-                            throw new Error("REF given invalid key! " + parameter.toString());
+                            return [["#ERR: REF given invalid key! " + parameter.toString()], []];
                         }
                         let key = parameter.toString()
                         parsedList.push(spreadsheet.getCellAtKeyDisplay(key))
@@ -361,7 +361,7 @@ export class CellHelper {
                         let parameters = processed[0].replace(" ", "");
                         let elements = parameters.split(",")
                         if (elements.length < 1) {
-                            throw new Error("Range given no arguments");
+                            return [["#ERR: Range given no arguments."], []];
                         }
                         let highestValue : number = Number(elements[0]);
                         let lowestValue : number = Number(elements[0]);
@@ -385,7 +385,7 @@ export class CellHelper {
                         let parameters = processed[0].replace(" ", "");
                         let elements = parameters.split(",")
                         if (elements.length < 1) {
-                            throw new Error("Maximum given no arguments");
+                            return [["#ERR: MAX given no arguments."], []];
                         }
                         let highestValue : number = Number(elements[0]);
                         elements.forEach(function (element) {
@@ -405,7 +405,7 @@ export class CellHelper {
                         let parameters = processed[0].replace(" ", "");
                         let elements = parameters.split(",")
                         if (elements.length < 1) {
-                            throw new Error("Minumum given no arguments");
+                            return [["#ERR: MIN given no arguments."], []];
                         }
                         let lowestValue : number = Number(elements[0]);
                         elements.forEach(function (element) {
@@ -429,6 +429,7 @@ export class CellHelper {
                     break;
                 }
             }
+            return [["#ERR: Unknown formula."], []];
         }
 
         /** orderOfOperation:
@@ -457,7 +458,7 @@ export class CellHelper {
                 // Operations
                 if (operationFormula.includes(parsedList[i])) {
                     if (i == parsedList.length -1 || (i == 0 && parsedList[i] != "-")) {
-                        throw new Error("operationFormula error, bad index i: " + i.toString());
+                        return [["#ERR: Operation missing operand."], []];
                     }
                     if (["+", "-"].includes(parsedList[i]) && orderOfOperation > 0 || ["*", "/", "%"].includes(parsedList[i]) && orderOfOperation > 1) {
                         i++;
@@ -520,7 +521,7 @@ export class CellHelper {
                 // Parenthesis
                 if (parsedList[i].charAt(0) == "(") {
                     if (parsedList[i].length < 2 || !parsedList[i].includes(")")) {
-                        throw new Error("Open parenthesis left unclosed!");
+                        return [["#ERR: Open parenthesis left unclosed."], []];
                     }
 
                     let parenthesisGroup = CellHelper.getParenthesisGroup(parsedList[i])
