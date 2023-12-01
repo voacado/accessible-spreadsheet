@@ -54,6 +54,11 @@ export class Cell {
     public updateCellValue() {
         let processedData = CellHelper.getValueFromUserInput(this.inputValue, this.mySpreadsheet)
         this.displayValue = processedData[0]
+        if (processedData[1].includes(this.getKey())) {
+            this.displayValue = "#ERROR: self-ref.";
+            this.updateObservers();
+            return;
+        }
         for (let observeeKey of processedData[1]) {
             this.mySpreadsheet.getCellAtKey(observeeKey).addObserver(this);
         }
