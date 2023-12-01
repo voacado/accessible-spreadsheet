@@ -137,9 +137,14 @@ export class Spreadsheet {
         let cellsToRemove : Cell[] = this.getCellsGivenRange("A" + CellHelper.getRowKeyFromIndex(index), 
                                                             CellHelper.getColKeyFromIndex(this.colCount-1) + CellHelper.getRowKeyFromIndex(index),
                                                             true)
+        let removedCellObservers : Cell[] = [];
         if (cellsToRemove.length !== 0) {
             for (let i = 0; i < cellsToRemove.length; i++) {
-                this.deleteCell(cellsToRemove[i])
+                let observers = cellsToRemove[i].getObservers()
+                observers.forEach((element : any) => {
+                    removedCellObservers.push(element);
+                });
+                this.deleteCell(cellsToRemove[i]);
             }
         }
         let cellsToChange : Cell[] = this.getCellsGivenRange("A" + CellHelper.getRowKeyFromIndex(index+1), 
@@ -151,6 +156,7 @@ export class Spreadsheet {
             this.notifyObservers();
             return;
         }
+        
         let oldKey : string = ""
         let newKey : string = ""
         let changingCell : Cell
@@ -165,6 +171,9 @@ export class Spreadsheet {
         for (let i = 0; i < cellsToChange.length; i++) {
             cellsToChange[i].updateObservers();
         }
+        for (let i = 0; i < removedCellObservers.length; i++) {
+            removedCellObservers[i].updateCellValue();
+        }
         this.notifyObservers();
     }
     
@@ -173,8 +182,13 @@ export class Spreadsheet {
         let cellsToRemove : Cell[] = this.getCellsGivenRange(CellHelper.getColKeyFromIndex(index) + "1", 
                                                             CellHelper.getColKeyFromIndex(index) + CellHelper.getRowKeyFromIndex(this.rowCount-1),
                                                             true)
+        let removedCellObservers : Cell[] = [];
         if (cellsToRemove.length !== 0) {
             for (let i = 0; i < cellsToRemove.length; i++) {
+                let observers = cellsToRemove[i].getObservers()
+                observers.forEach((element : any) => {
+                    removedCellObservers.push(element);
+                });
                 this.deleteCell(cellsToRemove[i]);
             }
         }
@@ -201,6 +215,9 @@ export class Spreadsheet {
         }
         for (let i = 0; i < cellsToChange.length; i++) {
             cellsToChange[i].updateObservers();
+        }
+        for (let i = 0; i < removedCellObservers.length; i++) {
+            removedCellObservers[i].updateCellValue();
         }
         this.notifyObservers();
     }
@@ -247,7 +264,7 @@ export class Spreadsheet {
         this.cells.forEach((cell : Cell, key : string) => {
             cellData[key] = cell.getFormulaBarDisplayValue();
         });
-        console.log("celldata elements:");
+        // console.log("celldata elements:");
         // cellData.forEach((element : any) => {
         //     console.log(element[0] + element[1]);
         // });
@@ -255,7 +272,7 @@ export class Spreadsheet {
             console.log(cellData[i])
         }
         const json = JSON.stringify(cellData);
-        console.log(json);
+        // console.log(json);
         const blob = new Blob([json], {type: "application/json"});
         const url = URL.createObjectURL(blob);
       
@@ -271,7 +288,7 @@ export class Spreadsheet {
         URL.revokeObjectURL(url);
     }
     
-    public loadSpreadsheet(): void {
+    public loadSpreadsheet(): void { 
         // Prompt user for file to load
         this.cells = new Map<string, Cell>();
         var input = document.createElement('input');
