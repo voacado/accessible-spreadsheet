@@ -1,13 +1,5 @@
 import { Cell } from "./Cell";
-// import { IValue } from "./values/IValue";
-// import { EmptyValue } from "./values/EmptyValue";
-// import { NumberValue } from "./values/NumberValue";
-// import { StringValue } from "./values/StringValue";
-// import { FormulaValue } from "./values/FormulaValue";
-// import { CellReference } from "./values/CellReference";
-// import { MultiCellReference } from "./values/MultiCellReference";
 import { CellHelper } from "./CellHelper";
-import { string } from "yargs";
 
 const initRowCount = 3
 const initColCount = 3
@@ -29,7 +21,7 @@ export class Spreadsheet {
 
     public static getInstance(): Spreadsheet {
         if (!Spreadsheet.instance) {
-            Spreadsheet.instance = new Spreadsheet(100, 100);
+            Spreadsheet.instance = new Spreadsheet(35, 35);
         }
         return Spreadsheet.instance;
     }
@@ -287,10 +279,10 @@ export class Spreadsheet {
             reader.onload = readerEvent => {
                 let readValue : any = JSON.parse(readerEvent.target!.result!?.toString());
                 readValue.array.forEach((element: string[]) => {
-                    if (element[0] == "RowCount") {
+                    if (element[0] === "RowCount") {
                         this.rowCount = Number(element[1]);
                     }
-                    else if (element[0] == "ColumnCount") {
+                    else if (element[0] === "ColumnCount") {
                         this.colCount = Number(element[1]);
                     }
                     else {
