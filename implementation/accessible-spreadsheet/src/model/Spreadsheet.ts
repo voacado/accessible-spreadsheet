@@ -71,10 +71,10 @@ export class Spreadsheet {
     
     public addRow(index : number) : void {
         if (index < 0) {
-            throw new Error("ERROR: Spreadsheet.addRow() given negative index.");
+            throw new Error("ERROR: Spreadsheet.addRow() given negative index: " + index.toString());
         }
         if (index > this.rowCount) {
-            throw new Error("ERROR: Spreadsheet.addRow() given index greater than rowCount.");
+            throw new Error("ERROR: Spreadsheet.addRow() given index greater than rowCount:" + index.toString());
         }
 
 
@@ -114,10 +114,10 @@ export class Spreadsheet {
     
     public addColumn(index : number) : void {
         if (index < 0) {
-            throw new Error("ERROR: Spreadsheet.addColumn() given negative index.");
+            throw new Error("ERROR: Spreadsheet.addColumn() given negative index:" + index.toString());
         }
         if (index > this.colCount) {
-            throw new Error("ERROR: Spreadsheet.addColumn() given index greater than colCount.");
+            throw new Error("ERROR: Spreadsheet.addColumn() given index greater than colCount: " + index.toString());
         }
 
         this.colCount++
@@ -292,6 +292,7 @@ export class Spreadsheet {
             cellData.set(key, cell.getFormulaBarDisplayValue());
         });
         const json = JSON.stringify(cellData);
+        console.log("celldata:" + cellData);
         const blob = new Blob([json], {type: "application/json"});
         const url = URL.createObjectURL(blob);
       

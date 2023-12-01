@@ -27,7 +27,7 @@ import { parsed } from "yargs";
  * REF                          {key}
  * RANGE                        {range}
  * SUM or TOTAL                 {range or multi}
- * AVERAGE or MEAN              {range or multi}
+ * AVERAGE or AVG or MEAN              {range or multi}
  * MAX or MAXIMUM               {range or multi}
  * MIN or MINIMUM               {range or multi}
  * ..                           {exactly two keys}
@@ -56,7 +56,7 @@ export class CellHelper {
         if (matches) {
             return parseInt(matches[2]).toString();
         } else {
-            throw new Error("ERROR: Spreadsheet.getRowFromKey() given key with more than one row.");
+            throw new Error("ERROR: Spreadsheet.getRowFromKey() given key with more than one row: " + key);
         }
     }
 
@@ -65,7 +65,7 @@ export class CellHelper {
         if (matches) {
             return matches[1];
         } else {
-            throw new Error("ERROR: Spreadsheet.getRowFromKey() given key with more than one row.");
+            throw new Error("ERROR: Spreadsheet.getRowFromKey() given key with more than one row: " + key);
         }
     }
 
@@ -252,7 +252,11 @@ export class CellHelper {
         let processedData = CellHelper.processInputString(input, spreadsheet, []);
 
         if (processedData[0].length > 1) {
-            throw new Error("CellHelper getValueFromUserInput processInputString returned multiple values");
+            let errorMsg = "";
+            processedData.forEach(function (element) {
+                errorMsg += element.toString();
+            });
+            throw new Error("CellHelper getValueFromUserInput processInputString returned multiple values: " + errorMsg);
         }
         let displayValue = processedData[0][0]
         let observees = processedData[1]
@@ -311,7 +315,7 @@ export class CellHelper {
     */
     public static processInputString(input : string, spreadsheet : Spreadsheet, knownObservees : string[], 
         shifting : boolean=false, shiftingPositive : boolean=false, shiftingColumn : boolean=false, shiftingKey : string="") : [string[], string[]] {
-        let functionFormula : string[] = ["REF", "RANGE", "SUM", "AVERAGE", "MEAN", "TOTAL", "MAX", "MAXIMUM", "MIN", "MINIMUM"]
+        let functionFormula : string[] = ["REF", "RANGE", "SUM", "AVERAGE", "AVG", "MEAN", "TOTAL", "MAX", "MAXIMUM", "MIN", "MINIMUM"]
         let operationFormula : string[] = ["+", "-", "*", "/", "%", "^", ".."]
         let parsedList : string[] = [];
         if (input.includes(",") && !input.includes("(") && !input.includes("\"")) {
@@ -366,17 +370,17 @@ export class CellHelper {
                 if (input.length > i + j && functionFormula.includes(input.substring(i, i + j))) {
                     let functionName : string = input.substring(i, i + j)
                     if (input.length <= i + j + 1) {
-                        throw new Error("Function not given arguments! ");
+                        throw new Error("Function " + functionName + "not given arguments! ");
                     }
                     if (input.substring(i + j).charAt(0) != "(") {
-                        throw new Error("Function not given parenthesis for arguments!");
+                        throw new Error("Function " + functionName + " not given parenthesis for arguments!");
                     }
                     let parenthesisGroup = CellHelper.getParenthesisGroup(input.substring(i+j))
                     // REF
                     if (functionName == "REF") {
                         let parameter = CellHelper.processInputString(parenthesisGroup, spreadsheet, knownObservees)[0];
                         if (!CellHelper.stringIsValidKey(parameter.toString())) {
-                            throw new Error("REF given invalid key!");
+                            throw new Error("REF given invalid key! " + parameter.toString());
                         }
                         let key = parameter.toString()
                         // if (shifting) {
@@ -389,8 +393,8 @@ export class CellHelper {
                         i += functionName.length + parenthesisGroup.length - 1
                         break;
                     }
-                    // AVERAGE or MEAN
-                    if (functionName == "AVERAGE" || functionName == "MEAN") {
+                    // AVERAGE or MEAN or AVG
+                    if (functionName == "AVERAGE" || functionName == "MEAN" || functionName == "AVG") {
                         let processed = CellHelper.processInputString(parenthesisGroup, spreadsheet, knownObservees)[0];
                         let parameters = processed[0].replace(" ", "");
                         let elements = parameters.split(",")
@@ -530,7 +534,7 @@ export class CellHelper {
                 // Operations
                 if (operationFormula.includes(parsedList[i])) {
                     if (i == parsedList.length -1 || (i == 0 && parsedList[i] != "-")) {
-                        throw new Error("operationFormula error");
+                        throw new Error("operationFormula error, bad index i: " + i.toString());
                     }
                     if (["+", "-"].includes(parsedList[i]) && orderOfOperation > 0 || ["*", "/", "%"].includes(parsedList[i]) && orderOfOperation > 1) {
                         i++;
