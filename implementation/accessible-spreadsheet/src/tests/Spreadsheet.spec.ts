@@ -1172,15 +1172,15 @@ describe('spreadsheet', (): void => {
     
 
 
-    describe('CellHelper', (): void => {
-      it('cellhelper', (): void => {
-        spreadsheet.setCellAtKeyGivenInput("A1", "1");
-        spreadsheet.setCellAtKeyGivenInput("A2", "2");
-        spreadsheet.setCellAtKeyGivenInput("A3", "3");
-        // expect(CellHelper.shouldShift("B1", "A1", true, true)).toEqual(true);
-        // expect(CellHelper.shouldShift("A1", "B1", true, true)).toEqual(false);
-      });
-    })
+    // describe('CellHelper', (): void => {
+    //   it('cellhelper', (): void => {
+    //     spreadsheet.setCellAtKeyGivenInput("A1", "1");
+    //     spreadsheet.setCellAtKeyGivenInput("A2", "2");
+    //     spreadsheet.setCellAtKeyGivenInput("A3", "3");
+    //     // expect(CellHelper.shouldShift("B1", "A1", true, true)).toEqual(true);
+    //     // expect(CellHelper.shouldShift("A1", "B1", true, true)).toEqual(false);
+    //   });
+    // })
 
     
     describe('cell ref add remove row', (): void => {

@@ -285,9 +285,9 @@ export class Spreadsheet {
         // console.log('Saving file');
 
         // Get data from spreadsheet into JSON format
-        let cellData : any;
-        cellData.set("RowCount", this.rowCount);
-        cellData.set("ColCount", this.colCount);
+        let cellData = new Map<string, string>();;
+        cellData.set("RowCount", this.rowCount.toString());
+        cellData.set("ColCount", this.colCount.toString());
         this.cells.forEach((cell : Cell, key : string) => {
             cellData.set(key, cell.getFormulaBarDisplayValue());
         });
