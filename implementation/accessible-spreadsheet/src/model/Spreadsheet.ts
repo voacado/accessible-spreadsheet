@@ -84,6 +84,7 @@ export class Spreadsheet {
                                                             false)
 
         if (cellsToChange.length === 0) {
+            this.notifyObservers();
             // console.log("AddRow cellsToChange.length was 0 given index " + index)
             return;
         }
@@ -108,6 +109,7 @@ export class Spreadsheet {
         for (let i = 0; i < cellsToChange.length; i++) {
             cellsToChange[i].updateObservers();
         }
+        this.notifyObservers();
     }
     
     public addColumn(index : number) : void {

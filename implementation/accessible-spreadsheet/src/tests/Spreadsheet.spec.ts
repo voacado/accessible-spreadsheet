@@ -132,6 +132,17 @@ describe('spreadsheet', (): void => {
       });
     })
 
+    describe('Spreadsheet Set Negative Cell Value', (): void => {
+      it('Setting a cell\'s value to a negative should be reflected by the cell\'s display and value and formula bar display', (): void => {
+        spreadsheet = new Spreadsheet();
+        spreadsheet.setCellAtKeyGivenInput("A1", "-1");
+        expect(spreadsheet.getRowCount()).toEqual(3);
+        expect(spreadsheet.getColCount()).toEqual(3);
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("-1");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("-1");
+      });
+    })
+
     describe('Spreadsheet Set Multiple Cell Values', (): void => {
       it('Setting any number of cells\' values should be reflected by their display and value and formula bar display', (): void => {
         spreadsheet = new Spreadsheet();
@@ -659,8 +670,6 @@ describe('spreadsheet', (): void => {
       });
     })
 
-    
-
     describe('Default Spreadsheet Remove Row', (): void => {
       it('Removing a row to a spreadsheet should decrease the row count correctly', (): void => {
         spreadsheet = new Spreadsheet();
@@ -984,6 +993,106 @@ describe('spreadsheet', (): void => {
       });
     })
 
+    describe('Cell Arithmetic Formula Bar Values', (): void => {
+      it('Cells given arithmetic should should that input in the formula bar.', (): void => {
+        spreadsheet = new Spreadsheet();
+        spreadsheet.setCellAtKeyGivenInput("A1", "1+2");
+        spreadsheet.setCellAtKeyGivenInput("A2", "3-1");
+        spreadsheet.setCellAtKeyGivenInput("A3", "4*3");
+        spreadsheet.setCellAtKeyGivenInput("B1", "55/5");
+        spreadsheet.setCellAtKeyGivenInput("B2", "3^3");
+        spreadsheet.setCellAtKeyGivenInput("B3", "12%5");
+        spreadsheet.setCellAtKeyGivenInput("C1", "1 + 2 * 2");
+        spreadsheet.setCellAtKeyGivenInput("C2", "1 * 2 + 2");
+        spreadsheet.setCellAtKeyGivenInput("C3", "3 * (5 + 2)");
+        // expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("3");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("1+2");
+        // expect(spreadsheet.getCellAtKeyDisplay("A2")).toEqual("2");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A2")).toEqual("3-1");
+        // expect(spreadsheet.getCellAtKeyDisplay("A3")).toEqual("12");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A3")).toEqual("4*3");
+        // expect(spreadsheet.getCellAtKeyDisplay("B1")).toEqual("11");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B1")).toEqual("55/5");
+        // expect(spreadsheet.getCellAtKeyDisplay("B2")).toEqual("27");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B2")).toEqual("3^3");
+        // expect(spreadsheet.getCellAtKeyDisplay("B3")).toEqual("2");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B3")).toEqual("12%5");
+        // expect(spreadsheet.getCellAtKeyDisplay("C1")).toEqual("5");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C1")).toEqual("1 + 2 * 2");
+        // expect(spreadsheet.getCellAtKeyDisplay("C2")).toEqual("4");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C2")).toEqual("1 * 2 + 2");
+        // expect(spreadsheet.getCellAtKeyDisplay("C3")).toEqual("21");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C3")).toEqual("3 * (5 + 2)");
+      });
+    })
+
+    describe('Cell Arithmetic Display Values', (): void => {
+      it('Cells should display logically correct values when given arithmetic as input.', (): void => {
+        spreadsheet = new Spreadsheet();
+        spreadsheet.setCellAtKeyGivenInput("A1", "1+2");
+        spreadsheet.setCellAtKeyGivenInput("A2", "3-1");
+        spreadsheet.setCellAtKeyGivenInput("A3", "4*3");
+        spreadsheet.setCellAtKeyGivenInput("B1", "55/5");
+        spreadsheet.setCellAtKeyGivenInput("B2", "3^3");
+        spreadsheet.setCellAtKeyGivenInput("B3", "12%5");
+        spreadsheet.setCellAtKeyGivenInput("C1", "1 + 2 * 2");
+        spreadsheet.setCellAtKeyGivenInput("C2", "1 * 2 + 2");
+        spreadsheet.setCellAtKeyGivenInput("C3", "3 * (5 + 2)");
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("3");
+        // expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("1+2");
+        expect(spreadsheet.getCellAtKeyDisplay("A2")).toEqual("2");
+        // expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A2")).toEqual("3-1");
+        expect(spreadsheet.getCellAtKeyDisplay("A3")).toEqual("12");
+        // expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A3")).toEqual("4*3");
+        expect(spreadsheet.getCellAtKeyDisplay("B1")).toEqual("11");
+        // expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B1")).toEqual("55/5");
+        expect(spreadsheet.getCellAtKeyDisplay("B2")).toEqual("27");
+        // expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B2")).toEqual("3^3");
+        expect(spreadsheet.getCellAtKeyDisplay("B3")).toEqual("2");
+        // expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B3")).toEqual("12%5");
+        expect(spreadsheet.getCellAtKeyDisplay("C1")).toEqual("5");
+        // expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C1")).toEqual("1 + 2 * 2");
+        expect(spreadsheet.getCellAtKeyDisplay("C2")).toEqual("4");
+        // expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C2")).toEqual("1 * 2 + 2");
+        expect(spreadsheet.getCellAtKeyDisplay("C3")).toEqual("21");
+        // expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C3")).toEqual("3 * (5 + 2)");
+      });
+    })
+
+    describe('Range Expressions', (): void => {
+      it('Cells with range expressions should correctly calculate their formulas.', (): void => {
+        spreadsheet = new Spreadsheet();
+        spreadsheet.setCellAtKeyGivenInput("A1", "10");
+        spreadsheet.setCellAtKeyGivenInput("A2", "20");
+        spreadsheet.setCellAtKeyGivenInput("A3", "30");
+        spreadsheet.setCellAtKeyGivenInput("B1", "6");
+        spreadsheet.setCellAtKeyGivenInput("B2", "12");
+        spreadsheet.setCellAtKeyGivenInput("B3", "19");
+        spreadsheet.setCellAtKeyGivenInput("C1", "SUM(A1..A3)");
+        spreadsheet.setCellAtKeyGivenInput("C2", "SUM(A1..B3)");
+        spreadsheet.setCellAtKeyGivenInput("C3", "AVERAGE(A1..A3)");
+        
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("10");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("10");
+        expect(spreadsheet.getCellAtKeyDisplay("A2")).toEqual("20");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A2")).toEqual("20");
+        expect(spreadsheet.getCellAtKeyDisplay("A3")).toEqual("30");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A3")).toEqual("30");
+        expect(spreadsheet.getCellAtKeyDisplay("B1")).toEqual("6");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B1")).toEqual("6");
+        expect(spreadsheet.getCellAtKeyDisplay("B2")).toEqual("12");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B2")).toEqual("12");
+        expect(spreadsheet.getCellAtKeyDisplay("B3")).toEqual("19");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B3")).toEqual("19");
+        expect(spreadsheet.getCellAtKeyDisplay("C1")).toEqual("60");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C1")).toEqual("SUM(A1..A3)");
+        expect(spreadsheet.getCellAtKeyDisplay("C2")).toEqual("97");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C2")).toEqual("SUM(A1..B3)");
+        expect(spreadsheet.getCellAtKeyDisplay("C3")).toEqual("20");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C3")).toEqual("AVERAGE(A1..A3)");
+      });
+    })
+
     describe('FormulasTest', (): void => {
       it('testing fomulas', (): void => {
         spreadsheet = new Spreadsheet();
@@ -1023,6 +1132,26 @@ describe('spreadsheet', (): void => {
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B3")).toEqual("AVERAGE(A1..A3)");
       });
     })
+
+    describe('Negatives', (): void => {
+      it('testing negatives', (): void => {
+        spreadsheet = new Spreadsheet();
+        spreadsheet.setCellAtKeyGivenInput("A1", "0");
+        spreadsheet.setCellAtKeyGivenInput("A2", "-0");
+        spreadsheet.setCellAtKeyGivenInput("A3", "-1");
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("0");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("0");
+        expect(spreadsheet.getCellAtKeyDisplay("A2")).toEqual("0");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A2")).toEqual("-0");
+        expect(spreadsheet.getCellAtKeyDisplay("A3")).toEqual("-1");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A3")).toEqual("-1");
+      });
+    })
+
+
+
+
+    
 
 
     describe('CellHelper', (): void => {

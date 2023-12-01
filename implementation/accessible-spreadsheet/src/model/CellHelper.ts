@@ -10,6 +10,7 @@ import { Cell } from "./Cell";
 import { Spreadsheet } from "./Spreadsheet";
 import { hasUncaughtExceptionCaptureCallback } from "process";
 import { instanceOf } from "prop-types";
+import { parsed } from "yargs";
 
 /**
  * USER INPUT RULES: 
@@ -528,14 +529,19 @@ export class CellHelper {
                 // }
                 // Operations
                 if (operationFormula.includes(parsedList[i])) {
-                    if (i == parsedList.length -1 || i == 0) {
+                    if (i == parsedList.length -1 || (i == 0 && parsedList[i] != "-")) {
                         throw new Error("operationFormula error");
                     }
                     if (["+", "-"].includes(parsedList[i]) && orderOfOperation > 0 || ["*", "/", "%"].includes(parsedList[i]) && orderOfOperation > 1) {
                         i++;
                         continue; 
                     }
-                    let firstOperand : string = parsedList[i-1]
+                    let firstOperand : string
+                    if (i == 0 && parsedList[i] == "-") {
+                        firstOperand = "0"
+                    } else {
+                        firstOperand = parsedList[i-1]
+                    }
                     let secondOperand : string = parsedList[i+1]
                     if (parsedList[i] == "..") {
                         // if (shifting && CellHelper.shouldShift(firstOperand, shiftingKey, shiftingPositive, shiftingColumn)) {
@@ -570,6 +576,10 @@ export class CellHelper {
                     }
                     if (parsedList[i] == "-") {
                         newItem = (Number(firstOperand) - Number(secondOperand)).toString();
+                        if (i == 0) {
+                            parsedList.splice(i, 2, newItem);
+                            break;
+                        }
                     }
                     if (parsedList[i] == "*") {
                         newItem = (Number(firstOperand) * Number(secondOperand)).toString();
