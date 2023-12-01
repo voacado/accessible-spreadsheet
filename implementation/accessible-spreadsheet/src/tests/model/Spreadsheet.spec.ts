@@ -1,13 +1,4 @@
-import { Spreadsheet } from '../model/Spreadsheet';
-import { Cell } from "../model/Cell";
-// import { IValue } from "./values/IValue";
-// import { EmptyValue } from "./values/EmptyValue";
-// import { NumberValue } from "./values/NumberValue";
-// import { StringValue } from "./values/StringValue";
-// import { FormulaValue } from "./values/FormulaValue";
-// import { CellReference } from "./values/CellReference";
-// import { MultiCellReference } from "./values/MultiCellReference";
-import { CellHelper } from "../model/CellHelper";
+import { Spreadsheet } from 'model/Spreadsheet';
 
 describe('spreadsheet', (): void => {
   describe('Spreadsheet', (): void => {

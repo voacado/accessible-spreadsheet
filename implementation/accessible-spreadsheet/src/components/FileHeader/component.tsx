@@ -1,20 +1,9 @@
 import { ScreenReader } from "model/ScreenReader";
+import { UserContext } from "contexts/UserPropsContext";
+import { useContext } from "react";
 
-// TODO: move this interface to separate file
-interface UserProps {
-  activeCell?: string;
-  setActiveCell?: (cell: string) => void;
-  activeEditCell?: string;
-  setActiveEditCell?: (cell: string) => void;
-  editValue?: string | number;
-  setEditValue?: (value: string | number) => void;
-  fileName: string;
-  setFileName: (name: string) => void;
-  theme?: string;
-  setTheme?: (theme: string) => void;
-}
-
-export const FileHeader: React.FC<UserProps> = ({fileName, setFileName}) => {
+export const FileHeader: React.FC = () => {
+  const { fileName, setFileName } = useContext(UserContext);
 
     // Handle editing file name
     const handleEditFileName = (event: React.ChangeEvent<HTMLInputElement>) => {

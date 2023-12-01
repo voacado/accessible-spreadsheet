@@ -49,6 +49,11 @@ export class Cell {
     public updateCellValue() {
         let processedData = CellHelper.getValueFromUserInput(this.inputValue, this.mySpreadsheet)
         this.displayValue = processedData[0]
+        if (processedData[1].includes(this.getKey())) {
+            this.displayValue = "#ERROR: self-ref.";
+            this.updateObservers();
+            return;
+        }
         for (let observeeKey of processedData[1]) {
             this.mySpreadsheet.getCellAtKey(observeeKey).addObserver(this);
         }
@@ -60,7 +65,6 @@ export class Cell {
             return;
         }
         this.observers.push(observer);
-        // TODO: CONFIRM ACYCLICITY
     }
     
     public removeObserver(observer : Cell) : void {
@@ -76,15 +80,17 @@ export class Cell {
         return this.observers
     }
 
-    private updateObservers() : void {
+    public updateObservers() : void {
         for (let observer of this.observers) {
             observer.updateCellValue();
         }
     }
 
     public deleteCell() : void {
-        // for (let observer of this.observers) {
-        //     observer.updateCellValue(); // TODO: ORDER
-        // }
+        this.inputValue = "";
+        this.displayValue = "";
+        for (let observer of this.observers) {
+            observer.updateCellValue();
+        }
     }
 }

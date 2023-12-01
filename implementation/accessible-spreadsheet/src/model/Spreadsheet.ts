@@ -1,39 +1,27 @@
 import { Cell } from "./Cell";
-// import { IValue } from "./values/IValue";
-// import { EmptyValue } from "./values/EmptyValue";
-// import { NumberValue } from "./values/NumberValue";
-// import { StringValue } from "./values/StringValue";
-// import { FormulaValue } from "./values/FormulaValue";
-// import { CellReference } from "./values/CellReference";
-// import { MultiCellReference } from "./values/MultiCellReference";
 import { CellHelper } from "./CellHelper";
-import { string } from "yargs";
 
 const initRowCount = 3
 const initColCount = 3
 
 export class Spreadsheet {
     // Dict approach
-    //private cells = new Map<string, Map<string, Cell>>();
     private cells = new Map<string, Cell>();
     private rowCount = 0;
     private colCount = 0;
-
-    // private textReader : TextReader;
 
     // Singleton Design Pattern - only one instance of Spreadsheet
     private static instance: Spreadsheet;
     // Observer Design Pattern - observers are notified when spreadsheet changes (like CellGrid)
     private observers: (() => void)[] = [];
 
-    constructor(rowCount :number=initRowCount, colCount : number=initColCount) { 
-        // TODO: Implement
+    constructor(rowCount :number=initRowCount, colCount : number=initColCount) {
         this.initialize(rowCount, colCount);
     }
 
     public static getInstance(): Spreadsheet {
         if (!Spreadsheet.instance) {
-            Spreadsheet.instance = new Spreadsheet(100, 100);
+            Spreadsheet.instance = new Spreadsheet(35, 35);
         }
         return Spreadsheet.instance;
     }
@@ -65,30 +53,27 @@ export class Spreadsheet {
 
     public keyExists(key : string) : boolean {
         return CellHelper.stringIsValidKey(key) && 
-                this.getIndexOfCol(this.getColFromKey(key)) < this.colCount &&
-                this.getIndexOfRow(this.getRowFromKey(key)) < this.rowCount
+                CellHelper.getIndexOfCol(CellHelper.getColFromKey(key)) < this.colCount &&
+                CellHelper.getIndexOfRow(CellHelper.getRowFromKey(key)) < this.rowCount
     }
     
     public addRow(index : number) : void {
         if (index < 0) {
-            throw new Error("ERROR: Spreadsheet.addRow() given negative index.");
+            throw new Error("ERROR: Spreadsheet.addRow() given negative index: " + index.toString());
         }
         if (index > this.rowCount) {
-            throw new Error("ERROR: Spreadsheet.addRow() given index greater than rowCount.");
+            throw new Error("ERROR: Spreadsheet.addRow() given index greater than rowCount:" + index.toString());
         }
 
-
         this.rowCount++;
-        let cellsToChange : Cell[] = this.getCellsGivenRange("A" + this.getRowKeyFromIndex(index), 
-                                                            this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(this.rowCount-1),
+        let cellsToChange : Cell[] = this.getCellsGivenRange("A" + CellHelper.getRowKeyFromIndex(index), 
+                                                            CellHelper.getColKeyFromIndex(this.colCount-1) + CellHelper.getRowKeyFromIndex(this.rowCount-1),
                                                             false)
 
         if (cellsToChange.length === 0) {
-            // console.log("AddRow cellsToChange.length was 0 given index " + index)
+            this.notifyObservers();
             return;
         }
-        // console.log("AddRow cellsToChange.length was " + cellsToChange.length + " given index " + index)
-        // console.log("RANGE EXPRSSION: " + "A" + this.getRowKeyFromIndex(index) + this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(this.rowCount-1))
 
         let oldKey : string = ""
         let newKey : string = ""
@@ -96,28 +81,29 @@ export class Spreadsheet {
         for (let i = 0; i < cellsToChange.length; i++) {
             changingCell = cellsToChange[i];
             oldKey = changingCell.getKey();
-            newKey = this.getColFromKey(oldKey) + this.getRowKeyFromIndex(this.getIndexOfRow(this.getRowFromKey(oldKey)) + 1);
-            // console.log("AddRow iteration " + i + " Changing cell at key " + oldKey + " to new key " + newKey)
+            newKey = CellHelper.getColFromKey(oldKey) + CellHelper.getRowKeyFromIndex(CellHelper.getIndexOfRow(CellHelper.getRowFromKey(oldKey)) + 1);
             cellsToChange[i].setKey(newKey);
             this.cells.set(newKey, changingCell);
             this.cells.delete(oldKey);
+        }
+        for (let i = 0; i < cellsToChange.length; i++) {
+            cellsToChange[i].updateObservers();
         }
         this.notifyObservers();
     }
     
     public addColumn(index : number) : void {
         if (index < 0) {
-            throw new Error("ERROR: Spreadsheet.addColumn() given negative index.");
+            throw new Error("ERROR: Spreadsheet.addColumn() given negative index:" + index.toString());
         }
         if (index > this.colCount) {
-            throw new Error("ERROR: Spreadsheet.addColumn() given index greater than colCount.");
+            throw new Error("ERROR: Spreadsheet.addColumn() given index greater than colCount: " + index.toString());
         }
 
         this.colCount++
-        let cellsToChange : Cell[] = this.getCellsGivenRange(this.getColKeyFromIndex(index) + "1", 
-                                                            this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(this.rowCount-1),
+        let cellsToChange : Cell[] = this.getCellsGivenRange(CellHelper.getColKeyFromIndex(index) + "1", 
+                                                            CellHelper.getColKeyFromIndex(this.colCount-1) + CellHelper.getRowKeyFromIndex(this.rowCount-1),
                                                             false)
-        
         
         if (cellsToChange.length === 0) {
             return;
@@ -128,77 +114,84 @@ export class Spreadsheet {
         for (let i = 0; i < cellsToChange.length; i++) {
             changingCell = cellsToChange[i];
             oldKey = changingCell.getKey();
-            newKey = this.getColKeyFromIndex(this.getIndexOfCol(this.getColFromKey(oldKey)) + 1) + this.getRowFromKey(oldKey)
+            newKey = CellHelper.getColKeyFromIndex(CellHelper.getIndexOfCol(CellHelper.getColFromKey(oldKey)) + 1) + CellHelper.getRowFromKey(oldKey)
             cellsToChange[i].setKey(newKey);
             this.cells.set(newKey, changingCell);
             this.cells.delete(oldKey);
+        }
+        for (let i = 0; i < cellsToChange.length; i++) {
+            cellsToChange[i].updateObservers();
         }
         this.notifyObservers();
     }
     
     public removeRow(index : number) : void {
-        // TODO: Implement
-
-
-        let cellsToRemove : Cell[] = this.getCellsGivenRange("A" + this.getRowKeyFromIndex(index), 
-                                                            this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(index),
+        let cellsToRemove : Cell[] = this.getCellsGivenRange("A" + CellHelper.getRowKeyFromIndex(index), 
+                                                            CellHelper.getColKeyFromIndex(this.colCount-1) + CellHelper.getRowKeyFromIndex(index),
                                                             true)
+        let removedCellObservers : Cell[] = [];
         if (cellsToRemove.length !== 0) {
             for (let i = 0; i < cellsToRemove.length; i++) {
-                this.deleteCell(cellsToRemove[i])
+                let observers = cellsToRemove[i].getObservers()
+                observers.forEach((element : any) => {
+                    removedCellObservers.push(element);
+                });
+                this.deleteCell(cellsToRemove[i]);
             }
         }
-        let cellsToChange : Cell[] = this.getCellsGivenRange("A" + this.getRowKeyFromIndex(index+1), 
-                                                            this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(this.rowCount-1),
+        let cellsToChange : Cell[] = this.getCellsGivenRange("A" + CellHelper.getRowKeyFromIndex(index+1), 
+                                                            CellHelper.getColKeyFromIndex(this.colCount-1) + CellHelper.getRowKeyFromIndex(this.rowCount-1),
                                                             true)
         
         this.rowCount--;
         if (cellsToChange.length === 0) {
+            this.notifyObservers();
             return;
         }
+        
         let oldKey : string = ""
         let newKey : string = ""
         let changingCell : Cell
         for (let i = 0; i < cellsToChange.length; i++) {
             changingCell = cellsToChange[i];
             oldKey = changingCell.getKey();
-            newKey = this.getColFromKey(oldKey) + this.getRowKeyFromIndex(this.getIndexOfRow(this.getRowFromKey(oldKey)) - 1);
+            newKey = CellHelper.getColFromKey(oldKey) + CellHelper.getRowKeyFromIndex(CellHelper.getIndexOfRow(CellHelper.getRowFromKey(oldKey)) - 1);
             cellsToChange[i].setKey(newKey);
             this.cells.set(newKey, changingCell);
             this.cells.delete(oldKey);
         }
-
-        // GET LIST LEFT TO RIGHT
-
-        // DELETE 
-
-        // SHIFT
-
-        // TODO: OBSERVERS
+        for (let i = 0; i < cellsToChange.length; i++) {
+            cellsToChange[i].updateObservers();
+        }
+        for (let i = 0; i < removedCellObservers.length; i++) {
+            removedCellObservers[i].updateCellValue();
+        }
         this.notifyObservers();
     }
     
     public removeColumn(index : number) : void {
-        // TODO: Implement
-
         // Delete all cells in the removed column
-        let cellsToRemove : Cell[] = this.getCellsGivenRange(this.getColKeyFromIndex(index) + "1", 
-                                                            this.getColKeyFromIndex(index) + this.getRowKeyFromIndex(this.rowCount-1),
+        let cellsToRemove : Cell[] = this.getCellsGivenRange(CellHelper.getColKeyFromIndex(index) + "1", 
+                                                            CellHelper.getColKeyFromIndex(index) + CellHelper.getRowKeyFromIndex(this.rowCount-1),
                                                             true)
+        let removedCellObservers : Cell[] = [];
         if (cellsToRemove.length !== 0) {
             for (let i = 0; i < cellsToRemove.length; i++) {
+                let observers = cellsToRemove[i].getObservers()
+                observers.forEach((element : any) => {
+                    removedCellObservers.push(element);
+                });
                 this.deleteCell(cellsToRemove[i]);
             }
         }
-        
-
         // Shift cells to the right of the removed column left one column
-        let cellsToChange : Cell[] = this.getCellsGivenRange(this.getColKeyFromIndex(index+1) + "1", 
-                                                            this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(this.rowCount-1),
+        let cellsToChange : Cell[] = this.getCellsGivenRange(CellHelper.getColKeyFromIndex(index+1) + "1", 
+                                                            CellHelper.getColKeyFromIndex(this.colCount-1) + CellHelper.getRowKeyFromIndex(this.rowCount-1),
                                                             true)
         
         this.colCount--
         if (cellsToChange.length === 0) {
+            this.notifyObservers();
             return;
         }
         let oldKey : string = ""
@@ -207,22 +200,23 @@ export class Spreadsheet {
         for (let i = 0; i < cellsToChange.length; i++) {
             changingCell = cellsToChange[i];
             oldKey = changingCell.getKey();
-            newKey = this.getColKeyFromIndex(this.getIndexOfCol(this.getColFromKey(oldKey)) - 1) + this.getRowFromKey(oldKey)
+            newKey = CellHelper.getColKeyFromIndex(CellHelper.getIndexOfCol(CellHelper.getColFromKey(oldKey)) - 1) + CellHelper.getRowFromKey(oldKey)
             cellsToChange[i].setKey(newKey);
             this.cells.set(newKey, changingCell);
             this.cells.delete(oldKey);
         }
-
-        // GET LIST LEFT TO RIGHT
-        // DELETE 
-        // SHIFT
-        // TODO: OBSERVERS
+        for (let i = 0; i < cellsToChange.length; i++) {
+            cellsToChange[i].updateObservers();
+        }
+        for (let i = 0; i < removedCellObservers.length; i++) {
+            removedCellObservers[i].updateCellValue();
+        }
         this.notifyObservers();
     }
     
     public clearRow(index : number) : void {
-        let cellsToChange : Cell[] = this.getCellsGivenRange("A" + this.getRowKeyFromIndex(index), 
-                                                            this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(this.rowCount-1),
+        let cellsToChange : Cell[] = this.getCellsGivenRange("A" + CellHelper.getRowKeyFromIndex(index), 
+                                                            CellHelper.getColKeyFromIndex(this.colCount-1) + CellHelper.getRowKeyFromIndex(index),
                                                             true)
         if (cellsToChange.length === 0) {
             return;
@@ -230,13 +224,15 @@ export class Spreadsheet {
         for (let i = 0; i < cellsToChange.length; i++) {
             cellsToChange[i].setCellValue("");
         }
-        // TODO: Implement
+        for (let i = 0; i < cellsToChange.length; i++) {
+            cellsToChange[i].updateObservers();
+        }
         this.notifyObservers();
     }
     
     public clearColumn(index : number) : void {
-        let cellsToChange : Cell[] = this.getCellsGivenRange(this.getColKeyFromIndex(index) + "1", 
-                                                            this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(this.rowCount-1),
+        let cellsToChange : Cell[] = this.getCellsGivenRange(CellHelper.getColKeyFromIndex(index) + "1", 
+                                                            CellHelper.getColKeyFromIndex(index) + CellHelper.getRowKeyFromIndex(this.rowCount-1),
                                                             true)
         if (cellsToChange.length === 0) {
             return;
@@ -244,16 +240,31 @@ export class Spreadsheet {
         for (let i = 0; i < cellsToChange.length; i++) {
             cellsToChange[i].setCellValue("");
         }
-        // TODO: Implement
+        for (let i = 0; i < cellsToChange.length; i++) {
+            cellsToChange[i].updateObservers();
+        }
         this.notifyObservers();
     }
     
     public saveSpreadsheet(fileName: string): void {
-        // TODO: serialize cells
-        console.log('Saving file');
-
         // Get data from spreadsheet into JSON format
-        const json = JSON.stringify(this.cells);
+//        let cellData = new Map<string, string>();
+        let cellData : any = {};
+        // let cellData: {string: string} = {};
+        cellData["RowCount"] = this.rowCount.toString();
+        cellData["ColCount"] = this.colCount.toString();
+        this.cells.forEach((cell : Cell, key : string) => {
+            cellData[key] = cell.getFormulaBarDisplayValue();
+        });
+        // console.log("celldata elements:");
+        // cellData.forEach((element : any) => {
+        //     console.log(element[0] + element[1]);
+        // });
+        for (let i = 0; i < cellData.length; i++) {
+            console.log(cellData[i])
+        }
+        const json = JSON.stringify(cellData);
+        // console.log(json);
         const blob = new Blob([json], {type: "application/json"});
         const url = URL.createObjectURL(blob);
       
@@ -263,15 +274,15 @@ export class Spreadsheet {
         link.download = `${fileName}.json`;
         document.body.appendChild(link);
         link.click();
-      
+        
         // Clean up created file from memory
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
     }
     
-    public loadSpreadsheet(): void {
-        console.log('Loading file')
+    public loadSpreadsheet(): void { 
         // Prompt user for file to load
+        this.cells = new Map<string, Cell>();
         var input = document.createElement('input');
         input.type = 'file';
 
@@ -280,92 +291,36 @@ export class Spreadsheet {
             var file = e.target.files[0];
             var reader = new FileReader();
             reader.readAsText(file, 'UTF-8');
-
+            let newCell;
             // When done reading, assign to cells
-            // TODO: actually assign to cells dict
             reader.onload = readerEvent => {
-            // this.cells = readerEvent.target!.result;
+                let readValue : any = JSON.parse(readerEvent.target!.result!?.toString());
+                readValue.array.forEach((element: string[]) => {
+                    if (element[0] === "RowCount") {
+                        this.rowCount = Number(element[1]);
+                    }
+                    else if (element[0] === "ColumnCount") {
+                        this.colCount = Number(element[1]);
+                    }
+                    else {
+                        newCell = new Cell(element[0], "", this);
+                        this.cells.set(element[0], newCell);
+                        newCell.setCellValue(element[1])
+                    }
+                });
             }
         };
         input.click();
     }
-    
-    // public getTextReader() : TextReader {
-        // TODO: Implement
-    // }
-
-    // TODO Key: A1 + 1 (B1 or A2)
-    // TODO: Key A + 1 (B) -> Key
-
-    public getRowAndColFromKey(key : string) : [string, string] {
-        return [this.getRowFromKey(key), this.getColFromKey(key)];
-    }
-
-    public getRowAndColKeyFromIndex(idx : number) : [string, string] {
-        return [this.getRowKeyFromIndex(idx), this.getColKeyFromIndex(idx)];
-    }
-
-    public getIndexFromRowAndCol(row : string, col : string) : [number, number] {
-        return [this.getIndexOfRow(row), this.getIndexOfCol(col)]
-    }
-
-    private getRowFromKey(key : string): string {
-        let matches: RegExpMatchArray = key.match(/([A-Z]+)(\d+)/)!;
-        if (matches) {
-            return parseInt(matches[2]).toString();
-        } else {
-            throw new Error("ERROR: Spreadsheet.getRowFromKey() given key with more than one row.");
-        }
-    }
-
-    private getColFromKey(key : string): string {
-        let matches: RegExpMatchArray = key.match(/([A-Z]+)(\d+)/)!;
-        if (matches) {
-            return matches[1];
-        } else {
-            throw new Error("ERROR: Spreadsheet.getRowFromKey() given key with more than one row.");
-        }
-    }
-
-    private getIndexOfRow(row : string) : number {
-        return Number(row) - 1;
-    }
-
-    private getIndexOfCol(col : string) : number {
-        let index: number = 0;
-        for (let i = 0; i < col.length; i++) {
-            index *= 26;
-            index += (col.charCodeAt(i) - 65) + 1; // A = 1, B = 2, ... Z = 26
-        }
-        return index - 1; // Zero-indexed
-    }
-
-    private getRowKeyFromIndex(index : number) : string {
-        return String(index + 1);
-    }
-
-    private getColKeyFromIndex(index : number) : string {
-        let key: string = "";
-        while (index >= 0) {
-            key = String.fromCharCode(index % 26 + 65) + key;
-            index = Math.floor(index / 26) - 1;
-        }
-        return key;
-    }
 
     private getCellAtKeyIfExists(key : string) : Cell | undefined {
-        // TODO if spreadsheet does not reach this key, ?
-        // console.log("getCellAtKeyIfExists() key: " + key + "does exist?: " + (this.cells.get(key) !== undefined))
         return this.cells.get(key);
     }
     
     public getCellAtKey(key : string) : Cell {
-        // TODO if spreadsheet does not reach this key, ?
-
         let cell : Cell = this.cells.get(key)!;
 
         if (cell === undefined) {
-            // console.log("getCellAtKey found undefined. Creating new cell at key: " + key  + " with empty value")
             cell = new Cell(key, "", this)
             this.cells.set(key, cell);
         }
@@ -373,28 +328,20 @@ export class Spreadsheet {
     }
 
     public getCellsGivenRange(startKey : string, endKey : string, leftToRight : boolean=true) : Cell[] {
-        let startRowIndex = this.getIndexOfRow(this.getRowFromKey(startKey));
-        let startColIndex = this.getIndexOfCol(this.getColFromKey(startKey));
-        let endRowIndex = this.getIndexOfRow(this.getRowFromKey(endKey));
-        let endColIndex = this.getIndexOfCol(this.getColFromKey(endKey));
+        let startRowIndex = CellHelper.getIndexOfRow(CellHelper.getRowFromKey(startKey));
+        let startColIndex = CellHelper.getIndexOfCol(CellHelper.getColFromKey(startKey));
+        let endRowIndex = CellHelper.getIndexOfRow(CellHelper.getRowFromKey(endKey));
+        let endColIndex = CellHelper.getIndexOfCol(CellHelper.getColFromKey(endKey));
         let cells : Cell[] = [];
-        // console.log("Start getCellsGivenRange")
         for (let i = startRowIndex; i <= endRowIndex; i++) {
             for (let j = startColIndex; j <= endColIndex; j++) {
-                let key : string = this.getColKeyFromIndex(j) + this.getRowKeyFromIndex(i);
-                // console.log("Checking key " + key + " in getCellsGivenRange")
+                let key : string = CellHelper.getColKeyFromIndex(j) + CellHelper.getRowKeyFromIndex(i);
                 let cell : Cell | undefined = this.getCellAtKeyIfExists(key);
                 if (cell !== undefined) {
-                    // console.log("Found cell at key " + key + " in getCellsGivenRange")
                     cells.push(cell);
                 } 
-                else {
-                    // console.log("cell did not exist at key: " + key)
-                }
             }
         }
-        
-        // console.log("Length of cells: " + cells.length)
 
         if (leftToRight) {
             return cells;
@@ -404,8 +351,6 @@ export class Spreadsheet {
 
     public setCellAtKeyGivenInput(key : string, userInput : string) : void {
         let cell : Cell = this.getCellAtKey(key);
-        // let value : IValue = CellHelper.getValueFromUserInput(userInput, this);
-        // console.log("Setting cell at " + key + " value to " + value.display())
         cell.setCellValue(userInput);
     }
 
@@ -419,22 +364,15 @@ export class Spreadsheet {
         return cell.getFormulaBarDisplayValue();
     }
 
-    // public getCellAtKeyValue(key : string) : number | string {
-    //     let cell : Cell = this.getCellAtKey(key);
-    //     return cell.getDisplayValue();
-    // }
-
     private deleteCell(cell : Cell) : void {
-        // TODO
         let oldKey : string = cell.getKey()
         cell.deleteCell();
         this.cells.delete(oldKey);
-        // Observesr
     }
 
     public spreadsheetAsString() : string {
         let orderedCells : Cell[] = this.getCellsGivenRange("A1", 
-                                                            this.getColKeyFromIndex(this.colCount-1) + this.getRowKeyFromIndex(this.rowCount-1),
+                                                            CellHelper.getColKeyFromIndex(this.colCount-1) + CellHelper.getRowKeyFromIndex(this.rowCount-1),
                                                             true)
         let outputString : string = ""
         for (let i = 0; i < orderedCells.length; i++) {
@@ -442,5 +380,4 @@ export class Spreadsheet {
         }
         return outputString
     }
-
 }

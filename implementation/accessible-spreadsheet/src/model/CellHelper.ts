@@ -1,3 +1,4 @@
+import { subscribe } from "diagnostics_channel";
 import { Cell } from "./Cell";
 // import { IValue } from "./values/IValue";
 // import { EmptyValue } from "./values/EmptyValue";
@@ -9,6 +10,7 @@ import { Cell } from "./Cell";
 import { Spreadsheet } from "./Spreadsheet";
 import { hasUncaughtExceptionCaptureCallback } from "process";
 import { instanceOf } from "prop-types";
+import { parsed } from "yargs";
 
 /**
  * USER INPUT RULES: 
@@ -25,17 +27,73 @@ import { instanceOf } from "prop-types";
  * REF                          {key}
  * RANGE                        {range}
  * SUM or TOTAL                 {range or multi}
- * AVERAGE or MEAN              {range or multi}
+ * AVERAGE or AVG or MEAN              {range or multi}
  * MAX or MAXIMUM               {range or multi}
  * MIN or MINIMUM               {range or multi}
+ * ..                           {exactly two keys}
  * 
  * // todo: COUNT()                     {range or multi}
  * = 1 + 2 * 2 - 4 / 8          ARITHMETIC
  */
 
-
 // CellHelper is a class of static helper methods for Cells and the Spreadsheet.
 export class CellHelper {
+    public static getRowAndColFromKey(key : string) : [string, string] {
+        return [CellHelper.getRowFromKey(key), CellHelper.getColFromKey(key)];
+    }
+
+    public static getRowAndColKeyFromIndex(idx : number) : [string, string] {
+        return [CellHelper.getRowKeyFromIndex(idx), CellHelper.getColKeyFromIndex(idx)];
+    }
+
+    public static getIndexFromRowAndCol(row : string, col : string) : [number, number] {
+        return [CellHelper.getIndexOfRow(row), CellHelper.getIndexOfCol(col)]
+    }
+
+    public static getRowFromKey(key : string): string {
+        let matches: RegExpMatchArray = key.match(/([A-Z]+)(\d+)/)!;
+        if (matches) {
+            return parseInt(matches[2]).toString();
+        } else {
+            throw new Error("ERROR: Spreadsheet.getRowFromKey() given key with more than one row: " + key);
+        }
+    }
+
+    public static getColFromKey(key : string): string {
+        let matches: RegExpMatchArray = key.match(/([A-Z]+)(\d+)/)!;
+        if (matches) {
+            return matches[1];
+        } else {
+            throw new Error("ERROR: Spreadsheet.getRowFromKey() given key with more than one row: " + key);
+        }
+    }
+
+    public static getIndexOfRow(row : string) : number {
+        return Number(row) - 1;
+    }
+
+    public static getIndexOfCol(col : string) : number {
+        let index: number = 0;
+        for (let i = 0; i < col.length; i++) {
+            index *= 26;
+            index += (col.charCodeAt(i) - 65) + 1; // A = 1, B = 2, ... Z = 26
+        }
+        return index - 1; // Zero-indexed
+    }
+
+    public static getRowKeyFromIndex(index : number) : string {
+        return String(index + 1);
+    }
+
+    public static getColKeyFromIndex(index : number) : string {
+        let key: string = "";
+        while (index >= 0) {
+            key = String.fromCharCode(index % 26 + 65) + key;
+            index = Math.floor(index / 26) - 1;
+        }
+        return key;
+    }
+
     // Returns whether a given input is empty, null, or undefined.
     public static inputIsEmpty(input : string) : boolean {
         return input === "" || input === undefined || input === null;
@@ -102,24 +160,6 @@ export class CellHelper {
         return false
     }
 
-    // public static inputIsCellReference(input : string) : boolean {
-    //     return input.startsWith("=") && CellHelper.stringIsValidKey(input.substring(1))
-    // }
-
-    // public static inputIsMultiCellReference(input : string) : boolean {
-    //     if (!input.startsWith("=")) {
-    //         return false
-    //     }
-    //     let pieces : string[] = input.substring(1).split(":")
-    //     if (pieces.length != 2) {
-    //         return false
-    //     }
-    //     if (!CellHelper.stringIsValidKey(pieces[0]) || !CellHelper.stringIsValidKey(pieces[1])) {
-    //         return false
-    //     }
-    //     return true
-    // }
-
     // Returns whether a given input is a correctly formatted cell rage
     public static inputIsCellRange(input : string) : boolean {
         let pieces : string[] = input.substring(1).split("..")
@@ -182,8 +222,6 @@ export class CellHelper {
         }
         return input.substring(0, endIndex);
     }
-    
-    // Given an input and a Cell, create // todo
 
     // Given an input, return the display value (after formulas, cell references, or other calculations) and a list of keys the Cell observes.
     public static getValueFromUserInput(input : string, spreadsheet : Spreadsheet) : [string, string[]] {
@@ -193,25 +231,19 @@ export class CellHelper {
         let processedData = CellHelper.processInputString(input, spreadsheet, []);
 
         if (processedData[0].length > 1) {
-            throw new Error("CellHelper getValueFromUserInput processInputString returned multiple values");
+            let errorMsg = "";
+            processedData.forEach(function (element) {
+                errorMsg += element.toString();
+            });
+            throw new Error("CellHelper getValueFromUserInput processInputString returned multiple values: " + errorMsg);
         }
         let displayValue = processedData[0][0]
         let observees = processedData[1]
         return [displayValue, observees];
     }
 
-
-
-
-
-
-
-
-
-
-
-
     /** 
+     * CUSTOM PARSING FUNCTION - RECURSIVE
      * Processes a cell's input string. 
      * Parameters: the cell's input, the spreadsheet of the cell, and known keys the cell observes.
      * 
@@ -220,7 +252,7 @@ export class CellHelper {
      * Second element: a list of keys that this cell is observing. 
     */
     public static processInputString(input : string, spreadsheet : Spreadsheet, knownObservees : string[]) : [string[], string[]] {
-        let functionFormula : string[] = ["REF", "RANGE", "SUM", "AVERAGE", "MEAN", "TOTAL", "MAX", "MAXIMUM", "MIN", "MINIMUM"]
+        let functionFormula : string[] = ["REF", "RANGE", "SUM", "AVERAGE", "AVG", "MEAN", "TOTAL", "MAX", "MAXIMUM", "MIN", "MINIMUM"]
         let operationFormula : string[] = ["+", "-", "*", "/", "%", "^", ".."]
         let parsedList : string[] = [];
         if (input.includes(",") && !input.includes("(") && !input.includes("\"")) {
@@ -275,33 +307,38 @@ export class CellHelper {
                 if (input.length > i + j && functionFormula.includes(input.substring(i, i + j))) {
                     let functionName : string = input.substring(i, i + j)
                     if (input.length <= i + j + 1) {
-                        throw new Error("Function not given arguments! ");
+                        throw new Error("Function " + functionName + "not given arguments! ");
                     }
                     if (input.substring(i + j).charAt(0) != "(") {
-                        throw new Error("Function not given parenthesis for arguments!");
+                        throw new Error("Function " + functionName + " not given parenthesis for arguments!");
                     }
                     let parenthesisGroup = CellHelper.getParenthesisGroup(input.substring(i+j))
                     // REF
                     if (functionName == "REF") {
                         let parameter = CellHelper.processInputString(parenthesisGroup, spreadsheet, knownObservees)[0];
                         if (!CellHelper.stringIsValidKey(parameter.toString())) {
-                            throw new Error("REF given invalid key!");
+                            throw new Error("REF given invalid key! " + parameter.toString());
                         }
-                        parsedList.push(spreadsheet.getCellAtKeyDisplay(parameter.toString()))
-                        knownObservees.push(parameter.toString())
+                        let key = parameter.toString()
+                        parsedList.push(spreadsheet.getCellAtKeyDisplay(key))
+                        knownObservees.push(key)
                         i += functionName.length + parenthesisGroup.length - 1
                         break;
                     }
-                    // AVERAGE or MEAN
-                    if (functionName == "AVERAGE" || functionName == "MEAN") {
+                    // AVERAGE or MEAN or AVG
+                    if (functionName == "AVERAGE" || functionName == "MEAN" || functionName == "AVG") {
                         let processed = CellHelper.processInputString(parenthesisGroup, spreadsheet, knownObservees)[0];
                         let parameters = processed[0].replace(" ", "");
                         let elements = parameters.split(",")
                         let runningSum : number = 0;
+                        let numberCount : number = 0;
                         elements.forEach(function (element) {
-                            runningSum += Number(element)
+                            if (element != "" && Number(element) != undefined && !isNaN(Number(element))) {
+                                runningSum += Number(element)
+                                numberCount++;
+                            }
                         });
-                        parsedList.push((runningSum / elements.length).toString());
+                        parsedList.push((runningSum / numberCount).toString());
                         i += functionName.length + parenthesisGroup.length - 1
                         break;
                     }
@@ -329,11 +366,13 @@ export class CellHelper {
                         let highestValue : number = Number(elements[0]);
                         let lowestValue : number = Number(elements[0]);
                         elements.forEach(function (element) {
-                            if (highestValue < Number(element)) {
-                                highestValue = Number(element)
-                            }
-                            if (lowestValue > Number(element)) {
-                                lowestValue = Number(element)
+                            if (element != "" && Number(element) != undefined && !isNaN(Number(element))) {
+                                if (highestValue < Number(element)) {
+                                    highestValue = Number(element)
+                                }
+                                if (lowestValue > Number(element)) {
+                                    lowestValue = Number(element)
+                                }
                             }
                         });
                         parsedList.push((highestValue - lowestValue).toString());
@@ -350,8 +389,10 @@ export class CellHelper {
                         }
                         let highestValue : number = Number(elements[0]);
                         elements.forEach(function (element) {
-                            if (highestValue < Number(element)) {
-                                highestValue = Number(element)
+                            if (element != "" && Number(element) != undefined && !isNaN(Number(element))) {
+                                if (highestValue < Number(element)) {
+                                    highestValue = Number(element)
+                                }
                             }
                         });
                         parsedList.push((highestValue).toString());
@@ -368,15 +409,16 @@ export class CellHelper {
                         }
                         let lowestValue : number = Number(elements[0]);
                         elements.forEach(function (element) {
-                            if (lowestValue > Number(element)) {
-                                lowestValue = Number(element)
+                            if (element != "" && Number(element) != undefined && !isNaN(Number(element))) {
+                                if (lowestValue > Number(element)) {
+                                    lowestValue = Number(element)
+                                }
                             }
                         });
                         parsedList.push((lowestValue).toString());
                         i += functionName.length + parenthesisGroup.length - 1
                         break;
                     }
-
                 }
             }
             // Check for Cell Key 
@@ -388,11 +430,6 @@ export class CellHelper {
                 }
             }
         }
-
-        // console.log("each element in parsedList:")
-        // parsedList.forEach(function (element) {
-        //     console.log(element);
-        // });
 
         /** orderOfOperation:
         *   0 = +, -
@@ -417,21 +454,21 @@ export class CellHelper {
                 orderOfOperation = 0;
             }
             for (let i : number = 0; i < parsedList.length; i++) {
-                // Empty Item
-                // if (parsedList[i] == undefined || parsedList[i] == null || parsedList[i] == "" || parsedList[i] == " ") {
-                //     parsedList.splice(i, 1);
-                //     break;
-                // }
                 // Operations
                 if (operationFormula.includes(parsedList[i])) {
-                    if (i == parsedList.length -1 || i == 0) {
-                        throw new Error("operationFormula error");
+                    if (i == parsedList.length -1 || (i == 0 && parsedList[i] != "-")) {
+                        throw new Error("operationFormula error, bad index i: " + i.toString());
                     }
                     if (["+", "-"].includes(parsedList[i]) && orderOfOperation > 0 || ["*", "/", "%"].includes(parsedList[i]) && orderOfOperation > 1) {
                         i++;
                         continue; 
                     }
-                    let firstOperand : string = parsedList[i-1]
+                    let firstOperand : string
+                    if (i == 0 && parsedList[i] == "-") {
+                        firstOperand = "0"
+                    } else {
+                        firstOperand = parsedList[i-1]
+                    }
                     let secondOperand : string = parsedList[i+1]
                     if (parsedList[i] == "..") {
                         let values = ""
@@ -460,6 +497,10 @@ export class CellHelper {
                     }
                     if (parsedList[i] == "-") {
                         newItem = (Number(firstOperand) - Number(secondOperand)).toString();
+                        if (i == 0) {
+                            parsedList.splice(i, 2, newItem);
+                            break;
+                        }
                     }
                     if (parsedList[i] == "*") {
                         newItem = (Number(firstOperand) * Number(secondOperand)).toString();
@@ -475,26 +516,6 @@ export class CellHelper {
                     }
                     parsedList.splice(i-1, 3, newItem);
                     break;
-                }
-                // Functions/Formulas
-                else if (functionFormula.includes(parsedList[i])) {
-                    if (i + 1 > parsedList.length) {
-                        throw new Error("Function not given arguments!");
-                    }
-                    if (parsedList[i+1].charAt(0) != "(") {
-                        throw new Error("Function not given parenthesis for arguments!");
-                    }
-                    if (parsedList[i+1].charAt(parsedList[i+1].length-1) != ")") {
-                        throw new Error("Function missing end parenthesis!");
-                    }
-                    if (parsedList[i] == "REF") {
-                        let parameter = CellHelper.processInputString(parsedList[i+1].substring(1,parsedList[i+1].length-1), spreadsheet, knownObservees)[0][0];
-                        if (!CellHelper.stringIsValidKey(parameter.toString())) {
-                            throw new Error("REF given invalid key!");
-                        }
-                        parsedList.splice(i, 2, "50");
-                        break;
-                    }
                 }
                 // Parenthesis
                 if (parsedList[i].charAt(0) == "(") {
@@ -519,12 +540,6 @@ export class CellHelper {
             }
             
         }
-
-        // console.log("End result, elements in ParsedList:")
-        // parsedList.forEach(function (element) {
-        //     console.log(element);
-        //     return;
-        // });
         return [parsedList, knownObservees];
     }
 }

@@ -1,23 +1,14 @@
 import React, { useEffect } from "react";
 import { Spreadsheet } from "model/Spreadsheet";
 import { ScreenReader } from "model/ScreenReader";
+import { CellHelper } from "model/CellHelper";
 
-// TODO: move this interface to separate file
-interface UserProps {
-    activeCell: string;
-    setActiveCell: (cell: string) => void;
-    activeEditCell: string;
-    setActiveEditCell: (cell: string) => void;
-    editValue: string | number;
-    setEditValue: (value: string | number) => void;
-    fileName?: string;
-    setFileName?: (name: string) => void;
-    theme?: string;
-    setTheme?: (theme: string) => void;
-  }
+import { UserContext } from "contexts/UserPropsContext";
+import { useContext } from "react";
 
-export const CellGrid: React.FC<UserProps> = ({activeCell, setActiveCell, activeEditCell, setActiveEditCell, editValue, setEditValue}) => {
+export const CellGrid: React.FC = () => {
     // TODO: we are currently re-rendering the entire spreadsheet on every update!
+    const { activeCell, setActiveCell, activeEditCell, setActiveEditCell, editValue, setEditValue } = useContext(UserContext);
 
     // Singleton Design Pattern - access created instance
     const spreadsheet = Spreadsheet.getInstance();
@@ -37,7 +28,7 @@ export const CellGrid: React.FC<UserProps> = ({activeCell, setActiveCell, active
     // Single click on cell to set is activeCell
     const handleSingleCellClick = (cellKey: string) => {
         setActiveCell(cellKey);
-        ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyValue(cellKey).toString());
+        ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyDisplay(cellKey).toString());
         setEditValue(spreadsheet.getCellAtKeyFormulaBarDisplay(cellKey) || "");
     };
 
@@ -54,9 +45,8 @@ export const CellGrid: React.FC<UserProps> = ({activeCell, setActiveCell, active
 
     // Handle sending edit value to Spreadsheet
     const handleSendEditValue = () => {
-        // TODO: editValue shouldn't just be a string or something
         spreadsheet.setCellAtKeyGivenInput(activeEditCell, editValue.toString());
-        ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyValue(activeEditCell).toString());
+        ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyDisplay(activeEditCell).toString());
         setActiveEditCell("");
     };
     
@@ -70,9 +60,9 @@ export const CellGrid: React.FC<UserProps> = ({activeCell, setActiveCell, active
 
                     {/* Generate column letters */}
                     {Array.from({ length: numCols }, (_, index) => (
-                        // TODO: do I need Z value? It interferes with Theme selection
                         <th key={index} className="sticky top-0 w-16 h-10 bg-cell-grid-header-color min-w-full min-h-full border border-cell-grid-header-border-color text-cell-grid-header-text-color">
-                            {spreadsheet.getRowAndColKeyFromIndex(index)[1]}
+                            {CellHelper.getRowAndColKeyFromIndex(index)[1]}
+                            {/* {spreadsheet.getRowAndColKeyFromIndex(index)[1]} */}
                         </th>
                     ))}
                 </tr>
@@ -90,7 +80,8 @@ export const CellGrid: React.FC<UserProps> = ({activeCell, setActiveCell, active
 
                         {/* Generate cells */}
                         {Array.from({ length: numCols }, (_, colIndex) => {
-                            const cellKey: string = spreadsheet.getRowAndColKeyFromIndex(colIndex)[1] + (rowIndex + 1);
+                            const cellKey: string = CellHelper.getRowAndColKeyFromIndex(colIndex)[1] + (rowIndex + 1);
+                            // const cellKey: string = spreadsheet.getRowAndColKeyFromIndex(colIndex)[1] + (rowIndex + 1);
                             const isActive: boolean = cellKey === activeCell;
                             const isEditing: boolean = cellKey === activeEditCell;
                             return (<td
@@ -103,6 +94,7 @@ export const CellGrid: React.FC<UserProps> = ({activeCell, setActiveCell, active
                                 {isEditing ? (
                                     <input
                                         type="text"
+                                        data-testid={`cell-${cellKey}`}
                                         className="w-full h-full outline-none text-left bg-cell-grid-cell-color"
                                         value={editValue}
                                         onChange={handleEditValue}
