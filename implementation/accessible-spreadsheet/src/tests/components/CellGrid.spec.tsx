@@ -1,34 +1,30 @@
-// TODO: tests
-
-import React, { useState } from 'react';
-import { render, fireEvent, screen, waitFor } from '@testing-library/react';
+import { render, fireEvent, screen } from "@testing-library/react";
 
 import { CellGrid } from "components";
-import { Spreadsheet } from 'model/Spreadsheet';
-import { ScreenReader } from 'model/ScreenReader';
+import { Spreadsheet } from "model/Spreadsheet";
 
-
-describe('CellGrid', () => {
-
+describe("CellGrid", () => {
   // Test: Component intializes properly
-  it('renders the CellGrid component', () => {
-    render(<CellGrid 
-      activeCell="A1" 
-      setActiveCell={() => {}} 
-      activeEditCell="" 
-      setActiveEditCell={() => {}} 
-      editValue="" 
-      setEditValue={() => {}} 
-    />);
-  
-    expect(screen.getByText('A')).toBeInTheDocument(); // Check for column header
-    expect(screen.getByText('1')).toBeInTheDocument(); // Check for row header
+  it("renders the CellGrid component", () => {
+    render(
+      <CellGrid
+        activeCell="A1"
+        setActiveCell={() => {}}
+        activeEditCell=""
+        setActiveEditCell={() => {}}
+        editValue=""
+        setEditValue={() => {}}
+      />
+    );
+
+    expect(screen.getByText("A")).toBeInTheDocument(); // Check for column header
+    expect(screen.getByText("1")).toBeInTheDocument(); // Check for row header
   });
 
-  it('renders an input field when a cell is in editing mode', () => {
-
+  // Test: Component properly reveals an input field on double click
+  it("renders an input field when a cell is in editing mode", () => {
     const spreadsheetMock = Spreadsheet.getInstance();
-    spreadsheetMock.setCellAtKeyGivenInput('A1', 'Test');
+    spreadsheetMock.setCellAtKeyGivenInput("A1", '"Test"');
     spreadsheetMock.notifyObservers();
 
     // Mock the props
@@ -40,100 +36,96 @@ describe('CellGrid', () => {
       editValue: "Test",
       setEditValue: jest.fn(),
     };
-  
+
     render(<CellGrid {...props} />);
 
     // Simulate a double click on cell A1 to enter editing mode
     const cellA1 = screen.getByDisplayValue("Test");
     fireEvent.doubleClick(cellA1);
-    
+
     // Now, the input field should be present
     const inputFieldPost = screen.getByTestId("cell-A1");
     expect(inputFieldPost).toBeInTheDocument();
   });
 
-  // it('handles single cell click', () => {
-  //   const mockSetActiveCell = jest.fn();
-  //   const spreadsheetMock = Spreadsheet.getInstance();
-  //   spreadsheetMock.setCellAtKeyGivenInput('A1', '"Some Content"');
-  //   spreadsheetMock.notifyObservers();
-  //   console.log(spreadsheetMock.getCellAtKeyDisplay('A1'));
+  // Test: Component properly sets active cell when single-clicking on a cell
+  it("handles single cell click - cell A1", () => {
+    const spreadsheetMock = Spreadsheet.getInstance();
+    const setActiveCellMock = jest.fn();
+    spreadsheetMock.setCellAtKeyGivenInput("A1", '"Test"');
+    spreadsheetMock.notifyObservers();
 
-  //   // spreadsheetMock.getCellAtKeyDisplay.mockReturnValue('Some Content');
-  
-  //   const props = {
-  //     activeCell: "",
-  //     setActiveCell: mockSetActiveCell,
-  //     activeEditCell: "",
-  //     setActiveEditCell: jest.fn(),
-  //     editValue: "",
-  //     setEditValue: jest.fn(),
-  //   };
-  
-  //   render(<CellGrid {...props} />);
-  
-  //   // Simulate single click on the cell
-  //   const cell = screen.getByDisplayValue('"Some Content"');
-  //   fireEvent.click(cell);
-  
-  //   // Verify setActiveCell is called with correct cell key
-  //   expect(mockSetActiveCell).toHaveBeenCalledWith('A1');
-  // });
-  
+    // Mock the props
+    const props = {
+      activeCell: "A1",
+      setActiveCell: setActiveCellMock,
+      activeEditCell: "A1", // Set A1 as the active editing cell
+      setActiveEditCell: jest.fn(),
+      editValue: "Test",
+      setEditValue: jest.fn(),
+    };
 
-  // // Handles cell click and double-click events
-  // it('properly handles cell click and double-click events', async () => {
-  //   const mockSetActiveCell = jest.fn();
-  //   const mockSetActiveEditCell = jest.fn();
-  //   const spreadsheetMock = Spreadsheet.getInstance();
-  //   // spreadsheetMock.getCellAtKeyDisplay.mockReturnValue('Cell Value');
+    render(<CellGrid {...props} />);
 
-  //   spreadsheetMock.setCellAtKeyGivenInput('A1', 'Cell Value');
-  //   spreadsheetMock.notifyObservers();
+    // Simulate a single click on cell A1 - sets A1 as active cell
+    const cellA1 = screen.getByDisplayValue("Test");
+    fireEvent.click(cellA1);
 
-  //       // // Wrapper component to test state updates
-  //       // const Wrapper = () => {
-  //       //   const [fileNameMock, setFileNameMock] = useState("Test File");
-  //       //   return (
-  //       //     // Render FileHeader
-  //       //     <FileHeader fileName={fileNameMock} setFileName={setFileNameMock} />
-  //       //   );
-  //       // };
-  //       // render(<Wrapper />);
-
-  //   const Wrapper = () => {
-  //     const [activeCellMock, setActiveCellMock] = useState("A1");
-  //     const [activeEditCellMock, setActiveEditCellMock] = useState("test");
-  //     const [editValueMock, setEditValueMock] = useState<string | number>("test");
-  
-  //       return (<CellGrid 
-  //         activeCell={activeCellMock} 
-  //         setActiveCell={setActiveCellMock} 
-  //         activeEditCell={activeEditCellMock}
-  //         setActiveEditCell={setActiveEditCellMock} 
-  //         editValue={editValueMock}
-  //         setEditValue={setEditValueMock} 
-  //       />);
-  //   };
-
-  //   render (<Wrapper />);
-    
-  //   // const cell = screen.getByAltText("Edit cell A1");
-  //   // const cell = screen.getByTestId("cell-A1");
-  //   await waitFor(() => {
-  //     const cell = screen.getByTestId("cell-A1");
-  //     expect(cell).toBeInTheDocument();
-  //   });
-  
-  //   // Simulate click
-  //   // fireEvent.click(cell);
-  //   // expect(spreadsheetMock.getCellAtKeyDisplay(mockSetActiveCell)).toEqual('Cell Value');
-  //   // expect(mockSetActiveCell).toHaveBeenCalledWith('A1');
-  
-  //   // // Simulate double-click
-  //   // fireEvent.doubleClick(cell);
-  //   // expect(mockSetActiveEditCell).toHaveBeenCalledWith('A1');
-  // });
-  
-  
+    expect(setActiveCellMock).toHaveBeenCalledWith("A1");
   });
+
+  it("handles single cell click - cell A2", () => {
+    const spreadsheetMock = Spreadsheet.getInstance();
+    const setActiveCellMock = jest.fn();
+    spreadsheetMock.setCellAtKeyGivenInput("A2", '"Test"');
+    spreadsheetMock.notifyObservers();
+
+    // Mock the props
+    const props = {
+      activeCell: "A2",
+      setActiveCell: setActiveCellMock,
+      activeEditCell: "A2", // Set A1 as the active editing cell
+      setActiveEditCell: jest.fn(),
+      editValue: "Test",
+      setEditValue: jest.fn(),
+    };
+
+    render(<CellGrid {...props} />);
+
+    // Simulate a single click on cell A1 - sets A1 as active cell
+    const cellA1 = screen.getByDisplayValue("Test");
+    fireEvent.click(cellA1);
+
+    expect(setActiveCellMock).toHaveBeenCalledWith("A2");
+  });
+
+  // Test: Component properly sets active edit cell when double-clicking on a cell
+  it("handles double cell click", () => {
+    const spreadsheetMock = Spreadsheet.getInstance();
+    const setActiveCellMock = jest.fn();
+    const setActiveEditCellMock = jest.fn();
+    spreadsheetMock.setCellAtKeyGivenInput("A1", '"Test"');
+    spreadsheetMock.notifyObservers();
+
+    // Mock the props
+    const props = {
+      activeCell: "A1",
+      setActiveCell: setActiveCellMock,
+      activeEditCell: "A1", // Set A1 as the active editing cell
+      setActiveEditCell: setActiveEditCellMock,
+      editValue: "Test",
+      setEditValue: jest.fn(),
+    };
+
+    render(<CellGrid {...props} />);
+
+    // Simulate a single click on cell A1 - sets A1 as active cell
+    const cellA1 = screen.getByDisplayValue("Test");
+    fireEvent.click(cellA1);
+    expect(setActiveCellMock).toHaveBeenCalledWith("A1");
+
+    // Simulate a double click on cell A1 - sets A1 as active edit cell
+    fireEvent.doubleClick(cellA1);
+    expect(setActiveEditCellMock).toHaveBeenCalledWith("A1");
+  });
+});

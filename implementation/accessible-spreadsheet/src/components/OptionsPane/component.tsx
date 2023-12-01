@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { ReactComponent as SaveFileSvg } from "graphics/SaveFileButton.svg";
 import { ReactComponent as LoadFileSvg } from "graphics/LoadFileButton.svg";
-import { ReactComponent as FormulaSvg } from "graphics/FormulaButton.svg";
 import { ReactComponent as InsertRowSvg } from "graphics/InsertRowButton.svg";
 import { ReactComponent as DeleteRowSvg } from "graphics/DeleteRowButton.svg";
 import { ReactComponent as InsertColSvg } from "graphics/InsertColButton.svg";
@@ -13,6 +12,7 @@ import { ReactComponent as ScreenReaderSvg } from "graphics/ScreenReaderButton.s
 
 import { Spreadsheet } from "model/Spreadsheet";
 import { ScreenReader } from "model/ScreenReader";
+import { CellHelper } from "model/CellHelper";
 
 // TODO: move this interface to separate file
 interface UserProps {
@@ -35,12 +35,6 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
   // Singleton Design Pattern - access created instance
   const spreadsheet = Spreadsheet.getInstance();
 
-  // States to handle Formula and Screen Reader buttons
-  const [formulaActive, setFormulaActive] = useState(false);
-  // Handler for the Formula button
-  const toggleFormula = () => {
-    setFormulaActive(!formulaActive);
-  };
   // Handler for the Screen Reader button
   const toggleScreenReader = () => {
     setScreenReaderUIActive(!screenReaderUIActive);
@@ -109,29 +103,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           <div className="bg-options-stroke-color w-0.5"></div>
         </div>
 
-        {/* Function Cluster 2: Formula */}
-        <button
-          className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
-          ${
-            formulaActive
-              ? "bg-options-btn-active-color shadow-lg"
-              : "hover:bg-options-btn-hover-color"
-          }`}
-          onClick={() => {
-            toggleFormula();
-            // setEditValue("=");
-            ScreenReader.getInstance().speak("Formula");
-          }}
-        >
-          <FormulaSvg style={{ height: "4em", width: "4em" }} />
-          Formula
-        </button>
-
-        <div className="flex h-auto p-2">
-          <div className="bg-options-stroke-color w-0.5"></div>
-        </div>
-
-        {/* Function Cluster 3: Insert/Delete */}
+        {/* Function Cluster 2: Insert/Delete */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
@@ -142,8 +114,8 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           onMouseDown={() => handleButtonClick("insert-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const curPos = spreadsheet.getRowAndColFromKey(activeCell);
-            const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
+            const curPos = CellHelper.getRowAndColFromKey(activeCell);
+            const activeCellIdx = CellHelper.getIndexFromRowAndCol(curPos[0], curPos[1]);
             spreadsheet.addRow(activeCellIdx[0]);
             ScreenReader.getInstance().speak("Insert Row");
           }}
@@ -169,8 +141,8 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           onMouseDown={() => handleButtonClick("delete-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const curPos = spreadsheet.getRowAndColFromKey(activeCell);
-            const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
+            const curPos = CellHelper.getRowAndColFromKey(activeCell);
+            const activeCellIdx = CellHelper.getIndexFromRowAndCol(curPos[0], curPos[1]);
             spreadsheet.removeRow(activeCellIdx[0]);
             ScreenReader.getInstance().speak("Delete Row");
           }}
@@ -196,8 +168,8 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           onMouseDown={() => handleButtonClick("clear-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const curPos = spreadsheet.getRowAndColFromKey(activeCell);
-            const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
+            const curPos = CellHelper.getRowAndColFromKey(activeCell);
+            const activeCellIdx = CellHelper.getIndexFromRowAndCol(curPos[0], curPos[1]);
             spreadsheet.clearRow(activeCellIdx[0]);
             ScreenReader.getInstance().speak("Clear Row");
           }}
@@ -223,8 +195,8 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           onMouseDown={() => handleButtonClick("insert-col-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const curPos = spreadsheet.getRowAndColFromKey(activeCell);
-            const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
+            const curPos = CellHelper.getRowAndColFromKey(activeCell);
+            const activeCellIdx = CellHelper.getIndexFromRowAndCol(curPos[0], curPos[1]);
             spreadsheet.addColumn(activeCellIdx[1]);
             ScreenReader.getInstance().speak("Insert Column");
           }}
@@ -251,8 +223,8 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           onMouseDown={() => handleButtonClick("delete-col-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const curPos = spreadsheet.getRowAndColFromKey(activeCell);
-            const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
+            const curPos = CellHelper.getRowAndColFromKey(activeCell);
+            const activeCellIdx = CellHelper.getIndexFromRowAndCol(curPos[0], curPos[1]);
             spreadsheet.removeColumn(activeCellIdx[1]);
             ScreenReader.getInstance().speak("Delete Column");
           }}
@@ -278,8 +250,8 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           onMouseDown={() => handleButtonClick("clear-col-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const curPos = spreadsheet.getRowAndColFromKey(activeCell);
-            const activeCellIdx = spreadsheet.getIndexFromRowAndCol(curPos[0], curPos[1]);
+            const curPos = CellHelper.getRowAndColFromKey(activeCell);
+            const activeCellIdx = CellHelper.getIndexFromRowAndCol(curPos[0], curPos[1]);
             spreadsheet.clearColumn(activeCellIdx[1]);
             ScreenReader.getInstance().speak("Clear Column");
           }}
