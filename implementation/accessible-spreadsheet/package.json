@@ -51,5 +51,9 @@
     "transform": {
       "^.+\\.(ts|tsx|js|jsx)$": "ts-jest"
     }
-  }
+  },
+  "moduleDirectories": [
+    "node_modules",
+    "src"
+  ]
 }

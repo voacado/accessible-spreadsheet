@@ -21,21 +21,6 @@ type ScreenReaderMock = {
   toggleScreenReader: jest.Mock;
 };
 
-const props = {
-  activeCell: "A1",
-  setActiveCell: jest.fn(),
-  activeEditCell: "",
-  setActiveEditCell: jest.fn(),
-  editValue: "",
-  setEditValue: jest.fn(),
-  fileName: "Untitled Spreadsheet",
-  setFileName: jest.fn(),
-  theme: "defaultTheme",
-  setTheme: jest.fn(),
-  screenReaderUIActive: false,
-  setScreenReaderUIActive: jest.fn(),
-};
-
 describe("OptionsPane", () => {
   let spreadsheetMock: SpreadsheetMock;
   let screenReaderMock: ScreenReaderMock;

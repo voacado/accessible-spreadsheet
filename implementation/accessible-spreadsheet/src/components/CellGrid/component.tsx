@@ -45,7 +45,6 @@ export const CellGrid: React.FC = () => {
 
     // Handle sending edit value to Spreadsheet
     const handleSendEditValue = () => {
-        // TODO: editValue shouldn't just be a string or something
         spreadsheet.setCellAtKeyGivenInput(activeEditCell, editValue.toString());
         ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyDisplay(activeEditCell).toString());
         setActiveEditCell("");
@@ -61,7 +60,6 @@ export const CellGrid: React.FC = () => {
 
                     {/* Generate column letters */}
                     {Array.from({ length: numCols }, (_, index) => (
-                        // TODO: do I need Z value? It interferes with Theme selection
                         <th key={index} className="sticky top-0 w-16 h-10 bg-cell-grid-header-color min-w-full min-h-full border border-cell-grid-header-border-color text-cell-grid-header-text-color">
                             {CellHelper.getRowAndColKeyFromIndex(index)[1]}
                             {/* {spreadsheet.getRowAndColKeyFromIndex(index)[1]} */}
