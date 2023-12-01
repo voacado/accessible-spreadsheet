@@ -1166,23 +1166,6 @@ describe('spreadsheet', (): void => {
       });
     })
 
-
-
-
-    
-
-
-    // describe('CellHelper', (): void => {
-    //   it('cellhelper', (): void => {
-    //     spreadsheet.setCellAtKeyGivenInput("A1", "1");
-    //     spreadsheet.setCellAtKeyGivenInput("A2", "2");
-    //     spreadsheet.setCellAtKeyGivenInput("A3", "3");
-    //     // expect(CellHelper.shouldShift("B1", "A1", true, true)).toEqual(true);
-    //     // expect(CellHelper.shouldShift("A1", "B1", true, true)).toEqual(false);
-    //   });
-    // })
-
-    
     describe('cell ref add remove row', (): void => {
       it('adding removing with referenecs', (): void => {
         spreadsheet = new Spreadsheet();
@@ -1239,6 +1222,14 @@ describe('spreadsheet', (): void => {
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("D2")).toEqual("REF(A2)");
         expect(spreadsheet.getCellAtKeyDisplay("D3")).toEqual("");
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("D3")).toEqual("REF(A3)");
+      });
+    })
+
+    describe('saving', (): void => {
+      it('saving', (): void => {
+        spreadsheet = new Spreadsheet();
+        spreadsheet.setCellAtKeyGivenInput("A1", "1");
+        spreadsheet.saveSpreadsheet("fileName123")
       });
     })
   })

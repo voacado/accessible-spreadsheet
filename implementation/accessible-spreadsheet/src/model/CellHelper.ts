@@ -36,7 +36,6 @@ import { parsed } from "yargs";
  * = 1 + 2 * 2 - 4 / 8          ARITHMETIC
  */
 
-
 // CellHelper is a class of static helper methods for Cells and the Spreadsheet.
 export class CellHelper {
     public static getRowAndColFromKey(key : string) : [string, string] {
@@ -161,24 +160,6 @@ export class CellHelper {
         return false
     }
 
-    // public static inputIsCellReference(input : string) : boolean {
-    //     return input.startsWith("=") && CellHelper.stringIsValidKey(input.substring(1))
-    // }
-
-    // public static inputIsMultiCellReference(input : string) : boolean {
-    //     if (!input.startsWith("=")) {
-    //         return false
-    //     }
-    //     let pieces : string[] = input.substring(1).split(":")
-    //     if (pieces.length != 2) {
-    //         return false
-    //     }
-    //     if (!CellHelper.stringIsValidKey(pieces[0]) || !CellHelper.stringIsValidKey(pieces[1])) {
-    //         return false
-    //     }
-    //     return true
-    // }
-
     // Returns whether a given input is a correctly formatted cell rage
     public static inputIsCellRange(input : string) : boolean {
         let pieces : string[] = input.substring(1).split("..")
@@ -241,8 +222,6 @@ export class CellHelper {
         }
         return input.substring(0, endIndex);
     }
-    
-    // Given an input and a Cell, create // todo
 
     // Given an input, return the display value (after formulas, cell references, or other calculations) and a list of keys the Cell observes.
     public static getValueFromUserInput(input : string, spreadsheet : Spreadsheet) : [string, string[]] {
@@ -263,58 +242,16 @@ export class CellHelper {
         return [displayValue, observees];
     }
 
-    // public static getValueFromUserInputShifting(input : string, spreadsheet : Spreadsheet,
-    //     shifting : boolean=false, shiftingPositive : boolean=false, shiftingColumn : boolean=false, shiftingKey : string="") : [string, string[]] {
-    //     if (CellHelper.inputIsEmpty(input)) {
-    //         return ["", []];
-    //     }
-    //     let processedData = CellHelper.processInputString(input, spreadsheet, [], shifting, shiftingPositive, shiftingColumn, shiftingKey);
-
-    //     if (processedData[0].length > 1) {
-    //         throw new Error("CellHelper getValueFromUserInput processInputString returned multiple values");
-    //     }
-    //     let displayValue = processedData[0][0]
-    //     let observees = processedData[1]
-    //     return [displayValue, observees];
-    // }
-
-
-
-
-    // public static shiftAllPossibleReferences(input : string, shiftingPositive : boolean=false, shiftingColumn : boolean=false, shiftingKey : string="") : input {
-    //     let newInput : string = input;
-    //     let oldKey : string = "";
-    //     let newKey : string = input;
-    //     for (let i = 0; i < input.length; i++) {
-    //         for (let j = i; j + i <= input.length; j++) {
-    //             oldKey = input.substring(i, i + j);
-    //             if (CellHelper.stringIsValidKey(oldKey)) {
-    //                 if (CellHelper.shouldShift(oldKey, shiftingKey, shiftingPositive, shiftingColumn)) {
-    //                     newKey = CellHelper.shiftKey(oldKey, shiftingPositive, shiftingColumn);
-    //                     return newInput = input.substring(0, i) + newKey + CellHelper.shiftAllPossibleReferences(input.substring(i+j));
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     return newInput;
-    // }
-
-
-
-
-
-
-
     /** 
+     * CUSTOM PARSING FUNCTION - RECURSIVE
      * Processes a cell's input string. 
-     * Parameters: the cell's input, the spreadsheet of the cell, known keys the cell observes, and "shifting" reference data.
+     * Parameters: the cell's input, the spreadsheet of the cell, and known keys the cell observes.
      * 
      * Returns a list of elements representing information retrieved from parsing input. 
      * First element: a list of elements to be processed. 
      * Second element: a list of keys that this cell is observing. 
     */
-    public static processInputString(input : string, spreadsheet : Spreadsheet, knownObservees : string[], 
-        shifting : boolean=false, shiftingPositive : boolean=false, shiftingColumn : boolean=false, shiftingKey : string="") : [string[], string[]] {
+    public static processInputString(input : string, spreadsheet : Spreadsheet, knownObservees : string[]) : [string[], string[]] {
         let functionFormula : string[] = ["REF", "RANGE", "SUM", "AVERAGE", "AVG", "MEAN", "TOTAL", "MAX", "MAXIMUM", "MIN", "MINIMUM"]
         let operationFormula : string[] = ["+", "-", "*", "/", "%", "^", ".."]
         let parsedList : string[] = [];
@@ -383,11 +320,6 @@ export class CellHelper {
                             throw new Error("REF given invalid key! " + parameter.toString());
                         }
                         let key = parameter.toString()
-                        // if (shifting) {
-                        //     if (CellHelper.shouldShift(key, shiftingKey, shiftingPositive, shiftingColumn)) {
-                        //         key = CellHelper.shiftKey(key, shiftingPositive, shiftingColumn)
-                        //     }
-                        // }
                         parsedList.push(spreadsheet.getCellAtKeyDisplay(key))
                         knownObservees.push(key)
                         i += functionName.length + parenthesisGroup.length - 1
@@ -498,10 +430,6 @@ export class CellHelper {
                 }
             }
         }
-        // console.log("each element in parsedList:")
-        // parsedList.forEach(function (element) {
-        //     console.log(element);
-        // });
 
         /** orderOfOperation:
         *   0 = +, -
@@ -526,11 +454,6 @@ export class CellHelper {
                 orderOfOperation = 0;
             }
             for (let i : number = 0; i < parsedList.length; i++) {
-                // Empty Item
-                // if (parsedList[i] == undefined || parsedList[i] == null || parsedList[i] == "" || parsedList[i] == " ") {
-                //     parsedList.splice(i, 1);
-                //     break;
-                // }
                 // Operations
                 if (operationFormula.includes(parsedList[i])) {
                     if (i == parsedList.length -1 || (i == 0 && parsedList[i] != "-")) {
@@ -548,12 +471,6 @@ export class CellHelper {
                     }
                     let secondOperand : string = parsedList[i+1]
                     if (parsedList[i] == "..") {
-                        // if (shifting && CellHelper.shouldShift(firstOperand, shiftingKey, shiftingPositive, shiftingColumn)) {
-                        //     CellHelper.shiftKey(firstOperand, shiftingPositive, shiftingColumn);
-                        // }
-                        // if (shifting && CellHelper.shouldShift(secondOperand, shiftingKey, shiftingPositive, shiftingColumn)) {
-                        //     CellHelper.shiftKey(secondOperand, shiftingPositive, shiftingColumn);
-                        // }
                         let values = ""
                         let cellsInRange = spreadsheet.getCellsGivenRange(firstOperand, secondOperand)
                         cellsInRange.forEach(function (cell) {
@@ -600,26 +517,6 @@ export class CellHelper {
                     parsedList.splice(i-1, 3, newItem);
                     break;
                 }
-                // Functions/Formulas
-                // else if (functionFormula.includes(parsedList[i])) {
-                //     if (i + 1 > parsedList.length) {
-                //         throw new Error("Function not given arguments!");
-                //     }
-                //     if (parsedList[i+1].charAt(0) != "(") {
-                //         throw new Error("Function not given parenthesis for arguments!");
-                //     }
-                //     if (parsedList[i+1].charAt(parsedList[i+1].length-1) != ")") {
-                //         throw new Error("Function missing end parenthesis!");
-                //     }
-                //     if (parsedList[i] == "REF") {
-                //         let parameter = CellHelper.processInputString(parsedList[i+1].substring(1,parsedList[i+1].length-1), spreadsheet, knownObservees)[0][0];
-                //         if (!CellHelper.stringIsValidKey(parameter.toString())) {
-                //             throw new Error("REF given invalid key!");
-                //         }
-                //         parsedList.splice(i, 2, "50");
-                //         break;
-                //     }
-                // }
                 // Parenthesis
                 if (parsedList[i].charAt(0) == "(") {
                     if (parsedList[i].length < 2 || !parsedList[i].includes(")")) {
@@ -643,63 +540,6 @@ export class CellHelper {
             }
             
         }
-
-        // console.log("End result, elements in ParsedList:")
-        // parsedList.forEach(function (element) {
-        //     console.log(element);
-        //     return;
-        // });
         return [parsedList, knownObservees];
     }
-
-    // public static shouldShift(key : string, shiftKey : string, shiftPositive : boolean, shiftColumn : boolean) : boolean {
-    //     if (shiftColumn) {
-    //         if (shiftPositive) {
-    //             if (CellHelper.getIndexOfCol(CellHelper.getColFromKey(key)) >= CellHelper.getIndexOfCol(CellHelper.getColFromKey(shiftKey))) {
-    //                 return true;
-    //             } 
-    //             return false
-    //         } 
-    //         else {
-    //             if (CellHelper.getIndexOfCol(CellHelper.getColFromKey(key)) < CellHelper.getIndexOfCol(CellHelper.getColFromKey(shiftKey))) {
-    //                 return true;
-    //             } 
-    //             return false
-    //         }
-    //     } 
-    //     // shiftingRow
-    //     else {
-    //         if (shiftPositive) {
-    //             if (CellHelper.getIndexOfRow(CellHelper.getRowFromKey(key)) >= CellHelper.getIndexOfRow(CellHelper.getRowFromKey(shiftKey))) {
-    //                 return true;
-    //             } 
-    //             return false
-    //         } 
-    //         else {
-    //             if (CellHelper.getIndexOfRow(CellHelper.getRowFromKey(key)) < CellHelper.getIndexOfRow(CellHelper.getRowFromKey(shiftKey))) {
-    //                 return true;
-    //             } 
-    //             return false
-    //         }
-    //     }
-    // }
-
-    // public static shiftKey(input : string, shiftPositive : boolean, shiftColumn : boolean) : string {
-    //     if (shiftColumn) {
-    //         if (shiftPositive) {
-    //             return CellHelper.getColKeyFromIndex(CellHelper.getIndexOfCol(CellHelper.getColFromKey(input))+1) + CellHelper.getRowFromKey(input)
-    //         } 
-    //         else {
-    //             return CellHelper.getColKeyFromIndex(CellHelper.getIndexOfCol(CellHelper.getColFromKey(input))-1) + CellHelper.getRowFromKey(input)
-    //         }
-    //     // shiftingRow
-    //     } else {
-    //         if (shiftPositive) {
-    //             return CellHelper.getColFromKey(input) + CellHelper.getRowKeyFromIndex(CellHelper.getIndexOfRow(CellHelper.getRowFromKey(input))+1)
-    //         } 
-    //         else {
-    //             return CellHelper.getColFromKey(input) + CellHelper.getRowKeyFromIndex(CellHelper.getIndexOfRow(CellHelper.getRowFromKey(input))-1)
-    //         }
-    //     }
-    // }
 }
