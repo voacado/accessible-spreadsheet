@@ -1,3 +1,4 @@
+import { subscribe } from "diagnostics_channel";
 import { Cell } from "./Cell";
 // import { IValue } from "./values/IValue";
 // import { EmptyValue } from "./values/EmptyValue";
@@ -28,6 +29,7 @@ import { instanceOf } from "prop-types";
  * AVERAGE or MEAN              {range or multi}
  * MAX or MAXIMUM               {range or multi}
  * MIN or MINIMUM               {range or multi}
+ * ..                           {exactly two keys}
  * 
  * // todo: COUNT()                     {range or multi}
  * = 1 + 2 * 2 - 4 / 8          ARITHMETIC
@@ -36,6 +38,62 @@ import { instanceOf } from "prop-types";
 
 // CellHelper is a class of static helper methods for Cells and the Spreadsheet.
 export class CellHelper {
+    public static getRowAndColFromKey(key : string) : [string, string] {
+        return [CellHelper.getRowFromKey(key), CellHelper.getColFromKey(key)];
+    }
+
+    public static getRowAndColKeyFromIndex(idx : number) : [string, string] {
+        return [CellHelper.getRowKeyFromIndex(idx), CellHelper.getColKeyFromIndex(idx)];
+    }
+
+    public static getIndexFromRowAndCol(row : string, col : string) : [number, number] {
+        return [CellHelper.getIndexOfRow(row), CellHelper.getIndexOfCol(col)]
+    }
+
+    public static getRowFromKey(key : string): string {
+        let matches: RegExpMatchArray = key.match(/([A-Z]+)(\d+)/)!;
+        if (matches) {
+            return parseInt(matches[2]).toString();
+        } else {
+            throw new Error("ERROR: Spreadsheet.getRowFromKey() given key with more than one row.");
+        }
+    }
+
+    public static getColFromKey(key : string): string {
+        let matches: RegExpMatchArray = key.match(/([A-Z]+)(\d+)/)!;
+        if (matches) {
+            return matches[1];
+        } else {
+            throw new Error("ERROR: Spreadsheet.getRowFromKey() given key with more than one row.");
+        }
+    }
+
+    public static getIndexOfRow(row : string) : number {
+        return Number(row) - 1;
+    }
+
+    public static getIndexOfCol(col : string) : number {
+        let index: number = 0;
+        for (let i = 0; i < col.length; i++) {
+            index *= 26;
+            index += (col.charCodeAt(i) - 65) + 1; // A = 1, B = 2, ... Z = 26
+        }
+        return index - 1; // Zero-indexed
+    }
+
+    public static getRowKeyFromIndex(index : number) : string {
+        return String(index + 1);
+    }
+
+    public static getColKeyFromIndex(index : number) : string {
+        let key: string = "";
+        while (index >= 0) {
+            key = String.fromCharCode(index % 26 + 65) + key;
+            index = Math.floor(index / 26) - 1;
+        }
+        return key;
+    }
+
     // Returns whether a given input is empty, null, or undefined.
     public static inputIsEmpty(input : string) : boolean {
         return input === "" || input === undefined || input === null;
@@ -200,10 +258,41 @@ export class CellHelper {
         return [displayValue, observees];
     }
 
+    // public static getValueFromUserInputShifting(input : string, spreadsheet : Spreadsheet,
+    //     shifting : boolean=false, shiftingPositive : boolean=false, shiftingColumn : boolean=false, shiftingKey : string="") : [string, string[]] {
+    //     if (CellHelper.inputIsEmpty(input)) {
+    //         return ["", []];
+    //     }
+    //     let processedData = CellHelper.processInputString(input, spreadsheet, [], shifting, shiftingPositive, shiftingColumn, shiftingKey);
+
+    //     if (processedData[0].length > 1) {
+    //         throw new Error("CellHelper getValueFromUserInput processInputString returned multiple values");
+    //     }
+    //     let displayValue = processedData[0][0]
+    //     let observees = processedData[1]
+    //     return [displayValue, observees];
+    // }
 
 
 
 
+    // public static shiftAllPossibleReferences(input : string, shiftingPositive : boolean=false, shiftingColumn : boolean=false, shiftingKey : string="") : input {
+    //     let newInput : string = input;
+    //     let oldKey : string = "";
+    //     let newKey : string = input;
+    //     for (let i = 0; i < input.length; i++) {
+    //         for (let j = i; j + i <= input.length; j++) {
+    //             oldKey = input.substring(i, i + j);
+    //             if (CellHelper.stringIsValidKey(oldKey)) {
+    //                 if (CellHelper.shouldShift(oldKey, shiftingKey, shiftingPositive, shiftingColumn)) {
+    //                     newKey = CellHelper.shiftKey(oldKey, shiftingPositive, shiftingColumn);
+    //                     return newInput = input.substring(0, i) + newKey + CellHelper.shiftAllPossibleReferences(input.substring(i+j));
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     return newInput;
+    // }
 
 
 
@@ -213,13 +302,14 @@ export class CellHelper {
 
     /** 
      * Processes a cell's input string. 
-     * Parameters: the cell's input, the spreadsheet of the cell, and known keys the cell observes.
+     * Parameters: the cell's input, the spreadsheet of the cell, known keys the cell observes, and "shifting" reference data.
      * 
      * Returns a list of elements representing information retrieved from parsing input. 
      * First element: a list of elements to be processed. 
      * Second element: a list of keys that this cell is observing. 
     */
-    public static processInputString(input : string, spreadsheet : Spreadsheet, knownObservees : string[]) : [string[], string[]] {
+    public static processInputString(input : string, spreadsheet : Spreadsheet, knownObservees : string[], 
+        shifting : boolean=false, shiftingPositive : boolean=false, shiftingColumn : boolean=false, shiftingKey : string="") : [string[], string[]] {
         let functionFormula : string[] = ["REF", "RANGE", "SUM", "AVERAGE", "MEAN", "TOTAL", "MAX", "MAXIMUM", "MIN", "MINIMUM"]
         let operationFormula : string[] = ["+", "-", "*", "/", "%", "^", ".."]
         let parsedList : string[] = [];
@@ -287,8 +377,14 @@ export class CellHelper {
                         if (!CellHelper.stringIsValidKey(parameter.toString())) {
                             throw new Error("REF given invalid key!");
                         }
-                        parsedList.push(spreadsheet.getCellAtKeyDisplay(parameter.toString()))
-                        knownObservees.push(parameter.toString())
+                        let key = parameter.toString()
+                        // if (shifting) {
+                        //     if (CellHelper.shouldShift(key, shiftingKey, shiftingPositive, shiftingColumn)) {
+                        //         key = CellHelper.shiftKey(key, shiftingPositive, shiftingColumn)
+                        //     }
+                        // }
+                        parsedList.push(spreadsheet.getCellAtKeyDisplay(key))
+                        knownObservees.push(key)
                         i += functionName.length + parenthesisGroup.length - 1
                         break;
                     }
@@ -442,6 +538,12 @@ export class CellHelper {
                     let firstOperand : string = parsedList[i-1]
                     let secondOperand : string = parsedList[i+1]
                     if (parsedList[i] == "..") {
+                        // if (shifting && CellHelper.shouldShift(firstOperand, shiftingKey, shiftingPositive, shiftingColumn)) {
+                        //     CellHelper.shiftKey(firstOperand, shiftingPositive, shiftingColumn);
+                        // }
+                        // if (shifting && CellHelper.shouldShift(secondOperand, shiftingKey, shiftingPositive, shiftingColumn)) {
+                        //     CellHelper.shiftKey(secondOperand, shiftingPositive, shiftingColumn);
+                        // }
                         let values = ""
                         let cellsInRange = spreadsheet.getCellsGivenRange(firstOperand, secondOperand)
                         cellsInRange.forEach(function (cell) {
@@ -485,25 +587,25 @@ export class CellHelper {
                     break;
                 }
                 // Functions/Formulas
-                else if (functionFormula.includes(parsedList[i])) {
-                    if (i + 1 > parsedList.length) {
-                        throw new Error("Function not given arguments!");
-                    }
-                    if (parsedList[i+1].charAt(0) != "(") {
-                        throw new Error("Function not given parenthesis for arguments!");
-                    }
-                    if (parsedList[i+1].charAt(parsedList[i+1].length-1) != ")") {
-                        throw new Error("Function missing end parenthesis!");
-                    }
-                    if (parsedList[i] == "REF") {
-                        let parameter = CellHelper.processInputString(parsedList[i+1].substring(1,parsedList[i+1].length-1), spreadsheet, knownObservees)[0][0];
-                        if (!CellHelper.stringIsValidKey(parameter.toString())) {
-                            throw new Error("REF given invalid key!");
-                        }
-                        parsedList.splice(i, 2, "50");
-                        break;
-                    }
-                }
+                // else if (functionFormula.includes(parsedList[i])) {
+                //     if (i + 1 > parsedList.length) {
+                //         throw new Error("Function not given arguments!");
+                //     }
+                //     if (parsedList[i+1].charAt(0) != "(") {
+                //         throw new Error("Function not given parenthesis for arguments!");
+                //     }
+                //     if (parsedList[i+1].charAt(parsedList[i+1].length-1) != ")") {
+                //         throw new Error("Function missing end parenthesis!");
+                //     }
+                //     if (parsedList[i] == "REF") {
+                //         let parameter = CellHelper.processInputString(parsedList[i+1].substring(1,parsedList[i+1].length-1), spreadsheet, knownObservees)[0][0];
+                //         if (!CellHelper.stringIsValidKey(parameter.toString())) {
+                //             throw new Error("REF given invalid key!");
+                //         }
+                //         parsedList.splice(i, 2, "50");
+                //         break;
+                //     }
+                // }
                 // Parenthesis
                 if (parsedList[i].charAt(0) == "(") {
                     if (parsedList[i].length < 2 || !parsedList[i].includes(")")) {
@@ -535,4 +637,55 @@ export class CellHelper {
         // });
         return [parsedList, knownObservees];
     }
+
+    // public static shouldShift(key : string, shiftKey : string, shiftPositive : boolean, shiftColumn : boolean) : boolean {
+    //     if (shiftColumn) {
+    //         if (shiftPositive) {
+    //             if (CellHelper.getIndexOfCol(CellHelper.getColFromKey(key)) >= CellHelper.getIndexOfCol(CellHelper.getColFromKey(shiftKey))) {
+    //                 return true;
+    //             } 
+    //             return false
+    //         } 
+    //         else {
+    //             if (CellHelper.getIndexOfCol(CellHelper.getColFromKey(key)) < CellHelper.getIndexOfCol(CellHelper.getColFromKey(shiftKey))) {
+    //                 return true;
+    //             } 
+    //             return false
+    //         }
+    //     } 
+    //     // shiftingRow
+    //     else {
+    //         if (shiftPositive) {
+    //             if (CellHelper.getIndexOfRow(CellHelper.getRowFromKey(key)) >= CellHelper.getIndexOfRow(CellHelper.getRowFromKey(shiftKey))) {
+    //                 return true;
+    //             } 
+    //             return false
+    //         } 
+    //         else {
+    //             if (CellHelper.getIndexOfRow(CellHelper.getRowFromKey(key)) < CellHelper.getIndexOfRow(CellHelper.getRowFromKey(shiftKey))) {
+    //                 return true;
+    //             } 
+    //             return false
+    //         }
+    //     }
+    // }
+
+    // public static shiftKey(input : string, shiftPositive : boolean, shiftColumn : boolean) : string {
+    //     if (shiftColumn) {
+    //         if (shiftPositive) {
+    //             return CellHelper.getColKeyFromIndex(CellHelper.getIndexOfCol(CellHelper.getColFromKey(input))+1) + CellHelper.getRowFromKey(input)
+    //         } 
+    //         else {
+    //             return CellHelper.getColKeyFromIndex(CellHelper.getIndexOfCol(CellHelper.getColFromKey(input))-1) + CellHelper.getRowFromKey(input)
+    //         }
+    //     // shiftingRow
+    //     } else {
+    //         if (shiftPositive) {
+    //             return CellHelper.getColFromKey(input) + CellHelper.getRowKeyFromIndex(CellHelper.getIndexOfRow(CellHelper.getRowFromKey(input))+1)
+    //         } 
+    //         else {
+    //             return CellHelper.getColFromKey(input) + CellHelper.getRowKeyFromIndex(CellHelper.getIndexOfRow(CellHelper.getRowFromKey(input))-1)
+    //         }
+    //     }
+    // }
 }
