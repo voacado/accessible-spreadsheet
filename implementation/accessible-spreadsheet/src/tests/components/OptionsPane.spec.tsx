@@ -72,7 +72,7 @@ describe("OptionsPane", () => {
 
   // Test: Save Button calls saveSpreadsheet
   it("calls saveSpreadsheet on save button click", () => {
-    render(<OptionsPane {...props} />);
+    render(<OptionsPane />);
 
     fireEvent.click(screen.getByText("Save"));
     expect(spreadsheetMock.saveSpreadsheet).toHaveBeenCalled();
@@ -80,7 +80,7 @@ describe("OptionsPane", () => {
 
   // Test: Load Button calls loadSpreadsheet
   it("calls loadSpreadsheet on load button click", () => {
-    render(<OptionsPane {...props} />);
+    render(<OptionsPane />);
 
     fireEvent.click(screen.getByText("Load"));
     expect(spreadsheetMock.loadSpreadsheet).toHaveBeenCalled();
@@ -88,7 +88,7 @@ describe("OptionsPane", () => {
 
   // Test: Insert Row Button calls addRow
   it("calls addRow on insert row button click", () => {
-    render(<OptionsPane {...props} />);
+    render(<OptionsPane />);
 
     fireEvent.click(screen.getByText("Insert Row"));
     expect(spreadsheetMock.addRow).toHaveBeenCalled();
@@ -96,7 +96,7 @@ describe("OptionsPane", () => {
 
   // Test: Delete Row Button calls removeRow
   it("calls removeRow on delete row button click", () => {
-    render(<OptionsPane {...props} />);
+    render(<OptionsPane />);
 
     fireEvent.click(screen.getByText("Delete Row"));
     expect(spreadsheetMock.removeRow).toHaveBeenCalled();
@@ -104,7 +104,7 @@ describe("OptionsPane", () => {
 
   // Test: Clear Row Button calls clearRow
   it("calls clearRow on clear row button click", () => {
-    render(<OptionsPane {...props} />);
+    render(<OptionsPane />);
 
     fireEvent.click(screen.getByText("Clear Row"));
     expect(spreadsheetMock.clearRow).toHaveBeenCalled();
@@ -112,7 +112,7 @@ describe("OptionsPane", () => {
 
   // Test: Insert Column Button calls addColumn
   it("calls addColumn on insert column button click", () => {
-    render(<OptionsPane {...props} />);
+    render(<OptionsPane />);
 
     fireEvent.click(screen.getByText("Insert Column"));
     expect(spreadsheetMock.addColumn).toHaveBeenCalled();
@@ -120,7 +120,7 @@ describe("OptionsPane", () => {
 
   // Test: Delete Column Button calls removeColumn
   it("calls removeColumn on delete column button click", () => {
-    render(<OptionsPane {...props} />);
+    render(<OptionsPane />);
 
     fireEvent.click(screen.getByText("Delete Column"));
     expect(spreadsheetMock.removeColumn).toHaveBeenCalled();
@@ -128,7 +128,7 @@ describe("OptionsPane", () => {
 
   // Test: Clear Column Button calls clearColumn
   it("calls clearColumn on clear column button click", () => {
-    render(<OptionsPane {...props} />);
+    render(<OptionsPane />);
 
     fireEvent.click(screen.getByText("Clear Column"));
     expect(spreadsheetMock.clearColumn).toHaveBeenCalled();
@@ -136,7 +136,7 @@ describe("OptionsPane", () => {
 
   // Test: Theme Button calls setTheme
   it("calls setTheme on theme button click", () => {
-    render(<OptionsPane {...props} />);
+    render(<OptionsPane />);
 
     fireEvent.click(screen.getByText("Theme"));
     expect(screenReaderMock.speak).toHaveBeenCalled();
@@ -144,7 +144,7 @@ describe("OptionsPane", () => {
 
   // Test: Screen Reader Button calls toggleScreenReader
   it("calls toggleScreenReader on screen reader button click", () => {
-    render(<OptionsPane {...props} />);
+    render(<OptionsPane />);
 
     fireEvent.click(screen.getByText("Screen Reader"));
     expect(screenReaderMock.toggleScreenReader).toHaveBeenCalled();

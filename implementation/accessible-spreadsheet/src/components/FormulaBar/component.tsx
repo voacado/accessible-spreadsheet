@@ -5,21 +5,11 @@ import { ReactComponent as FxSvg } from "graphics/fxIcon.svg";
 import { Spreadsheet } from "model/Spreadsheet";
 import { ScreenReader } from "model/ScreenReader";
 
-// TODO: move this interface to separate file
-interface UserProps {
-  activeCell: string;
-  setActiveCell?: (cell: string) => void;
-  activeEditCell: string;
-  setActiveEditCell?: (cell: string) => void;
-  editValue: string | number;
-  setEditValue: (value: string | number) => void;
-  fileName?: string;
-  setFileName?: (name: string) => void;
-  theme?: string;
-  setTheme?: (theme: string) => void;
-}
+import { UserContext } from "contexts/UserPropsContext";
+import { useContext } from "react";
 
-export const FormulaBar: React.FC<UserProps> = ({activeCell, activeEditCell, editValue, setEditValue}) => {
+export const FormulaBar: React.FC = () => {
+  const { activeCell, activeEditCell, editValue, setEditValue } = useContext(UserContext);
 
   // Singleton Design Pattern - access created spreadsheet instance
   const spreadsheet = Spreadsheet.getInstance();

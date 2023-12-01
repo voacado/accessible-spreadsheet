@@ -3,22 +3,12 @@ import { Spreadsheet } from "model/Spreadsheet";
 import { ScreenReader } from "model/ScreenReader";
 import { CellHelper } from "model/CellHelper";
 
-// TODO: move this interface to separate file
-interface UserProps {
-    activeCell: string;
-    setActiveCell: (cell: string) => void;
-    activeEditCell: string;
-    setActiveEditCell: (cell: string) => void;
-    editValue: string | number;
-    setEditValue: (value: string | number) => void;
-    fileName?: string;
-    setFileName?: (name: string) => void;
-    theme?: string;
-    setTheme?: (theme: string) => void;
-  }
+import { UserContext } from "contexts/UserPropsContext";
+import { useContext } from "react";
 
-export const CellGrid: React.FC<UserProps> = ({activeCell, setActiveCell, activeEditCell, setActiveEditCell, editValue, setEditValue}) => {
+export const CellGrid: React.FC = () => {
     // TODO: we are currently re-rendering the entire spreadsheet on every update!
+    const { activeCell, setActiveCell, activeEditCell, setActiveEditCell, editValue, setEditValue } = useContext(UserContext);
 
     // Singleton Design Pattern - access created instance
     const spreadsheet = Spreadsheet.getInstance();

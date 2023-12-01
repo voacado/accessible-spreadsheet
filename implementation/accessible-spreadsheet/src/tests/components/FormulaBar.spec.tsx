@@ -1,20 +1,46 @@
+import React from "react";
 import { render, fireEvent, screen } from "@testing-library/react";
+
+import { UserContext } from "contexts/UserPropsContext";
+import IUserProps from "interfaces/IUserProps";
 
 import { FormulaBar } from "components";
 import { Spreadsheet } from "model/Spreadsheet";
 import { ScreenReader } from "model/ScreenReader";
 
+// Helper func to render components given UserContext
+const renderWithUserContext = (
+  ui: React.ReactElement,
+  {
+    providerProps,
+    ...renderOptions
+  }: { providerProps: IUserProps; [key: string]: any }
+) => {
+  return render(
+    <UserContext.Provider value={providerProps}>{ui}</UserContext.Provider>,
+    renderOptions
+  );
+};
+
 describe("FormulaBar", () => {
   // Test: Component intializes properly
   it("Component renders properly without crashing", () => {
-    render(
-      <FormulaBar
-        activeCell="A1"
-        activeEditCell="A1"
-        editValue=""
-        setEditValue={() => {}}
-      />
-    );
+    const providerProps: IUserProps = {
+      activeCell: "A1",
+      setActiveCell: () => {},
+      activeEditCell: "A1",
+      setActiveEditCell: () => {},
+      editValue: "",
+      setEditValue: () => {},
+      fileName: "",
+      setFileName: () => {},
+      theme: "",
+      setTheme: () => {},
+      screenReaderUIActive: false,
+      setScreenReaderUIActive: () => {},
+    };
+
+    renderWithUserContext(<FormulaBar />, { providerProps });
     expect(
       screen.getByPlaceholderText("Enter formula or data...")
     ).toBeInTheDocument();
@@ -23,14 +49,22 @@ describe("FormulaBar", () => {
   // Test: Component properly sends edit value to React state (via "setEditValue")
   it("handles input change via react state", () => {
     const mockSetEditValue = jest.fn();
-    render(
-      <FormulaBar
-        activeCell="A1"
-        activeEditCell="A1"
-        editValue=""
-        setEditValue={mockSetEditValue}
-      />
-    );
+    const providerProps = {
+      activeCell: "A1",
+      setActiveCell: () => {},
+      activeEditCell: "A1",
+      setActiveEditCell: () => {},
+      editValue: "",
+      setEditValue: mockSetEditValue,
+      fileName: "",
+      setFileName: () => {},
+      theme: "",
+      setTheme: () => {},
+      screenReaderUIActive: false,
+      setScreenReaderUIActive: () => {},
+    };
+
+    renderWithUserContext(<FormulaBar />, { providerProps });
 
     const input = screen.getByPlaceholderText("Enter formula or data...");
     fireEvent.change(input, { target: { value: "123" } });
@@ -41,14 +75,22 @@ describe("FormulaBar", () => {
   // Test: Component properly sends edit value to Spreadsheet on blur
   it("sends edited value to Spreadsheet on blur", () => {
     const spreadsheetMock = Spreadsheet.getInstance();
-    render(
-      <FormulaBar
-        activeCell="A1"
-        activeEditCell="A1"
-        editValue="123"
-        setEditValue={() => {}}
-      />
-    );
+    const providerProps = {
+      activeCell: "A1",
+      setActiveCell: () => {},
+      activeEditCell: "A1",
+      setActiveEditCell: () => {},
+      editValue: "123",
+      setEditValue: () => {},
+      fileName: "",
+      setFileName: () => {},
+      theme: "",
+      setTheme: () => {},
+      screenReaderUIActive: false,
+      setScreenReaderUIActive: () => {},
+    };
+
+    renderWithUserContext(<FormulaBar />, { providerProps });
 
     const input = screen.getByPlaceholderText("Enter formula or data...");
     fireEvent.blur(input);
@@ -58,22 +100,29 @@ describe("FormulaBar", () => {
 
   // Test: Component properly sends edit value to ScreenReader on blur
   it("calls ScreenReader speak method on input blur", () => {
-    // Instantiate ScreenReader
     const screenReaderMock = ScreenReader.getInstance();
     if (!screenReaderMock.getScreenReaderStatus()) {
       screenReaderMock.toggleScreenReader();
     }
     screenReaderMock.clearSpeechLog();
 
-    // Render FormulaBar and change value to editValue
-    render(
-      <FormulaBar
-        activeCell="A1"
-        activeEditCell="A1"
-        editValue="123"
-        setEditValue={() => {}}
-      />
-    );
+    const providerProps = {
+      activeCell: "A1",
+      setActiveCell: () => {},
+      activeEditCell: "A1",
+      setActiveEditCell: () => {},
+      editValue: "123",
+      setEditValue: () => {},
+      fileName: "",
+      setFileName: () => {},
+      theme: "",
+      setTheme: () => {},
+      screenReaderUIActive: false,
+      setScreenReaderUIActive: () => {},
+    };
+
+    renderWithUserContext(<FormulaBar />, { providerProps });
+
     const input = screen.getByPlaceholderText("Enter formula or data...");
     fireEvent.blur(input);
 

@@ -14,23 +14,11 @@ import { Spreadsheet } from "model/Spreadsheet";
 import { ScreenReader } from "model/ScreenReader";
 import { CellHelper } from "model/CellHelper";
 
-// TODO: move this interface to separate file
-interface UserProps {
-  activeCell: string;
-  setActiveCell?: (cell: string) => void;
-  activeEditCell?: string;
-  setActiveEditCell?: (cell: string) => void;
-  editValue?: string | number;
-  setEditValue: (value: string | number) => void;
-  fileName: string;
-  setFileName: (name: string) => void;
-  theme: string;
-  setTheme: (theme: string) => void;
-  screenReaderUIActive: boolean;
-  setScreenReaderUIActive: (screenReaderActive: boolean) => void;
-}
+import { UserContext } from "contexts/UserPropsContext";
+import { useContext } from "react";
 
-export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, fileName, setFileName, theme, setTheme, screenReaderUIActive, setScreenReaderUIActive}) => {
+export const OptionsPane: React.FC = () => {
+  const { activeCell, fileName, theme, setTheme, screenReaderUIActive, setScreenReaderUIActive } = useContext(UserContext);
 
   // Singleton Design Pattern - access created instance
   const spreadsheet = Spreadsheet.getInstance();
