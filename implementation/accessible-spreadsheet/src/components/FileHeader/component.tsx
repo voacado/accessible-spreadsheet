@@ -1,26 +1,22 @@
-// TODO: Grab file name from model
+import { ScreenReader } from "model/ScreenReader";
+import { UserContext } from "contexts/UserPropsContext";
+import { useContext } from "react";
 
-// TODO: move this interface to separate file
-interface UserProps {
-  activeCell?: string;
-  setActiveCell?: (cell: string) => void;
-  activeEditCell?: string;
-  setActiveEditCell?: (cell: string) => void;
-  editValue?: string | number;
-  setEditValue?: (value: string | number) => void;
-  fileName: string;
-  setFileName: (name: string) => void;
-}
-
-export const FileHeader: React.FC<UserProps> = ({fileName, setFileName}) => {
+export const FileHeader: React.FC = () => {
+  const { fileName, setFileName } = useContext(UserContext);
 
     // Handle editing file name
     const handleEditFileName = (event: React.ChangeEvent<HTMLInputElement>) => {
       setFileName(event.target.value);
   };
 
+  // Handle text-to-speech on de-select
+  const handleEditFileNameBlur = () => {
+    ScreenReader.getInstance().speak(fileName);
+  };
+
     return (
-      <div className="bg-file-header-light text-indigo-50 p-[0.4%] min-w-full w-fit">
+      <div className="bg-file-header-color text-file-header-font-color p-[0.4%] min-w-full w-fit">
         <header>
             <div className="flex justify-center font-google-sans">
               <input
@@ -28,6 +24,7 @@ export const FileHeader: React.FC<UserProps> = ({fileName, setFileName}) => {
                   className="w-full h-full text-center font-google-sans border-none outline-none bg-transparent"
                   value={fileName}
                   onChange={handleEditFileName}
+                  onBlur={handleEditFileNameBlur}
                   autoFocus
               />
           </div>

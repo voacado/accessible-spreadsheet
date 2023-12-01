@@ -1,20 +1,14 @@
 import React, { useEffect } from "react";
-import { Spreadsheet } from "../../model/Spreadsheet";
+import { Spreadsheet } from "model/Spreadsheet";
+import { ScreenReader } from "model/ScreenReader";
+import { CellHelper } from "model/CellHelper";
 
-// TODO: move this interface to separate file
-interface UserProps {
-    activeCell: string;
-    setActiveCell: (cell: string) => void;
-    activeEditCell: string;
-    setActiveEditCell: (cell: string) => void;
-    editValue: string | number;
-    setEditValue: (value: string | number) => void;
-    fileName?: string;
-    setFileName?: (name: string) => void;
-  }
+import { UserContext } from "contexts/UserPropsContext";
+import { useContext } from "react";
 
-export const CellGrid: React.FC<UserProps> = ({activeCell, setActiveCell, activeEditCell, setActiveEditCell, editValue, setEditValue}) => {
+export const CellGrid: React.FC = () => {
     // TODO: we are currently re-rendering the entire spreadsheet on every update!
+    const { activeCell, setActiveCell, activeEditCell, setActiveEditCell, editValue, setEditValue } = useContext(UserContext);
 
     // Singleton Design Pattern - access created instance
     const spreadsheet = Spreadsheet.getInstance();
@@ -34,13 +28,14 @@ export const CellGrid: React.FC<UserProps> = ({activeCell, setActiveCell, active
     // Single click on cell to set is activeCell
     const handleSingleCellClick = (cellKey: string) => {
         setActiveCell(cellKey);
-        setEditValue(spreadsheet.getCellAtKeyValue(cellKey) || "");
+        ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyDisplay(cellKey).toString());
+        setEditValue(spreadsheet.getCellAtKeyFormulaBarDisplay(cellKey) || "");
     };
 
     // Double click on cell to set is activeEditCell
-    const handleDoubleClick = (cellKey: string) => {
+    const handleDoubleCellClick = (cellKey: string) => {
         setActiveEditCell(cellKey);
-        setEditValue(spreadsheet.getCellAtKeyValue(cellKey) || "");
+        setEditValue(spreadsheet.getCellAtKeyFormulaBarDisplay(cellKey) || "");
     };
 
     // Handle edit cell value
@@ -52,21 +47,24 @@ export const CellGrid: React.FC<UserProps> = ({activeCell, setActiveCell, active
     const handleSendEditValue = () => {
         // TODO: editValue shouldn't just be a string or something
         spreadsheet.setCellAtKeyGivenInput(activeEditCell, editValue.toString());
+        ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyDisplay(activeEditCell).toString());
         setActiveEditCell("");
     };
     
 
     return (
-        <table className="table-fixed border-collapse border border-gray-400">
+        <table className="table-fixed border-collapse border border-cell-grid-header-border-color">
             <thead>
                 <tr>
                     {/* Empty cell for the top-left corner */}
-                    <th className="sticky top-0 left-0 z-20 w-10 h-10 bg-options-light min-w-full min-h-full"></th>
+                    <th className="sticky top-0 left-0 z-20 w-10 h-10 bg-cell-grid-header-color min-w-full min-h-full"></th>
 
                     {/* Generate column letters */}
                     {Array.from({ length: numCols }, (_, index) => (
-                        <th key={index} className="sticky top-0 z-10 w-16 h-10 bg-options-light min-w-full min-h-full border border-gray-400">
-                            {spreadsheet.getRowAndColKeyFromIndex(index)[1]}
+                        // TODO: do I need Z value? It interferes with Theme selection
+                        <th key={index} className="sticky top-0 w-16 h-10 bg-cell-grid-header-color min-w-full min-h-full border border-cell-grid-header-border-color text-cell-grid-header-text-color">
+                            {CellHelper.getRowAndColKeyFromIndex(index)[1]}
+                            {/* {spreadsheet.getRowAndColKeyFromIndex(index)[1]} */}
                         </th>
                     ))}
                 </tr>
@@ -78,27 +76,28 @@ export const CellGrid: React.FC<UserProps> = ({activeCell, setActiveCell, active
                     <tr key={rowIndex}>
 
                         {/* Row number */}
-                        <th className="sticky left-0 z-10 w-16 h-10 bg-options-light min-w-full min-h-full border border-gray-400">
+                        <th className="sticky left-0 z-10 w-16 h-10 bg-cell-grid-header-color min-w-full min-h-full border border-cell-grid-header-border-color text-cell-grid-header-text-color">
                             {rowIndex + 1}
                         </th>
 
                         {/* Generate cells */}
                         {Array.from({ length: numCols }, (_, colIndex) => {
-                            const cellKey: string = spreadsheet.getRowAndColKeyFromIndex(colIndex)[1] + (rowIndex + 1);
+                            const cellKey: string = CellHelper.getRowAndColKeyFromIndex(colIndex)[1] + (rowIndex + 1);
+                            // const cellKey: string = spreadsheet.getRowAndColKeyFromIndex(colIndex)[1] + (rowIndex + 1);
                             const isActive: boolean = cellKey === activeCell;
                             const isEditing: boolean = cellKey === activeEditCell;
                             return (<td
                                 key={colIndex}
-                                className={`w-16 h-10 border border-gray-300 ${isActive ? 'outline-cell-grid-active-light outline-2 outline' : ''}`}
+                                className={`min-w-100 h-10 overflow-hidden whitespace-nowrap overflow-ellipsis border border-cell-grid-cell-border-color ${isActive ? 'outline-cell-grid-active-color outline-2 outline' : ''} bg-cell-grid-cell-color text-cell-grid-cell-text-color`}
+
                                 onClick={() => handleSingleCellClick(cellKey)}
-                                onDoubleClick={() => handleDoubleClick(cellKey)}
+                                onDoubleClick={() => handleDoubleCellClick(cellKey)}
                             >
                                 {isEditing ? (
                                     <input
                                         type="text"
-                                        // className="w-full h-full text-left"
-                                        className="w-full h-full outline-none text-left"
-                                        // className="w-full h-full min-w-full min-h-full border-none outline-none text-left"
+                                        data-testid={`cell-${cellKey}`}
+                                        className="w-full h-full outline-none text-left bg-cell-grid-cell-color"
                                         value={editValue}
                                         onChange={handleEditValue}
                                         onBlur={handleSendEditValue}

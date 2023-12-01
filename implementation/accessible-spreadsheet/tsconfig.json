@@ -1,5 +1,13 @@
 {
   "compilerOptions": {
+    "baseUrl": "src",
+    // "rootDir": "src",
+    "paths": {
+      // "@components/*": ["components/*"],
+      // "@graphics/*": ["graphics/*"],
+      // "@model/*": ["model/*"],
+      // "@/*": ["./src/*"],
+    },
     "target": "es5",
     "lib": [
       "dom",
@@ -22,5 +30,5 @@
   },
   "include": [
     "src"
-  ]
+, "test/ScreenReader.spec.ts"  ]
 }
