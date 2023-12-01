@@ -1148,6 +1148,24 @@ describe('spreadsheet', (): void => {
       });
     })
 
+    describe('Self Referential Cells', (): void => {
+      it('A cell that refers to itself should display an error.', (): void => {
+        spreadsheet = new Spreadsheet();
+        spreadsheet.setCellAtKeyGivenInput("A1", "REF(A1)");
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("#ERROR: self-ref.");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("REF(A1)");
+      });
+    })
+
+    describe('Self Referential Cells, Range', (): void => {
+      it('A cell that refers to itself in a range formula should display an error.', (): void => {
+        spreadsheet = new Spreadsheet();
+        spreadsheet.setCellAtKeyGivenInput("B2", "SUM(A1..C3)");
+        expect(spreadsheet.getCellAtKeyDisplay("B2")).toEqual("#ERROR: self-ref.");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B2")).toEqual("SUM(A1..C3)");
+      });
+    })
+
 
 
 
