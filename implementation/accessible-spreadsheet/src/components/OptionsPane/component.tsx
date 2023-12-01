@@ -347,7 +347,7 @@ export const OptionsPane: React.FC<UserProps> = ({activeCell, setEditValue, file
           }`}
           onClick={() => {
             toggleScreenReader();
-            ScreenReader.getInstance().speak("Screen Reader");
+            ScreenReader.getInstance().speak("Screen Reader Active");
           }}
         >
           <ScreenReaderSvg style={{ height: "4em", width: "4em" }} />

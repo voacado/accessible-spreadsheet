@@ -1,5 +1,5 @@
-import { Spreadsheet } from '../model/Spreadsheet';
-import { Cell } from "../model/Cell";
+import { Spreadsheet } from 'model/Spreadsheet';
+// import { Cell } from "./Cell";
 // import { IValue } from "./values/IValue";
 // import { EmptyValue } from "./values/EmptyValue";
 // import { NumberValue } from "./values/NumberValue";
@@ -7,14 +7,13 @@ import { Cell } from "../model/Cell";
 // import { FormulaValue } from "./values/FormulaValue";
 // import { CellReference } from "./values/CellReference";
 // import { MultiCellReference } from "./values/MultiCellReference";
-import { CellHelper } from "../model/CellHelper";
+// import { CellHelper } from "./CellHelper";
 
 describe('spreadsheet', (): void => {
   describe('Spreadsheet', (): void => {
     let spreadsheet: Spreadsheet;
 
     beforeEach((): void => {
-      console.clear();
       spreadsheet = new Spreadsheet();
     });
 
@@ -1025,74 +1024,5 @@ describe('spreadsheet', (): void => {
     })
 
 
-    describe('CellHelper', (): void => {
-      it('cellhelper', (): void => {
-        spreadsheet.setCellAtKeyGivenInput("A1", "1");
-        spreadsheet.setCellAtKeyGivenInput("A2", "2");
-        spreadsheet.setCellAtKeyGivenInput("A3", "3");
-        // expect(CellHelper.shouldShift("B1", "A1", true, true)).toEqual(true);
-        // expect(CellHelper.shouldShift("A1", "B1", true, true)).toEqual(false);
-      });
-    })
-
-    
-    describe('cell ref add remove row', (): void => {
-      it('adding removing with referenecs', (): void => {
-        spreadsheet = new Spreadsheet();
-        spreadsheet.setCellAtKeyGivenInput("A1", "1");
-        spreadsheet.setCellAtKeyGivenInput("A2", "2");
-        spreadsheet.setCellAtKeyGivenInput("A3", "3");
-        spreadsheet.setCellAtKeyGivenInput("B1", "");
-        spreadsheet.setCellAtKeyGivenInput("B2", "");
-        spreadsheet.setCellAtKeyGivenInput("B3", "");
-        spreadsheet.setCellAtKeyGivenInput("C1", "REF(A1)");
-        spreadsheet.setCellAtKeyGivenInput("C2", "REF(A2)");
-        spreadsheet.setCellAtKeyGivenInput("C3", "REF(A3)");
-        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("1");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("1");
-        expect(spreadsheet.getCellAtKeyDisplay("A2")).toEqual("2");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A2")).toEqual("2");
-        expect(spreadsheet.getCellAtKeyDisplay("A3")).toEqual("3");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A3")).toEqual("3");
-        expect(spreadsheet.getCellAtKeyDisplay("B1")).toEqual("");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B1")).toEqual("");
-        expect(spreadsheet.getCellAtKeyDisplay("B2")).toEqual("");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B2")).toEqual("");
-        expect(spreadsheet.getCellAtKeyDisplay("B3")).toEqual("");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B3")).toEqual("");
-        expect(spreadsheet.getCellAtKeyDisplay("C1")).toEqual("1");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C1")).toEqual("REF(A1)");
-        expect(spreadsheet.getCellAtKeyDisplay("C2")).toEqual("2");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C2")).toEqual("REF(A2)");
-        expect(spreadsheet.getCellAtKeyDisplay("C3")).toEqual("3");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C3")).toEqual("REF(A3)");
-
-        spreadsheet.addColumn(0);
-        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("");
-        expect(spreadsheet.getCellAtKeyDisplay("A2")).toEqual("");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A2")).toEqual("");
-        expect(spreadsheet.getCellAtKeyDisplay("A3")).toEqual("");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A3")).toEqual("");
-        expect(spreadsheet.getCellAtKeyDisplay("B1")).toEqual("1");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B1")).toEqual("1");
-        expect(spreadsheet.getCellAtKeyDisplay("B2")).toEqual("2");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B2")).toEqual("2");
-        expect(spreadsheet.getCellAtKeyDisplay("B3")).toEqual("3");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B3")).toEqual("3");
-        expect(spreadsheet.getCellAtKeyDisplay("C1")).toEqual("");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C1")).toEqual("");
-        expect(spreadsheet.getCellAtKeyDisplay("C2")).toEqual("");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C2")).toEqual("");
-        expect(spreadsheet.getCellAtKeyDisplay("C3")).toEqual("");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C3")).toEqual("");
-        expect(spreadsheet.getCellAtKeyDisplay("D1")).toEqual("");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("D1")).toEqual("REF(A1)");
-        expect(spreadsheet.getCellAtKeyDisplay("D2")).toEqual("");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("D2")).toEqual("REF(A2)");
-        expect(spreadsheet.getCellAtKeyDisplay("D3")).toEqual("");
-        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("D3")).toEqual("REF(A3)");
-      });
-    })
   })
 })

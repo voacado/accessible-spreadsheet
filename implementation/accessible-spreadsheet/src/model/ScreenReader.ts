@@ -42,13 +42,14 @@ export class ScreenReader {
     }
 
     public speak(text: string): void {
+        // if ((text != null && text !== undefined && text['length'] !== 0 && text !== "" && text !== "''" && text !== "\"\"" && this.isScreenReaderActive)) {
         if ((text != null && text !== undefined && text['length'] !== 0 && text !== "" && text !== "''" && text !== "\"\"" && this.isScreenReaderActive)) {
+            this.addToSpeechLog(text);
             if (window.speechSynthesis.speaking) {
                 window.speechSynthesis.cancel();
             }
             this.textToSpeech.text = text;
             window.speechSynthesis.speak(this.textToSpeech);
-            this.addToSpeechLog(text);
         }
     }
 
@@ -62,5 +63,14 @@ export class ScreenReader {
 
     public getSpeechLog(): string[] {
         return this.speechLog;
+    }
+
+    public clearSpeechLog(): void {
+        this.speechLog = [];
+        this.notifyObservers();
+    }
+
+    public getScreenReaderStatus(): boolean {
+        return this.isScreenReaderActive;
     }
 }

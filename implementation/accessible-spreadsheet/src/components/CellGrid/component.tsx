@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Spreadsheet } from "model/Spreadsheet";
 import { ScreenReader } from "model/ScreenReader";
+import { CellHelper } from "model/CellHelper";
 
 // TODO: move this interface to separate file
 interface UserProps {
@@ -72,7 +73,8 @@ export const CellGrid: React.FC<UserProps> = ({activeCell, setActiveCell, active
                     {Array.from({ length: numCols }, (_, index) => (
                         // TODO: do I need Z value? It interferes with Theme selection
                         <th key={index} className="sticky top-0 w-16 h-10 bg-cell-grid-header-color min-w-full min-h-full border border-cell-grid-header-border-color text-cell-grid-header-text-color">
-                            {spreadsheet.getRowAndColKeyFromIndex(index)[1]}
+                            {CellHelper.getRowAndColKeyFromIndex(index)[1]}
+                            {/* {spreadsheet.getRowAndColKeyFromIndex(index)[1]} */}
                         </th>
                     ))}
                 </tr>
@@ -90,7 +92,8 @@ export const CellGrid: React.FC<UserProps> = ({activeCell, setActiveCell, active
 
                         {/* Generate cells */}
                         {Array.from({ length: numCols }, (_, colIndex) => {
-                            const cellKey: string = spreadsheet.getRowAndColKeyFromIndex(colIndex)[1] + (rowIndex + 1);
+                            const cellKey: string = CellHelper.getRowAndColKeyFromIndex(colIndex)[1] + (rowIndex + 1);
+                            // const cellKey: string = spreadsheet.getRowAndColKeyFromIndex(colIndex)[1] + (rowIndex + 1);
                             const isActive: boolean = cellKey === activeCell;
                             const isEditing: boolean = cellKey === activeEditCell;
                             return (<td
@@ -103,6 +106,7 @@ export const CellGrid: React.FC<UserProps> = ({activeCell, setActiveCell, active
                                 {isEditing ? (
                                     <input
                                         type="text"
+                                        data-testid={`cell-${cellKey}`}
                                         className="w-full h-full outline-none text-left bg-cell-grid-cell-color"
                                         value={editValue}
                                         onChange={handleEditValue}

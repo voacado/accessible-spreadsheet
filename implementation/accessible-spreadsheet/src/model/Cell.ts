@@ -46,6 +46,11 @@ export class Cell {
         this.updateCellValue();
     }
     
+    // public setCellValueShifting(input : string, shiftingPositive : boolean=false, shiftingColumn : boolean=false, shiftingKey : string="") : void {
+    //     this.inputValue = input;
+    //     this.updateCellValueAndShift(shiftingPositive, shiftingColumn, shiftingKey);
+    // }
+    
     public updateCellValue() {
         let processedData = CellHelper.getValueFromUserInput(this.inputValue, this.mySpreadsheet)
         this.displayValue = processedData[0]
@@ -54,6 +59,15 @@ export class Cell {
         }
         this.updateObservers();
     }
+
+    // public updateCellValueAndShift(shiftingPositive : boolean=false, shiftingColumn : boolean=false, shiftingKey : string="") {
+    //     let processedData = CellHelper.getValueFromUserInputShifting(this.inputValue, this.mySpreadsheet, true, shiftingPositive, shiftingColumn, shiftingKey)
+    //     this.displayValue = processedData[0]
+    //     for (let observeeKey of processedData[1]) {
+    //         this.mySpreadsheet.getCellAtKey(observeeKey).addObserver(this);
+    //     }
+    //     this.updateObservers();
+    // }
     
     public addObserver(observer : Cell) : void {
         if (this.observers.includes(observer)) {

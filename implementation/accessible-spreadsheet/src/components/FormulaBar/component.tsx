@@ -37,7 +37,7 @@ export const FormulaBar: React.FC<UserProps> = ({activeCell, activeEditCell, edi
       // TODO: editValue shouldn't just be a string or something
       // spreadsheet.setCellAtKeyGivenInput(activeEditCell, editValue.toString());
       spreadsheet.setCellAtKeyGivenInput(activeCell, editValue.toString());
-      console.log(spreadsheet.getCellAtKeyDisplay(activeEditCell));
+      // console.log(spreadsheet.getCellAtKeyDisplay(activeEditCell));
       ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyDisplay(activeEditCell).toString());
       // setActiveEditCell(""); // TODO: check if this works here
   };
