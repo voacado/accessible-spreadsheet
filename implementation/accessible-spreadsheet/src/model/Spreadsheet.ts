@@ -239,14 +239,23 @@ export class Spreadsheet {
     
     public saveSpreadsheet(fileName: string): void {
         // Get data from spreadsheet into JSON format
-        let cellData = new Map<string, string>();;
-        cellData.set("RowCount", this.rowCount.toString());
-        cellData.set("ColCount", this.colCount.toString());
+//        let cellData = new Map<string, string>();
+        let cellData : any = {};
+        // let cellData: {string: string} = {};
+        cellData["RowCount"] = this.rowCount.toString();
+        cellData["ColCount"] = this.colCount.toString();
         this.cells.forEach((cell : Cell, key : string) => {
-            cellData.set(key, cell.getFormulaBarDisplayValue());
+            cellData[key] = cell.getFormulaBarDisplayValue();
         });
+        console.log("celldata elements:");
+        // cellData.forEach((element : any) => {
+        //     console.log(element[0] + element[1]);
+        // });
+        for (let i = 0; i < cellData.length; i++) {
+            console.log(cellData[i])
+        }
         const json = JSON.stringify(cellData);
-        console.log("celldata:" + cellData);
+        console.log(json);
         const blob = new Blob([json], {type: "application/json"});
         const url = URL.createObjectURL(blob);
       
@@ -256,7 +265,7 @@ export class Spreadsheet {
         link.download = `${fileName}.json`;
         document.body.appendChild(link);
         link.click();
-      
+        
         // Clean up created file from memory
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
