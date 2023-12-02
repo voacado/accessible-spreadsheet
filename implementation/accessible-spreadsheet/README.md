@@ -1,4 +1,4 @@
-# Accessible Spreadsheet
+# Accessible Spreadsheet 📊
 
 A spreadsheet program designed with accessibility in mind.
 
