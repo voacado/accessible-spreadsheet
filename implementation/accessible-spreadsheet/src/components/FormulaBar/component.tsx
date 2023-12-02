@@ -1,5 +1,3 @@
-// TODO: connect to model, implement functionality
-
 import React from "react";
 import { ReactComponent as FxSvg } from "graphics/fxIcon.svg";
 import { Spreadsheet } from "model/Spreadsheet";
@@ -14,22 +12,22 @@ export const FormulaBar: React.FC = () => {
   // Singleton Design Pattern - access created spreadsheet instance
   const spreadsheet = Spreadsheet.getInstance();
 
-    // TODO: duplicate funcs b/t here and CellGrid
     // Handle editing cell value
     const handleEditCellValue = (event: React.ChangeEvent<HTMLInputElement>) => {
       setEditValue(event.target.value);
-      // console.log(editValue)
-      // spreadsheet.setCellAtKeyGivenInput(activeEditCell, editValue.toString());
   };
 
     // Handle sending edit value to Spreadsheet
     const handleSendEditValue = () => {
-      // TODO: editValue shouldn't just be a string or something
-      // spreadsheet.setCellAtKeyGivenInput(activeEditCell, editValue.toString());
       spreadsheet.setCellAtKeyGivenInput(activeCell, editValue.toString());
-      // console.log(spreadsheet.getCellAtKeyDisplay(activeEditCell));
       ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyDisplay(activeEditCell).toString());
-      // setActiveEditCell(""); // TODO: check if this works here
+  };
+
+    // Handle enter or escape key to exit edit mode on cell
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" || event.key === "Escape") {
+        (event.target as HTMLInputElement).blur();
+    }
   };
 
   return (
@@ -49,9 +47,8 @@ export const FormulaBar: React.FC = () => {
         type="text"
         value={editValue}
         onChange={handleEditCellValue}
-        // onChange={handleChange}
         onBlur={handleSendEditValue}
-        // onBlur={handleSendEditValue}
+        onKeyDown={handleKeyDown}
         className="flex-grow bg-transparent outline-none text-formula-bar-font-color"
         placeholder="Enter formula or data..."
       />

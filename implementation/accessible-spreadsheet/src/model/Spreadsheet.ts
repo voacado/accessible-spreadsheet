@@ -24,7 +24,7 @@ export class Spreadsheet {
 
     public static getInstance(): Spreadsheet {
         if (!Spreadsheet.instance) {
-            Spreadsheet.instance = new Spreadsheet(100, 100);
+            Spreadsheet.instance = new Spreadsheet(35, 35);
         }
         return Spreadsheet.instance;
     }
@@ -301,10 +301,10 @@ export class Spreadsheet {
             reader.onload = readerEvent => {
                 let readValue : any = JSON.parse(readerEvent.target!.result!?.toString());
                 readValue.array.forEach((element: string[]) => {
-                    if (element[0] == "RowCount") {
+                    if (element[0] === "RowCount") {
                         this.rowCount = Number(element[1]);
                     }
-                    else if (element[0] == "ColumnCount") {
+                    else if (element[0] === "ColumnCount") {
                         this.colCount = Number(element[1]);
                     }
                     else {
