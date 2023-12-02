@@ -128,8 +128,14 @@ export class CellParser {
                     }
                     // Function missing parenthesis for arguments.
                     if (input.substring(i + j).charAt(0) != "(") {
-                        parsed = true;
-                        return [["#ERR: Function " + functionName + "not given parenthesis."], []];
+                        // We skip MIN because it may still be MINIMUM, and if it is not, it will error elsewhere.
+                        if (functionName != "MIN") {
+                            parsed = true;
+                            return [["#ERR: Function " + functionName + "not given parenthesis."], []];
+                        }
+                    }
+                    if (input.substring(i + j).charAt(0) != "(" && functionName == "MIN") {
+                        continue;
                     }
                     // Get arguments from parenthesis group.
                     let parenthesisGroup = CellParserHelper.getParenthesisGroup(input.substring(i+j))
