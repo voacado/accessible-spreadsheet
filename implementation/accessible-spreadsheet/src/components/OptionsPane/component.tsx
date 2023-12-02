@@ -7,17 +7,21 @@ import { ReactComponent as InsertColSvg } from "graphics/InsertColButton.svg";
 import { ReactComponent as DeleteColSvg } from "graphics/DeleteColButton.svg";
 import { ReactComponent as ClearRowSvg } from "graphics/ClearRowButton.svg";
 import { ReactComponent as ClearColSvg } from "graphics/ClearColumnButton.svg";
+import { ReactComponent as ClearCellSvg } from "graphics/ClearCellButton.svg";
 import { ReactComponent as ThemeSvg } from "graphics/ThemeButtonButton.svg";
 import { ReactComponent as ScreenReaderSvg } from "graphics/ScreenReaderButton.svg";
 
 import { Spreadsheet } from "model/Spreadsheet";
 import { ScreenReader } from "model/ScreenReader";
-// import { CellHelper } from "model/CellHelper";
 
 import { UserContext } from "contexts/UserPropsContext";
 import { useContext } from "react";
 import { KeyHelper } from "model/KeyHelper";
 
+/**
+ * OptionsPane React component
+ * Handles displaying and handling of buttons for interacting with the spreadsheet
+ */
 export const OptionsPane: React.FC = () => {
   const { activeCell, fileName, theme, setTheme, screenReaderUIActive, setScreenReaderUIActive } = useContext(UserContext);
 
@@ -248,6 +252,31 @@ export const OptionsPane: React.FC = () => {
             }}
           />
           Clear Column
+        </button>
+
+        <button
+          className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
+          ${
+            pressedButton === "clear-col-button"
+              ? "bg-options-btn-active-color shadow-lg"
+              : "hover:bg-options-btn-hover-color"
+          }`}
+          onMouseDown={() => handleButtonClick("clear-col-button")}
+          onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
+          onClick={() => {
+            spreadsheet.clearCell(activeCell);
+            ScreenReader.getInstance().speak("Clear Cell");
+          }}
+        >
+          <ClearCellSvg
+            className="text-options-btn-icon-border-color fill-current"
+            style={{
+              height: "4em",
+              width: "4em",
+              transform: "translateX(-7%) translateY(5%)",
+            }}
+          />
+          Clear Cell
         </button>
 
         <div className="flex h-auto p-2">
