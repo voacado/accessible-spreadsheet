@@ -42,7 +42,7 @@ export class CellParserHelper {
     // Returns whether a given input is a correctly formatted cell rage
     public static inputIsCellRange(input : string) : boolean {
         let pieces : string[] = input.substring(1).split("..")
-        if (pieces.length != 2) {
+        if (pieces.length !== 2) {
             return false
         }
         return CellParserHelper.stringIsValidKey(pieces[0]) && CellParserHelper.stringIsValidKey(pieces[1]);
@@ -87,17 +87,17 @@ export class CellParserHelper {
     public static parenthesisCheck(formula : string) {
         let unclosedParenthesisCount = 0;
         for (let i = 0; i < formula.length; i++) {
-            if (formula.charAt(i) == "(") {
+            if (formula.charAt(i) === "(") {
                 unclosedParenthesisCount++;
             }
-            if (formula.charAt(i) == ")") {
+            if (formula.charAt(i) === ")") {
                 if (unclosedParenthesisCount < 1) {
                     return false;
                 }
                 unclosedParenthesisCount--;
             }
         }
-        return unclosedParenthesisCount == 0
+        return unclosedParenthesisCount === 0
     }
 
     // Returns the first open parenthesis' "group", until the first parenthesis is closed.
@@ -114,10 +114,10 @@ export class CellParserHelper {
         let j : number = 1;
         // Loop as long as there are still unclosed parenthesis and there is still input to check.
         while (unclosedParenthesisCount > 0 && input.length > j) {
-            if (input.charAt(j) == "(") {
+            if (input.charAt(j) === "(") {
                 unclosedParenthesisCount++;
             }
-            if (input.charAt(j) == ")") {
+            if (input.charAt(j) === ")") {
                 unclosedParenthesisCount--;
             }
             j++;

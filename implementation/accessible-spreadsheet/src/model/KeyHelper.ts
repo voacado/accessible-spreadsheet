@@ -111,6 +111,9 @@ export class KeyHelper {
      * @returns cell key (e.g. 1, 4 -> "B5")
      */
     public static createKeyFromIndeces(columnIndex : number, rowIndex : number) {
+        if (columnIndex < 0 || rowIndex < 0) {
+            throw new Error("#ERR: createKeyFromIndeces given negative index.");
+        }
         return KeyHelper.getColKeyFromIndex(columnIndex) + KeyHelper.getRowKeyFromIndex(rowIndex);
     }
 
