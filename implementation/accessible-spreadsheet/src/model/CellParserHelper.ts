@@ -39,24 +39,6 @@ export class CellParserHelper {
         return false
     }
 
-    // Returns whether a given input is a correctly formatted cell rage
-    public static inputIsCellRange(input : string) : boolean {
-        let pieces : string[] = input.substring(1).split("..")
-        if (pieces.length !== 2) {
-            return false
-        }
-        return CellParserHelper.stringIsValidKey(pieces[0]) && CellParserHelper.stringIsValidKey(pieces[1]);
-    }
-
-    // Returns the two keys in a given cell range. For example, returns ["A1", "B2"] when given "A1..B2"
-    public static getKeysFromCellRangeInput(input : string) : [string, string] {
-        if (!CellParserHelper.inputIsCellRange(input)) {
-            // Invalid cell range given, return two empty strings
-            return ["", ""];
-        }
-        return [input.substring(1).split("..")[0], input.substring(1).split("..")[1]];
-    }
-
     // Returns whether a given input is empty, null, or undefined.
     public static inputIsEmpty(input : string) : boolean {
         return input === "" || input === undefined || input === null;

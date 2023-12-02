@@ -41,16 +41,14 @@ export class Spreadsheet {
         this.observers.forEach(observer => observer());
     }
 
-    private initialize(rowCount :number, colCount : number) : void {
+    private initialize(rowCount : number, colCount : number) : void {
         this.cells = new Map<string, Cell>();
         this.rowCount = rowCount;
         this.colCount = colCount;
     }
 
     public resetSpreadsheet() {
-        this.cells = new Map<string, Cell>();
-        this.rowCount = 0;
-        this.colCount = 0;
+        this.initialize(initRowCount, initColCount);
         this.notifyObservers();
     }
 
@@ -62,11 +60,11 @@ export class Spreadsheet {
         return this.colCount;
     }
 
-    public keyExists(key : string) : boolean {
-        return CellParserHelper.stringIsValidKey(key) && 
-                KeyHelper.getIndexOfColFromKey(key) < this.colCount &&
-                KeyHelper.getIndexOfRowFromKey(key) < this.rowCount
-    }
+    // public keyExists(key : string) : boolean {
+    //     return CellParserHelper.stringIsValidKey(key) && 
+    //             KeyHelper.getIndexOfColFromKey(key) < this.colCount &&
+    //             KeyHelper.getIndexOfRowFromKey(key) < this.rowCount
+    // }
     
     public addRow(index : number) : void {
         if (index < 0) {

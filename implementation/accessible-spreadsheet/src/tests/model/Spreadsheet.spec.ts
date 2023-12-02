@@ -8,7 +8,6 @@ describe('spreadsheet', (): void => {
 
     beforeEach((): void => {
       spreadsheet = Spreadsheet.getInstance();
-      spreadsheet.resetSpreadsheet();
     });
 
     afterEach((): void => {
@@ -250,7 +249,7 @@ describe('spreadsheet', (): void => {
 
         spreadsheet.addRow(0);
         expect(spreadsheet.getRowCount()).toEqual(31);
-        expect(spreadsheet.getColCount()).toEqual(31);
+        expect(spreadsheet.getColCount()).toEqual(30);
         expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("");
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("");
         expect(spreadsheet.getCellAtKeyDisplay("B1")).toEqual("");
@@ -661,11 +660,11 @@ describe('spreadsheet', (): void => {
 
     describe('Default Spreadsheet Remove Rows and Columns', (): void => {
       it('Removing rows and columns to a spreadsheet should decrease their counts correctly', (): void => {
-        expect(spreadsheet.getRowCount()).toEqual(20);
-        expect(spreadsheet.getColCount()).toEqual(20);
+        expect(spreadsheet.getRowCount()).toEqual(30);
+        expect(spreadsheet.getColCount()).toEqual(30);
         spreadsheet.removeRow(0);
         expect(spreadsheet.getRowCount()).toEqual(29);
-        expect(spreadsheet.getColCount()).toEqual(20);
+        expect(spreadsheet.getColCount()).toEqual(30);
         spreadsheet.removeColumn(0);
         expect(spreadsheet.getRowCount()).toEqual(29);
         expect(spreadsheet.getColCount()).toEqual(29);
@@ -1170,11 +1169,48 @@ describe('spreadsheet', (): void => {
       });
     })
 
-    describe('saving', (): void => {
-      it('saving', (): void => {
-        spreadsheet.setCellAtKeyGivenInput("A1", "1");
-        spreadsheet.saveSpreadsheet("fileName123")
+    describe('Cell Reference chains delete', (): void => {
+      it('Removing a cell that other cells observe should update those cells.', (): void => {
+        spreadsheet.setCellAtKeyGivenInput("A1", "77");
+        spreadsheet.setCellAtKeyGivenInput("B2", "REF(A1)");
+        spreadsheet.setCellAtKeyGivenInput("C3", "REF(B2)");
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyDisplay("B2")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B2")).toEqual("REF(A1)");
+        expect(spreadsheet.getCellAtKeyDisplay("C3")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C3")).toEqual("REF(B2)");
+        spreadsheet.removeColumn(0);
+        expect(spreadsheet.getCellAtKeyDisplay("A2")).toEqual("");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A2")).toEqual("REF(A1)");
+        expect(spreadsheet.getCellAtKeyDisplay("B3")).toEqual("");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B3")).toEqual("REF(B2)");
       });
     })
+
+    describe('Row and Column index out of bounds Errors', (): void => {
+      it('Using the add, remove, or clear methods on rows and columns out of bounds will throw errors.', (): void => {
+        expect(() => spreadsheet.addRow(-1)).toThrow();
+        expect(() => spreadsheet.addColumn(-1)).toThrow();
+        expect(() => spreadsheet.removeRow(-1)).toThrow();
+        expect(() => spreadsheet.removeColumn(-1)).toThrow();
+        expect(() => spreadsheet.clearRow(-1)).toThrow();
+        expect(() => spreadsheet.clearColumn(-1)).toThrow();
+        
+        expect(() => spreadsheet.addRow(999)).toThrow();
+        expect(() => spreadsheet.addColumn(999)).toThrow();
+        expect(() => spreadsheet.removeRow(999)).toThrow();
+        expect(() => spreadsheet.removeColumn(999)).toThrow();
+        expect(() => spreadsheet.clearRow(999)).toThrow();
+        expect(() => spreadsheet.clearColumn(999)).toThrow();
+      });
+    })
+
+    // describe('saving', (): void => {
+    //   it('saving', (): void => {
+    //     spreadsheet.setCellAtKeyGivenInput("A1", "1");
+    //     spreadsheet.saveSpreadsheet("fileName123")
+    //   });
+    // })
   })
 })
