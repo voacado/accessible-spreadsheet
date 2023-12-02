@@ -20,8 +20,9 @@ export class CellParser {
             // });
             throw new Error("#ERR: getValueFromUserInput parser returned mulitple tokens.");
         }
+        // If no tokens are returned, display an empty string.
         if (processedData[0].length == 0) {
-            throw new Error("#ERR: getValueFromUserInput parser returned no tokens.");
+            return ["", []]
         }
         // Return the final display value and the list of cells to observe.
         let displayValue = processedData[0][0];
