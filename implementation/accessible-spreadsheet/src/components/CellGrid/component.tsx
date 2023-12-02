@@ -29,38 +29,51 @@ export const CellGrid: React.FC = () => {
         return () => spreadsheet.unsubscribe(updateCellGrid);
     }, [spreadsheet]);
 
-    // Single click on cell to set is activeCell
+    /**
+     * Single click on cell to set is activeCell
+     * @param cellKey cell index (ex. A1, B1, C1, etc.)
+     */
     const handleSingleCellClick = (cellKey: string) => {
         setActiveCell(cellKey);
         ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyDisplay(cellKey).toString());
         setEditValue(spreadsheet.getCellAtKeyFormulaBarDisplay(cellKey) || "");
     };
 
-    // Double click on cell to set is activeEditCell
+    /**
+     * Double click on cell to set is activeEditCell
+     * @param cellKey cell index (ex. A1, B1, C1, etc.)
+     */
     const handleDoubleCellClick = (cellKey: string) => {
         setActiveEditCell(cellKey);
         setEditValue(spreadsheet.getCellAtKeyFormulaBarDisplay(cellKey) || "");
     };
 
-    // Handle enter or escape key to exit edit mode on cell
+    /**
+     * Handle enter or escape key to exit edit mode on cell
+     * @param event React event
+     */
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter" || event.key === "Escape") {
             (event.target as HTMLInputElement).blur();
         }
     };
 
-    // Handle edit cell value
+    /**
+     * Handle editing the cell value
+     * @param event React event
+     */
     const handleEditValue = (event: React.ChangeEvent<HTMLInputElement>) => {
         setEditValue(event.target.value);
     };
 
-    // Handle sending edit value to Spreadsheet
+    /**
+     * Handle sending edit value to Spreadsheet
+     */
     const handleSendEditValue = () => {
         spreadsheet.setCellAtKeyGivenInput(activeEditCell, editValue.toString());
         ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyDisplay(activeEditCell).toString());
         setActiveEditCell("");
     };
-    
 
     return (
         <table className="table-fixed border-collapse border border-cell-grid-header-border-color">

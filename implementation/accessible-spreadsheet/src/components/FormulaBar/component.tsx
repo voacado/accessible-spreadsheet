@@ -16,18 +16,26 @@ export const FormulaBar: React.FC = () => {
   // Singleton Design Pattern - access created spreadsheet instance
   const spreadsheet = Spreadsheet.getInstance();
 
-    // Handle editing cell value
+    /**
+     * Handle editing the cell value
+     * @param event React event
+     */
     const handleEditCellValue = (event: React.ChangeEvent<HTMLInputElement>) => {
       setEditValue(event.target.value);
   };
 
-    // Handle sending edit value to Spreadsheet
+    /**
+     * Handle sending edit value to Spreadsheet
+     */
     const handleSendEditValue = () => {
       spreadsheet.setCellAtKeyGivenInput(activeCell, editValue.toString());
       ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyDisplay(activeEditCell).toString());
   };
 
-    // Handle enter or escape key to exit edit mode on cell
+    /**
+     * Handle enter or escape key to exit edit mode on cell
+     * @param event React event
+     */
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter" || event.key === "Escape") {
         (event.target as HTMLInputElement).blur();

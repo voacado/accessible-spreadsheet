@@ -28,7 +28,9 @@ export const OptionsPane: React.FC = () => {
   // Singleton Design Pattern - access created instance
   const spreadsheet = Spreadsheet.getInstance();
 
-  // Handler for the Screen Reader button
+  /**
+   * Handler for the Screen Reader button
+   */
   const toggleScreenReader = () => {
     setScreenReaderUIActive(!screenReaderUIActive);
     ScreenReader.getInstance().toggleScreenReader();
@@ -36,15 +38,26 @@ export const OptionsPane: React.FC = () => {
 
   // State to handle button press animation
   const [pressedButton, setPressedButton] = useState<string | null>(null);
+  /**
+   * Handler for button press animation
+   * @param buttonId The id of the button that was pressed
+   */
   const handleButtonClick = (buttonId: string) => {
     setPressedButton(buttonId);
   };
 
   // State to handle Theme dropdown
   const [themeDropdown, setThemeDropdown] = useState(false);
+  /**
+   * Handler for Theme dropdown
+   * @returns Handler for Theme dropdown
+   */
   const toggleThemeDropdown = () => setThemeDropdown(!themeDropdown);
 
-  // Handler for changing themes
+  /**
+   * Handler for changing themes
+   * @param theme The theme to change to
+   */
   const handleThemeChange = (theme: string) => {
     setTheme(theme);  // Update the global theme
     setThemeDropdown(false);  // Close the dropdown
@@ -54,6 +67,7 @@ export const OptionsPane: React.FC = () => {
     <div className="bg-options-bg-color text-options-font-color stroke-2 font-google-sans min-w-full w-fit">
 
       {/* Function Cluster 1: Save/Load */}
+      {/* Save Button */}
       <header className="flex justify-left gap-1 p-1.5">
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
@@ -73,6 +87,7 @@ export const OptionsPane: React.FC = () => {
           Save
         </button>
 
+        {/* Load Button */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
@@ -97,6 +112,7 @@ export const OptionsPane: React.FC = () => {
         </div>
 
         {/* Function Cluster 2: Insert/Delete */}
+        {/* Insert Row Button */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
@@ -123,6 +139,7 @@ export const OptionsPane: React.FC = () => {
           Insert Row
         </button>
 
+        {/* Delete Row Button */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
@@ -149,6 +166,7 @@ export const OptionsPane: React.FC = () => {
           Delete Row
         </button>
 
+        {/* Clear Row Button */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
@@ -175,6 +193,7 @@ export const OptionsPane: React.FC = () => {
           Clear Row
         </button>
 
+        {/* Insert Column Button */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
@@ -202,6 +221,7 @@ export const OptionsPane: React.FC = () => {
           Insert Column
         </button>
 
+        {/* Delete Column Button */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
@@ -228,6 +248,7 @@ export const OptionsPane: React.FC = () => {
           Delete Column
         </button>
 
+        {/* Clear Column Button */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
@@ -254,14 +275,15 @@ export const OptionsPane: React.FC = () => {
           Clear Column
         </button>
 
+        {/* Clear Cell Button */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
-            pressedButton === "clear-col-button"
+            pressedButton === "clear-cell-button"
               ? "bg-options-btn-active-color shadow-lg"
               : "hover:bg-options-btn-hover-color"
           }`}
-          onMouseDown={() => handleButtonClick("clear-col-button")}
+          onMouseDown={() => handleButtonClick("clear-cell-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
             spreadsheet.clearCell(activeCell);
@@ -284,6 +306,7 @@ export const OptionsPane: React.FC = () => {
         </div>
 
         {/* Function Cluster 4: Theme/Screen Reader */}
+        {/* Theme Button */}
         <div className="relative inline-block text-left">
           <button
             className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
@@ -322,6 +345,7 @@ export const OptionsPane: React.FC = () => {
         )}
       </div>
 
+        {/* Screen Reader Button */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
