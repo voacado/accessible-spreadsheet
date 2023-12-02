@@ -112,7 +112,7 @@ describe("createKeyFromIndices()", () => {
   });
 
   it("neg indices should throw error", () => {
-    expect(KeyHelper.createKeyFromIndeces(-5, -5)).toThrow();
+    expect(() => KeyHelper.createKeyFromIndeces(-5, -5)).toThrow();
   });
 });
 

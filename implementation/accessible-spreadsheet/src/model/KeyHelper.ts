@@ -138,6 +138,11 @@ export class KeyHelper {
         if (!CellParserHelper.stringIsValidKey(key)) {
             throw new Error("#ERR: decrementKeyRow given invalid key.");
         }
+
+        if (key === "A1") {
+            throw new Error("#ERR: decrementKeyCol given key A1.");
+        }
+
         return KeyHelper.getColFromKey(key) + KeyHelper.getRowKeyFromIndex(KeyHelper.getIndexOfRowFromKey(key) - 1);
     }
 
@@ -162,6 +167,11 @@ export class KeyHelper {
         if (!CellParserHelper.stringIsValidKey(key)) {
             throw new Error("#ERR: decrementKeyCol given invalid key.");
         }
+
+        if (key === "A1") {
+            throw new Error("#ERR: decrementKeyCol given key A1.");
+        }
+
         return KeyHelper.getColKeyFromIndex(KeyHelper.getIndexOfColFromKey(key) - 1) + KeyHelper.getRowFromKey(key);
     }
 }

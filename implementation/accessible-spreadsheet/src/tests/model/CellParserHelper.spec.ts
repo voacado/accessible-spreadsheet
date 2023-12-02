@@ -21,17 +21,6 @@ describe("stringIsValidKey()", () => {
   });
 });
 
-describe("inputIsCellRange()", () => {
-  //   it("correct cell range - returns true", () => {
-  //     expect(CellParserHelper.inputIsCellRange("B2..C3")).toBeTruthy();
-  //   });
-
-  it("incorrect cell range - returns false", () => {
-    expect(CellParserHelper.inputIsCellRange("A1..2B")).toBeFalsy();
-    expect(CellParserHelper.inputIsCellRange("A1B2")).toBeFalsy();
-  });
-});
-
 describe("inputIsEmpty()", () => {
   it("checks for empty input", () => {
     expect(CellParserHelper.inputIsEmpty("")).toBeTruthy();

@@ -14,6 +14,8 @@ type SpreadsheetMock = {
   addColumn: jest.Mock;
   removeColumn: jest.Mock;
   clearColumn: jest.Mock;
+  clearCell: jest.Mock;
+  
 };
 
 type ScreenReaderMock = {
@@ -36,6 +38,7 @@ describe("OptionsPane", () => {
       addColumn: jest.fn(),
       removeColumn: jest.fn(),
       clearColumn: jest.fn(),
+      clearCell: jest.fn()
     };
 
     screenReaderMock = {
@@ -119,12 +122,53 @@ describe("OptionsPane", () => {
     expect(spreadsheetMock.clearColumn).toHaveBeenCalled();
   });
 
+  // Test: Clear Cell Button calls clearCell
+  it("calls clearCell on clear cell button click", () => {
+    render(<OptionsPane />);
+
+    fireEvent.click(screen.getByText("Clear Cell"));
+    expect(spreadsheetMock.clearCell).toHaveBeenCalled();
+  });
+
   // Test: Theme Button calls setTheme
   it("calls setTheme on theme button click", () => {
     render(<OptionsPane />);
 
     fireEvent.click(screen.getByText("Theme"));
     expect(screenReaderMock.speak).toHaveBeenCalled();
+  });
+
+  // Test: Theme Button -> Light Mode calls speak with Light Mode
+  it("calls handleThemeChange on light mode button click from theme button", () => {
+    render(<OptionsPane />);
+
+    fireEvent.click(screen.getByText("Theme"));
+    fireEvent.click(screen.getByText("Light Mode (Default)"));
+    expect(screenReaderMock.speak).toHaveBeenCalledWith("Light Mode");
+    expect(screenReaderMock.speak).not.toHaveBeenCalledWith("Dark Mode");
+    expect(screenReaderMock.speak).not.toHaveBeenCalledWith("High Contrast Mode");
+  });
+
+  // Test: Theme Button -> Dark Mode calls speak with Dark Mode
+  it("calls handleThemeChange on dark mode button click from theme button", () => {
+    render(<OptionsPane />);
+
+    fireEvent.click(screen.getByText("Theme"));
+    fireEvent.click(screen.getByText("Dark Mode"));
+    expect(screenReaderMock.speak).not.toHaveBeenCalledWith("Light Mode");
+    expect(screenReaderMock.speak).toHaveBeenCalledWith("Dark Mode");
+    expect(screenReaderMock.speak).not.toHaveBeenCalledWith("High Contrast Mode");
+  });
+
+  // Test: Theme Button -> High Contrast Mode calls speak with High Contrast Mode
+  it("calls handleThemeChange on high contrast mode button click from theme button", () => {
+    render(<OptionsPane />);
+
+    fireEvent.click(screen.getByText("Theme"));
+    fireEvent.click(screen.getByText("High Contrast Mode"));
+    expect(screenReaderMock.speak).not.toHaveBeenCalledWith("Light Mode");
+    expect(screenReaderMock.speak).not.toHaveBeenCalledWith("Dark Mode");
+    expect(screenReaderMock.speak).toHaveBeenCalledWith("High Contrast Mode");
   });
 
   // Test: Screen Reader Button calls toggleScreenReader
