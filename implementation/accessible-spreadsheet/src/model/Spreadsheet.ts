@@ -4,8 +4,8 @@ import { CellParserHelper } from "./CellParserHelper";
 import { KeyHelper } from "./KeyHelper";
 import { string } from "yargs";
 
-const initRowCount = 3
-const initColCount = 3
+const initRowCount = 30;
+const initColCount = 30;
 
 export class Spreadsheet {
     // Dict approach
@@ -18,13 +18,13 @@ export class Spreadsheet {
     // Observer Design Pattern - observers are notified when spreadsheet changes (like CellGrid)
     private observers: (() => void)[] = [];
 
-    constructor(rowCount :number=initRowCount, colCount : number=initColCount) {
+    private constructor(rowCount : number = initRowCount, colCount : number = initColCount) {
         this.initialize(rowCount, colCount);
     }
 
     public static getInstance(): Spreadsheet {
         if (!Spreadsheet.instance) {
-            Spreadsheet.instance = new Spreadsheet(35, 35);
+            Spreadsheet.instance = new Spreadsheet(initRowCount, initColCount);
         }
         return Spreadsheet.instance;
     }
@@ -42,8 +42,16 @@ export class Spreadsheet {
     }
 
     private initialize(rowCount :number, colCount : number) : void {
+        this.cells = new Map<string, Cell>();
         this.rowCount = rowCount;
         this.colCount = colCount;
+    }
+
+    public resetSpreadsheet() {
+        this.cells = new Map<string, Cell>();
+        this.rowCount = 0;
+        this.colCount = 0;
+        this.notifyObservers();
     }
 
     public getRowCount() : number {
@@ -301,14 +309,14 @@ export class Spreadsheet {
             reader.onload = readerEvent => {
                 let readValue : any = JSON.parse(readerEvent.target!.result!?.toString());
                 readValue.array.forEach((element: string[]) => {
-                    if (element[0] === "RowCount") {
+                    if (element[0] == "RowCount") {
                         this.rowCount = Number(element[1]);
                     }
-                    else if (element[0] === "ColumnCount") {
+                    else if (element[0] == "ColumnCount") {
                         this.colCount = Number(element[1]);
                     }
                     else {
-                        newCell = new Cell(element[0], "", this);
+                        newCell = new Cell(element[0], "");
                         this.cells.set(element[0], newCell);
                         newCell.setCellValue(element[1])
                     }
@@ -316,6 +324,7 @@ export class Spreadsheet {
             }
         };
         input.click();
+        this.notifyObservers();
     }
 
     private getCellAtKeyIfExists(key : string) : Cell | undefined {
@@ -357,11 +366,13 @@ export class Spreadsheet {
     public clearCell(key : string) {
         let cell : Cell = this.getCellAtKey(key);
         cell.clearCell();
+        this.notifyObservers();
     }
 
     public setCellAtKeyGivenInput(key : string, userInput : string) : void {
         let cell : Cell = this.getCellAtKey(key);
         cell.setCellValue(userInput);
+        this.notifyObservers();
     }
 
     public getCellAtKeyDisplay(key : string) : string {

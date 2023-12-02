@@ -8,6 +8,7 @@ export class KeyHelper {
         }
         let matches: RegExpMatchArray = key.match(/([A-Z]+)(\d+)/)!;
         if (matches) {
+            console.log("getRowFromKey returned " + parseInt(matches[2]).toString());
             return parseInt(matches[2]).toString();
         } else {
             throw new Error("#ERR: Spreadsheet.getRowFromKey() given key with more than one row: " + key);
@@ -21,20 +22,11 @@ export class KeyHelper {
         }
         let matches: RegExpMatchArray = key.match(/([A-Z]+)(\d+)/)!;
         if (matches) {
+            console.log("getColFromKey returned " + matches[1]);
             return matches[1];
         } else {
             throw new Error("#ERR: Spreadsheet.getRowFromKey() given key with more than one row: " + key);
         }
-    }
-
-    // Returns a list of two strings, the column and row split from a given key.
-    public static getColAndRowFromKey(key : string) : [string, string] {
-        return [KeyHelper.getRowFromKey(key), KeyHelper.getColFromKey(key)];
-    }
-
-    // Returns a list of two strings, the row and column split from a given key.
-    public static getRowAndColFromKey(key : string) : [string, string] {
-        return [KeyHelper.getRowFromKey(key), KeyHelper.getColFromKey(key)];
     }
 
     // Return the index of a row, given a key.
@@ -81,7 +73,7 @@ export class KeyHelper {
 
     // Return a key given the index of its column and row.
     public static createKeyFromIndeces(columnIndex : number, rowIndex : number) {
-        return KeyHelper.getColKeyFromIndex(columnIndex) + KeyHelper.getRowKeyFromIndex(rowIndex)
+        return KeyHelper.getColKeyFromIndex(columnIndex) + KeyHelper.getRowKeyFromIndex(rowIndex);
     }
 
     // Returns the key next to a given key, in the positive row direction.
@@ -89,7 +81,7 @@ export class KeyHelper {
         if (!CellParserHelper.stringIsValidKey(key)) {
             throw new Error("#ERR: incrementKeyRow given invalid key.");
         }
-        return KeyHelper.getColFromKey(key) + KeyHelper.getRowKeyFromIndex(KeyHelper.getIndexOfRowFromKey(key) + 1)
+        return KeyHelper.getColFromKey(key) + KeyHelper.getRowKeyFromIndex(KeyHelper.getIndexOfRowFromKey(key) + 1);
     }
 
     // Returns the key next to a given key, in the negative row direction.
@@ -97,7 +89,7 @@ export class KeyHelper {
         if (!CellParserHelper.stringIsValidKey(key)) {
             throw new Error("#ERR: decrementKeyRow given invalid key.");
         }
-        return KeyHelper.getColFromKey(key) + KeyHelper.getRowKeyFromIndex(KeyHelper.getIndexOfRowFromKey(key) - 1)
+        return KeyHelper.getColFromKey(key) + KeyHelper.getRowKeyFromIndex(KeyHelper.getIndexOfRowFromKey(key) - 1);
     }
 
     // Returns the key next to a given key, in the positive column direction.

@@ -6,16 +6,14 @@ export class Cell {
     private displayValue : string;
     private inputValue : string;
     private observers : Cell[] = [];
-    private mySpreadsheet : Spreadsheet;
 
-    constructor(key : string, input : string, spreadsheet : Spreadsheet) {
+    constructor(key : string, input : string) {
         this.key = key;
         this.inputValue = input;
-        this.mySpreadsheet = spreadsheet;
-        let processedData = CellParser.getValueFromUserInput(this.inputValue, this.mySpreadsheet)
+        let processedData = CellParser.getValueFromUserInput(this.inputValue)
         this.displayValue = processedData[0]
         for (let observeeKey of processedData[1]) {
-            this.mySpreadsheet.getCellAtKey(observeeKey);
+            Spreadsheet.getInstance().getCellAtKey(observeeKey);
         }
         this.updateCellValue()
     }
@@ -47,7 +45,7 @@ export class Cell {
     }
     
     public updateCellValue() {
-        let processedData = CellParser.getValueFromUserInput(this.inputValue, this.mySpreadsheet)
+        let processedData = CellParser.getValueFromUserInput(this.inputValue)
         this.displayValue = processedData[0]
         if (processedData[1].includes(this.getKey())) {
             this.displayValue = "#ERROR: self-ref.";
@@ -55,7 +53,7 @@ export class Cell {
             return;
         }
         for (let observeeKey of processedData[1]) {
-            this.mySpreadsheet.getCellAtKey(observeeKey).addObserver(this);
+            Spreadsheet.getInstance().getCellAtKey(observeeKey).addObserver(this);
         }
         this.updateObservers();
     }

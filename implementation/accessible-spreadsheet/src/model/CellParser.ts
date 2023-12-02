@@ -5,13 +5,13 @@ import {CellParserHelper} from "./CellParserHelper";
 
 export class CellParser {
     // Given an input, return the display value (after formulas, cell references, or other calculations) and a list of keys the Cell observes.
-    public static getValueFromUserInput(input : string, spreadsheet : Spreadsheet) : [string, string[]] {
+    public static getValueFromUserInput(input : string) : [string, string[]] {
         // Emprt inputs are valid, but would be removed by the parser, so we return early here.
         if (CellParserHelper.inputIsEmpty(input)) {
             return ["", []];
         }
         // Use the parser to process the input.
-        let processedData = CellParser.processInputString(input, spreadsheet, []);
+        let processedData = CellParser.processInputString(input, []);
         // If there are multiple tokens after parsing through the input, there is an error.
         if (processedData[0].length > 1) {
             // let errorMsg = "";
@@ -38,7 +38,7 @@ export class CellParser {
      * First element: a list of tokens that were parsed. The initial call should always return one token.
      * Second element: a list of keys that this cell is observing (observees, not observers).
     */
-    public static processInputString(input : string, spreadsheet : Spreadsheet, knownObservees : string[]) : [string[], string[]] {
+    public static processInputString(input : string, knownObservees : string[]) : [string[], string[]] {
         let parsedList : string[] = [];
 
         // If we have recursed into an error, return it as the only oken.
@@ -134,7 +134,7 @@ export class CellParser {
                     let parenthesisGroup = CellParserHelper.getParenthesisGroup(input.substring(i+j))
                     // REF
                     if (functionName == "REF") {
-                        let parameter = CellParser.processInputString(parenthesisGroup, spreadsheet, knownObservees)[0];
+                        let parameter = CellParser.processInputString(parenthesisGroup, knownObservees)[0];
                         // Check for paremeter being a valid key.
                         if (!CellParserHelper.stringIsValidKey(parameter.toString())) {
                             parsed = true;
@@ -143,7 +143,7 @@ export class CellParser {
                         // If given a valid paremeter, retrieve the Cell at that key.
                         let key = parameter.toString()
                         // Add that cell's value as a token. 
-                        parsedList.push(spreadsheet.getCellAtKeyDisplay(key))
+                        parsedList.push(Spreadsheet.getInstance().getCellAtKeyDisplay(key))
                         knownObservees.push(key)
                         i += functionName.length + parenthesisGroup.length - 1
                         parsed = true;
@@ -153,7 +153,7 @@ export class CellParser {
                     let averageOrSum = ["AVERAGE", "MEAN", "AVG", "SUM", "TOTAL"]
                     if (averageOrSum.includes(functionName)) {
                         // Split given paremeters. Function expects numbers separated by commas.
-                        let processed = CellParser.processInputString(parenthesisGroup, spreadsheet, knownObservees)[0];
+                        let processed = CellParser.processInputString(parenthesisGroup, knownObservees)[0];
                         // Remove empty space between arguments
                         let parameters = processed[0].replace(" ", "");
                         // Retrieve individual arguments as elements
@@ -192,7 +192,7 @@ export class CellParser {
                     // If the function is a range, min, or max, find both the max and min.
                     let rangeOrMinOrMax = ["RANGE", "MINIMUM", "MIN", "MAXIMUM", "MAX"];
                     if (rangeOrMinOrMax.includes(functionName)) {
-                        let processed = CellParser.processInputString(parenthesisGroup, spreadsheet, knownObservees)[0];
+                        let processed = CellParser.processInputString(parenthesisGroup, knownObservees)[0];
                         let parameters = processed[0].replace(" ", "");
                         let elements = parameters.split(",")
                         // If not enough arguments, add return error token.
@@ -315,7 +315,7 @@ export class CellParser {
                         }
                         let values = "";
                         // Get all cells in the range.
-                        let cellsInRange = spreadsheet.getCellsGivenRange(firstOperand, secondOperand);
+                        let cellsInRange = Spreadsheet.getInstance().getCellsGivenRange(firstOperand, secondOperand);
                         // Add each cell in that range as an observee, and add its value to values, followed by a comma.
                         cellsInRange.forEach(function (cell : Cell) {
                             knownObservees.push(cell.getKey());
@@ -331,7 +331,7 @@ export class CellParser {
                         break;
                     }
                     // Recursively evaluate the second operand.
-                    secondOperand = CellParser.processInputString(parsedList[i+1], spreadsheet, knownObservees)[0][0]
+                    secondOperand = CellParser.processInputString(parsedList[i+1], knownObservees)[0][0]
                     // Create newItem to store the result of the operation.
                     let newItem : string = "#ERR: "
                     // If the operator is addition, it may be concatenation.
@@ -387,7 +387,7 @@ export class CellParser {
                     }
                     // Evaluate the parenthesis group recursively.
                     let parenthesisGroup = CellParserHelper.getParenthesisGroup(parsedList[i])
-                    let parenReturn : string[] = CellParser.processInputString(parenthesisGroup.substring(1, parenthesisGroup.length-1), spreadsheet, knownObservees)[0]
+                    let parenReturn : string[] = CellParser.processInputString(parenthesisGroup.substring(1, parenthesisGroup.length-1), knownObservees)[0]
                     if (parsedList.length > parenthesisGroup.length) {
                         parsedList.splice(i+1, 0, parsedList[i].substring(parenthesisGroup.length, parsedList[i].length))
                     }
