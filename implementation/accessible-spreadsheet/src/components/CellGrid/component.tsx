@@ -38,6 +38,13 @@ export const CellGrid: React.FC = () => {
         setEditValue(spreadsheet.getCellAtKeyFormulaBarDisplay(cellKey) || "");
     };
 
+    // Handle enter or escape key to exit edit mode on cell
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter" || event.key === "Escape") {
+            (event.target as HTMLInputElement).blur();
+        }
+    };
+
     // Handle edit cell value
     const handleEditValue = (event: React.ChangeEvent<HTMLInputElement>) => {
         setEditValue(event.target.value);
@@ -99,6 +106,7 @@ export const CellGrid: React.FC = () => {
                                         value={editValue}
                                         onChange={handleEditValue}
                                         onBlur={handleSendEditValue}
+                                        onKeyDown={handleKeyDown}
                                         autoFocus
                                     />
                                 ) : (spreadsheet.getCellAtKeyDisplay(cellKey) || ""

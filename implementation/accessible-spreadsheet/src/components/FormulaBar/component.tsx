@@ -23,6 +23,13 @@ export const FormulaBar: React.FC = () => {
       ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyDisplay(activeEditCell).toString());
   };
 
+    // Handle enter or escape key to exit edit mode on cell
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" || event.key === "Escape") {
+        (event.target as HTMLInputElement).blur();
+    }
+  };
+
   return (
     <div className="bg-formula-bar-bg-color p-1.5 gap-2 flex items-center border-2 border-x-0 border-formula-bar-border-color">
       {/* "fx" button - onClick begins formula (appends "=") */}
@@ -40,9 +47,8 @@ export const FormulaBar: React.FC = () => {
         type="text"
         value={editValue}
         onChange={handleEditCellValue}
-        // onChange={handleChange}
         onBlur={handleSendEditValue}
-        // onBlur={handleSendEditValue}
+        onKeyDown={handleKeyDown}
         className="flex-grow bg-transparent outline-none text-formula-bar-font-color"
         placeholder="Enter formula or data..."
       />

@@ -15,6 +15,13 @@ export const FileHeader: React.FC = () => {
     ScreenReader.getInstance().speak(fileName);
   };
 
+  // Handle enter or escape key to exit edit mode on cell
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" || event.key === "Escape") {
+        (event.target as HTMLInputElement).blur();
+    }
+  };
+
     return (
       <div className="bg-file-header-color text-file-header-font-color p-[0.4%] min-w-full w-fit">
         <header>
@@ -25,6 +32,7 @@ export const FileHeader: React.FC = () => {
                   value={fileName}
                   onChange={handleEditFileName}
                   onBlur={handleEditFileNameBlur}
+                  onKeyDown={handleKeyDown}
                   autoFocus
               />
           </div>
