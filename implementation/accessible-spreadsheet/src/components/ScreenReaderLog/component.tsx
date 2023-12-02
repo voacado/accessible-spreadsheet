@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { ScreenReader } from "model/ScreenReader";
 import paperclipPng from "graphics/Paperclip.png";
 
+/**
+ * ScreenReaderLog React component
+ * Handles displaying messages from ScreenReader to user
+ */
 export const ScreenReaderLog = () => {
   const screenReader = ScreenReader.getInstance();
   const screenReaderLog = screenReader.getSpeechLog();
@@ -19,7 +23,9 @@ export const ScreenReaderLog = () => {
   return (
     <div className="fixed bottom-10 right-12 mb-4 ml-4 p-4 backdrop-blur-sm border rounded-lg shadow-lg">
       <div className="flex items-end space-x-2">
+        {/* Add Clippy */}
         <img src={paperclipPng} alt="Clippy" className="w-16 h-16" />
+        {/* Visualize messages */}
         <div className="flex flex-col items-start min-w-[125px] max-w-[350px]">
           {screenReaderLog.map((message, index) => (
             <div

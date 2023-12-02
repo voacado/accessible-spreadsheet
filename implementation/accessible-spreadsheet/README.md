@@ -1,4 +1,4 @@
-# Accessible Spreadsheet
+# Accessible Spreadsheet 📊
 
 A spreadsheet program designed with accessibility in mind.
 
@@ -15,3 +15,7 @@ To run the spreadsheet, run `npm run start` in terminal.
 ## Testing:
 
 To test the spreadsheet, run `npm run test`.
+
+## Code Coverage:
+
+To check for code coverage, run `npm run coverage`.

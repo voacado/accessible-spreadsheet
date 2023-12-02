@@ -1,53 +1,83 @@
 import { Spreadsheet } from "./Spreadsheet";
-import { CellHelper } from "./CellHelper";
+import { CellParser } from "./CellParser";
 
+/**
+ * Cell class
+ * Represents a single cell in the spreadsheet
+ */
 export class Cell {
-    private key : string;
-    private displayValue : string;
-    private inputValue : string;
-    private observers : Cell[] = [];
-    private mySpreadsheet : Spreadsheet;
+    private key : string; // key of the cell
+    private displayValue : string; // display value of the cell
+    private inputValue : string; // input value of the cell
+    private observers : Cell[] = []; // observers of the cell
 
-    constructor(key : string, input : string, spreadsheet : Spreadsheet) {
+    constructor(key : string, input : string) {
         this.key = key;
         this.inputValue = input;
-        this.mySpreadsheet = spreadsheet;
-        let processedData = CellHelper.getValueFromUserInput(this.inputValue, this.mySpreadsheet)
+        let processedData = CellParser.getValueFromUserInput(this.inputValue)
         this.displayValue = processedData[0]
         for (let observeeKey of processedData[1]) {
-            this.mySpreadsheet.getCellAtKey(observeeKey);
+            Spreadsheet.getInstance().getCellAtKey(observeeKey);
         }
         this.updateCellValue()
     }
 
+    /**
+     * Get the key of the cell
+     * @returns the key of the cell
+     */
     public getKey() : string {
         return this.key;
     }
 
+    /**
+     * Set the key of the cell
+     * @param key - the key to set the cell to
+     */
     public setKey(key : string) : void {
         this.key = key;
     }
 
+    /**
+     * Clear the cell of its value
+     */
     public clearCell() : void {
         this.inputValue = "";
         this.updateCellValue()
     }
     
+    /**
+     * Get the display value of the cell
+     * The display value is post-formula evaluation
+     * @returns the display value of the cell
+     */
     public getDisplayValue() : string {
         return this.displayValue;
     }
     
+    /**
+     * Get the formula bar (input) value of the cell
+     * The formula bar (input) value is pre-formula evaluation
+     * @returns the formula bar (input) value of the cell
+     */
     public getFormulaBarDisplayValue() : string {
         return this.inputValue;
     }
     
+    /**
+     * Set the  value of the cell
+     * @param input - the value to set the cell to
+     */
     public setCellValue(input : string) : void {
         this.inputValue = input;
         this.updateCellValue();
     }
     
-    public updateCellValue() {
-        let processedData = CellHelper.getValueFromUserInput(this.inputValue, this.mySpreadsheet)
+    /**
+     * Get the value of the cell
+     */
+    public updateCellValue(): void {
+        let processedData = CellParser.getValueFromUserInput(this.inputValue)
         this.displayValue = processedData[0]
         if (processedData[1].includes(this.getKey())) {
             this.displayValue = "#ERROR: self-ref.";
@@ -55,11 +85,14 @@ export class Cell {
             return;
         }
         for (let observeeKey of processedData[1]) {
-            this.mySpreadsheet.getCellAtKey(observeeKey).addObserver(this);
+            Spreadsheet.getInstance().getCellAtKey(observeeKey).addObserver(this);
         }
         this.updateObservers();
     }
     
+    /**
+     * Add an observer to the cell
+     */
     public addObserver(observer : Cell) : void {
         if (this.observers.includes(observer)) {
             return;
@@ -67,6 +100,9 @@ export class Cell {
         this.observers.push(observer);
     }
     
+    /**
+     * Remove an observer from the cell
+     */
     public removeObserver(observer : Cell) : void {
         let index = this.observers.indexOf(observer);
         if (index > -1) {
@@ -76,16 +112,25 @@ export class Cell {
         }
     }
     
+    /**
+     * Get the observers of the cell
+     */
     public getObservers() : Cell[] {
         return this.observers
     }
 
+    /**
+     * Notify the observers of the cell
+     */
     public updateObservers() : void {
         for (let observer of this.observers) {
             observer.updateCellValue();
         }
     }
 
+    /**
+     * Delete the cell
+     */
     public deleteCell() : void {
         this.inputValue = "";
         this.displayValue = "";

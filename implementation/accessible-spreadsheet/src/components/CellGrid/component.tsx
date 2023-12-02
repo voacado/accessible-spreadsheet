@@ -1,11 +1,15 @@
 import React, { useEffect } from "react";
 import { Spreadsheet } from "model/Spreadsheet";
 import { ScreenReader } from "model/ScreenReader";
-import { CellHelper } from "model/CellHelper";
 
 import { UserContext } from "contexts/UserPropsContext";
 import { useContext } from "react";
+import { KeyHelper } from "model/KeyHelper";
 
+/**
+ * CellGrid React component
+ * Handles displaying an interactable spreadsheet grid
+ */
 export const CellGrid: React.FC = () => {
     // TODO: we are currently re-rendering the entire spreadsheet on every update!
     const { activeCell, setActiveCell, activeEditCell, setActiveEditCell, editValue, setEditValue } = useContext(UserContext);
@@ -25,31 +29,51 @@ export const CellGrid: React.FC = () => {
         return () => spreadsheet.unsubscribe(updateCellGrid);
     }, [spreadsheet]);
 
-    // Single click on cell to set is activeCell
+    /**
+     * Single click on cell to set is activeCell
+     * @param cellKey cell index (ex. A1, B1, C1, etc.)
+     */
     const handleSingleCellClick = (cellKey: string) => {
         setActiveCell(cellKey);
         ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyDisplay(cellKey).toString());
         setEditValue(spreadsheet.getCellAtKeyFormulaBarDisplay(cellKey) || "");
     };
 
-    // Double click on cell to set is activeEditCell
+    /**
+     * Double click on cell to set is activeEditCell
+     * @param cellKey cell index (ex. A1, B1, C1, etc.)
+     */
     const handleDoubleCellClick = (cellKey: string) => {
         setActiveEditCell(cellKey);
         setEditValue(spreadsheet.getCellAtKeyFormulaBarDisplay(cellKey) || "");
     };
 
-    // Handle edit cell value
+    /**
+     * Handle enter or escape key to exit edit mode on cell
+     * @param event React event
+     */
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter" || event.key === "Escape") {
+            (event.target as HTMLInputElement).blur();
+        }
+    };
+
+    /**
+     * Handle editing the cell value
+     * @param event React event
+     */
     const handleEditValue = (event: React.ChangeEvent<HTMLInputElement>) => {
         setEditValue(event.target.value);
     };
 
-    // Handle sending edit value to Spreadsheet
+    /**
+     * Handle sending edit value to Spreadsheet
+     */
     const handleSendEditValue = () => {
         spreadsheet.setCellAtKeyGivenInput(activeEditCell, editValue.toString());
         ScreenReader.getInstance().speak(spreadsheet.getCellAtKeyDisplay(activeEditCell).toString());
         setActiveEditCell("");
     };
-    
 
     return (
         <table className="table-fixed border-collapse border border-cell-grid-header-border-color">
@@ -61,7 +85,7 @@ export const CellGrid: React.FC = () => {
                     {/* Generate column letters */}
                     {Array.from({ length: numCols }, (_, index) => (
                         <th key={index} className="sticky top-0 w-16 h-10 bg-cell-grid-header-color min-w-full min-h-full border border-cell-grid-header-border-color text-cell-grid-header-text-color">
-                            {CellHelper.getRowAndColKeyFromIndex(index)[1]}
+                            {KeyHelper.getColKeyFromIndex(index)}
                             {/* {spreadsheet.getRowAndColKeyFromIndex(index)[1]} */}
                         </th>
                     ))}
@@ -80,7 +104,7 @@ export const CellGrid: React.FC = () => {
 
                         {/* Generate cells */}
                         {Array.from({ length: numCols }, (_, colIndex) => {
-                            const cellKey: string = CellHelper.getRowAndColKeyFromIndex(colIndex)[1] + (rowIndex + 1);
+                            const cellKey: string = KeyHelper.createKeyFromIndeces(colIndex, (rowIndex))
                             // const cellKey: string = spreadsheet.getRowAndColKeyFromIndex(colIndex)[1] + (rowIndex + 1);
                             const isActive: boolean = cellKey === activeCell;
                             const isEditing: boolean = cellKey === activeEditCell;
@@ -99,6 +123,7 @@ export const CellGrid: React.FC = () => {
                                         value={editValue}
                                         onChange={handleEditValue}
                                         onBlur={handleSendEditValue}
+                                        onKeyDown={handleKeyDown}
                                         autoFocus
                                     />
                                 ) : (spreadsheet.getCellAtKeyDisplay(cellKey) || ""

@@ -7,23 +7,30 @@ import { ReactComponent as InsertColSvg } from "graphics/InsertColButton.svg";
 import { ReactComponent as DeleteColSvg } from "graphics/DeleteColButton.svg";
 import { ReactComponent as ClearRowSvg } from "graphics/ClearRowButton.svg";
 import { ReactComponent as ClearColSvg } from "graphics/ClearColumnButton.svg";
+import { ReactComponent as ClearCellSvg } from "graphics/ClearCellButton.svg";
 import { ReactComponent as ThemeSvg } from "graphics/ThemeButtonButton.svg";
 import { ReactComponent as ScreenReaderSvg } from "graphics/ScreenReaderButton.svg";
 
 import { Spreadsheet } from "model/Spreadsheet";
 import { ScreenReader } from "model/ScreenReader";
-import { CellHelper } from "model/CellHelper";
 
 import { UserContext } from "contexts/UserPropsContext";
 import { useContext } from "react";
+import { KeyHelper } from "model/KeyHelper";
 
+/**
+ * OptionsPane React component
+ * Handles displaying and handling of buttons for interacting with the spreadsheet
+ */
 export const OptionsPane: React.FC = () => {
   const { activeCell, fileName, theme, setTheme, screenReaderUIActive, setScreenReaderUIActive } = useContext(UserContext);
 
   // Singleton Design Pattern - access created instance
   const spreadsheet = Spreadsheet.getInstance();
 
-  // Handler for the Screen Reader button
+  /**
+   * Handler for the Screen Reader button
+   */
   const toggleScreenReader = () => {
     setScreenReaderUIActive(!screenReaderUIActive);
     ScreenReader.getInstance().toggleScreenReader();
@@ -31,15 +38,26 @@ export const OptionsPane: React.FC = () => {
 
   // State to handle button press animation
   const [pressedButton, setPressedButton] = useState<string | null>(null);
+  /**
+   * Handler for button press animation
+   * @param buttonId The id of the button that was pressed
+   */
   const handleButtonClick = (buttonId: string) => {
     setPressedButton(buttonId);
   };
 
   // State to handle Theme dropdown
   const [themeDropdown, setThemeDropdown] = useState(false);
+  /**
+   * Handler for Theme dropdown
+   * @returns Handler for Theme dropdown
+   */
   const toggleThemeDropdown = () => setThemeDropdown(!themeDropdown);
 
-  // Handler for changing themes
+  /**
+   * Handler for changing themes
+   * @param theme The theme to change to
+   */
   const handleThemeChange = (theme: string) => {
     setTheme(theme);  // Update the global theme
     setThemeDropdown(false);  // Close the dropdown
@@ -49,6 +67,7 @@ export const OptionsPane: React.FC = () => {
     <div className="bg-options-bg-color text-options-font-color stroke-2 font-google-sans min-w-full w-fit">
 
       {/* Function Cluster 1: Save/Load */}
+      {/* Save Button */}
       <header className="flex justify-left gap-1 p-1.5">
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
@@ -68,6 +87,7 @@ export const OptionsPane: React.FC = () => {
           Save
         </button>
 
+        {/* Load Button */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
@@ -92,6 +112,7 @@ export const OptionsPane: React.FC = () => {
         </div>
 
         {/* Function Cluster 2: Insert/Delete */}
+        {/* Insert Row Button */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
@@ -102,9 +123,8 @@ export const OptionsPane: React.FC = () => {
           onMouseDown={() => handleButtonClick("insert-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const curPos = CellHelper.getRowAndColFromKey(activeCell);
-            const activeCellIdx = CellHelper.getIndexFromRowAndCol(curPos[0], curPos[1]);
-            spreadsheet.addRow(activeCellIdx[0]);
+            const activeCellIdx = KeyHelper.getIndexOfRowFromKey(activeCell);
+            spreadsheet.addRow(activeCellIdx);
             ScreenReader.getInstance().speak("Insert Row");
           }}
         >
@@ -119,6 +139,7 @@ export const OptionsPane: React.FC = () => {
           Insert Row
         </button>
 
+        {/* Delete Row Button */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
@@ -129,9 +150,8 @@ export const OptionsPane: React.FC = () => {
           onMouseDown={() => handleButtonClick("delete-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const curPos = CellHelper.getRowAndColFromKey(activeCell);
-            const activeCellIdx = CellHelper.getIndexFromRowAndCol(curPos[0], curPos[1]);
-            spreadsheet.removeRow(activeCellIdx[0]);
+            const activeCellIdx = KeyHelper.getIndexOfRowFromKey(activeCell);
+            spreadsheet.removeRow(activeCellIdx);
             ScreenReader.getInstance().speak("Delete Row");
           }}
         >
@@ -146,6 +166,7 @@ export const OptionsPane: React.FC = () => {
           Delete Row
         </button>
 
+        {/* Clear Row Button */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
@@ -156,9 +177,8 @@ export const OptionsPane: React.FC = () => {
           onMouseDown={() => handleButtonClick("clear-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const curPos = CellHelper.getRowAndColFromKey(activeCell);
-            const activeCellIdx = CellHelper.getIndexFromRowAndCol(curPos[0], curPos[1]);
-            spreadsheet.clearRow(activeCellIdx[0]);
+            const activeCellIdx = KeyHelper.getIndexOfRowFromKey(activeCell);
+            spreadsheet.clearRow(activeCellIdx);
             ScreenReader.getInstance().speak("Clear Row");
           }}
         >
@@ -173,6 +193,7 @@ export const OptionsPane: React.FC = () => {
           Clear Row
         </button>
 
+        {/* Insert Column Button */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
@@ -183,9 +204,8 @@ export const OptionsPane: React.FC = () => {
           onMouseDown={() => handleButtonClick("insert-col-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const curPos = CellHelper.getRowAndColFromKey(activeCell);
-            const activeCellIdx = CellHelper.getIndexFromRowAndCol(curPos[0], curPos[1]);
-            spreadsheet.addColumn(activeCellIdx[1]);
+            const activeCellIdx = KeyHelper.getIndexOfColFromKey(activeCell);
+            spreadsheet.addColumn(activeCellIdx);
             ScreenReader.getInstance().speak("Insert Column");
           }}
         >
@@ -201,6 +221,7 @@ export const OptionsPane: React.FC = () => {
           Insert Column
         </button>
 
+        {/* Delete Column Button */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
@@ -211,9 +232,8 @@ export const OptionsPane: React.FC = () => {
           onMouseDown={() => handleButtonClick("delete-col-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const curPos = CellHelper.getRowAndColFromKey(activeCell);
-            const activeCellIdx = CellHelper.getIndexFromRowAndCol(curPos[0], curPos[1]);
-            spreadsheet.removeColumn(activeCellIdx[1]);
+            const activeCellIdx = KeyHelper.getIndexOfColFromKey(activeCell);
+            spreadsheet.removeColumn(activeCellIdx);
             ScreenReader.getInstance().speak("Delete Column");
           }}
         >
@@ -228,6 +248,7 @@ export const OptionsPane: React.FC = () => {
           Delete Column
         </button>
 
+        {/* Clear Column Button */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
@@ -238,9 +259,8 @@ export const OptionsPane: React.FC = () => {
           onMouseDown={() => handleButtonClick("clear-col-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const curPos = CellHelper.getRowAndColFromKey(activeCell);
-            const activeCellIdx = CellHelper.getIndexFromRowAndCol(curPos[0], curPos[1]);
-            spreadsheet.clearColumn(activeCellIdx[1]);
+            const activeCellIdx = KeyHelper.getIndexOfColFromKey(activeCell);
+            spreadsheet.clearColumn(activeCellIdx);
             ScreenReader.getInstance().speak("Clear Column");
           }}
         >
@@ -255,11 +275,38 @@ export const OptionsPane: React.FC = () => {
           Clear Column
         </button>
 
+        {/* Clear Cell Button */}
+        <button
+          className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
+          ${
+            pressedButton === "clear-cell-button"
+              ? "bg-options-btn-active-color shadow-lg"
+              : "hover:bg-options-btn-hover-color"
+          }`}
+          onMouseDown={() => handleButtonClick("clear-cell-button")}
+          onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
+          onClick={() => {
+            spreadsheet.clearCell(activeCell);
+            ScreenReader.getInstance().speak("Clear Cell");
+          }}
+        >
+          <ClearCellSvg
+            className="text-options-btn-icon-border-color fill-current"
+            style={{
+              height: "4em",
+              width: "4em",
+              transform: "translateX(-7%) translateY(5%)",
+            }}
+          />
+          Clear Cell
+        </button>
+
         <div className="flex h-auto p-2">
           <div className="bg-options-stroke-color w-0.5"></div>
         </div>
 
         {/* Function Cluster 4: Theme/Screen Reader */}
+        {/* Theme Button */}
         <div className="relative inline-block text-left">
           <button
             className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
@@ -298,6 +345,7 @@ export const OptionsPane: React.FC = () => {
         )}
       </div>
 
+        {/* Screen Reader Button */}
         <button
           className={`flex flex-col items-center justify-between focus:outline-none font-sans px-4 py-2 rounded transition duration-200 ease-in-out 
           ${
