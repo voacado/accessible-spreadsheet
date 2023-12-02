@@ -107,7 +107,7 @@ export const OptionsPane: React.FC = () => {
           onMouseDown={() => handleButtonClick("insert-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const activeCellIdx = KeyHelper.getIndexOfColFromKey(activeCell);
+            const activeCellIdx = KeyHelper.getIndexOfRowFromKey(activeCell);
             spreadsheet.addRow(activeCellIdx);
             ScreenReader.getInstance().speak("Insert Row");
           }}
@@ -133,7 +133,7 @@ export const OptionsPane: React.FC = () => {
           onMouseDown={() => handleButtonClick("delete-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const activeCellIdx = KeyHelper.getIndexOfColFromKey(activeCell);
+            const activeCellIdx = KeyHelper.getIndexOfRowFromKey(activeCell);
             spreadsheet.removeRow(activeCellIdx);
             ScreenReader.getInstance().speak("Delete Row");
           }}
@@ -159,7 +159,7 @@ export const OptionsPane: React.FC = () => {
           onMouseDown={() => handleButtonClick("clear-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const activeCellIdx = KeyHelper.getIndexOfColFromKey(activeCell);
+            const activeCellIdx = KeyHelper.getIndexOfRowFromKey(activeCell);
             spreadsheet.clearRow(activeCellIdx);
             ScreenReader.getInstance().speak("Clear Row");
           }}
