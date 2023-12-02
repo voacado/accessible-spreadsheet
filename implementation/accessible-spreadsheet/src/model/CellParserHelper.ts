@@ -1,4 +1,3 @@
-
 export class CellParserHelper {
     // Returns whether a given input is a valid key for a cell position. I.E., a series of letters then numbers.
     public static stringIsValidKey(input : string) : boolean {

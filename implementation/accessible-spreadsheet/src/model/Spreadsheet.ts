@@ -1,11 +1,4 @@
 import { Cell } from "./Cell";
-// import { IValue } from "./values/IValue";
-// import { EmptyValue } from "./values/EmptyValue";
-// import { NumberValue } from "./values/NumberValue";
-// import { StringValue } from "./values/StringValue";
-// import { FormulaValue } from "./values/FormulaValue";
-// import { CellReference } from "./values/CellReference";
-// import { MultiCellReference } from "./values/MultiCellReference";
 import { CellParser } from "./CellParser";
 import { CellParserHelper } from "./CellParserHelper";
 import { KeyHelper } from "./KeyHelper";

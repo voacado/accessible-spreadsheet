@@ -26,8 +26,8 @@ describe('spreadsheet', (): void => {
     describe('Default Spreadsheet Constructor Values', (): void => {
       it('spreadsheet should have three rows and three columns', (): void => {
         spreadsheet = new Spreadsheet();
-        expect(spreadsheet.getRowCount()).toEqual(3);
-        expect(spreadsheet.getColCount()).toEqual(3);
+        expect(spreadsheet.getRowCount()).toEqual(26);
+        expect(spreadsheet.getColCount()).toEqual(26);
       });
     })
 
@@ -42,8 +42,8 @@ describe('spreadsheet', (): void => {
     describe('Empty Spreadsheet Displays', (): void => {
       it('an empty spreadsheet should display empty strings at every valid position without errors', (): void => {
         spreadsheet = new Spreadsheet();
-        expect(spreadsheet.getRowCount()).toEqual(3);
-        expect(spreadsheet.getColCount()).toEqual(3);
+        expect(spreadsheet.getRowCount()).toEqual(26);
+        expect(spreadsheet.getColCount()).toEqual(26);
 
         expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("");
         expect(spreadsheet.getCellAtKeyDisplay("A2")).toEqual("");
@@ -60,8 +60,8 @@ describe('spreadsheet', (): void => {
     describe('Empty Spreadsheet Formula Bar Display', (): void => {
       it('an empty spreadsheet should return empty string formula bar displays at every valid position without errors', (): void => {
         spreadsheet = new Spreadsheet();
-        expect(spreadsheet.getRowCount()).toEqual(3);
-        expect(spreadsheet.getColCount()).toEqual(3);
+        expect(spreadsheet.getRowCount()).toEqual(26);
+        expect(spreadsheet.getColCount()).toEqual(26);
 
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("");
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A2")).toEqual("");
@@ -78,46 +78,46 @@ describe('spreadsheet', (): void => {
     describe('Default Spreadsheet Add Row', (): void => {
       it('adding a row to a spreadsheet should increase the row count correctly', (): void => {
         spreadsheet = new Spreadsheet();
-        expect(spreadsheet.getRowCount()).toEqual(3);
-        expect(spreadsheet.getColCount()).toEqual(3);
+        expect(spreadsheet.getRowCount()).toEqual(26);
+        expect(spreadsheet.getColCount()).toEqual(26);
         spreadsheet.addRow(0);
-        expect(spreadsheet.getRowCount()).toEqual(4);
-        expect(spreadsheet.getColCount()).toEqual(3);
+        expect(spreadsheet.getRowCount()).toEqual(27);
+        expect(spreadsheet.getColCount()).toEqual(26);
       });
     })
 
     describe('Default Spreadsheet Add Column', (): void => {
       it('adding a column to a spreadsheet should increase the column count correctly', (): void => {
         spreadsheet = new Spreadsheet();
-        expect(spreadsheet.getRowCount()).toEqual(3);
-        expect(spreadsheet.getColCount()).toEqual(3);
+        expect(spreadsheet.getRowCount()).toEqual(26);
+        expect(spreadsheet.getColCount()).toEqual(26);
         spreadsheet.addColumn(0);
-        expect(spreadsheet.getRowCount()).toEqual(3);
-        expect(spreadsheet.getColCount()).toEqual(4);
+        expect(spreadsheet.getRowCount()).toEqual(26);
+        expect(spreadsheet.getColCount()).toEqual(27);
       });
     })
 
     describe('Default Spreadsheet Add Rows and Columns', (): void => {
       it('adding rows and columns to a spreadsheet should increase their counts correctly', (): void => {
         spreadsheet = new Spreadsheet();
-        expect(spreadsheet.getRowCount()).toEqual(3);
-        expect(spreadsheet.getColCount()).toEqual(3);
+        expect(spreadsheet.getRowCount()).toEqual(26);
+        expect(spreadsheet.getColCount()).toEqual(26);
         spreadsheet.addRow(0);
-        expect(spreadsheet.getRowCount()).toEqual(4);
-        expect(spreadsheet.getColCount()).toEqual(3);
+        expect(spreadsheet.getRowCount()).toEqual(27);
+        expect(spreadsheet.getColCount()).toEqual(26);
         spreadsheet.addColumn(0);
-        expect(spreadsheet.getRowCount()).toEqual(4);
-        expect(spreadsheet.getColCount()).toEqual(4);
-        spreadsheet.addRow(0);
-        spreadsheet.addColumn(0);
-        expect(spreadsheet.getRowCount()).toEqual(5);
-        expect(spreadsheet.getColCount()).toEqual(5);
+        expect(spreadsheet.getRowCount()).toEqual(27);
+        expect(spreadsheet.getColCount()).toEqual(27);
         spreadsheet.addRow(0);
         spreadsheet.addColumn(0);
+        expect(spreadsheet.getRowCount()).toEqual(28);
+        expect(spreadsheet.getColCount()).toEqual(28);
         spreadsheet.addRow(0);
         spreadsheet.addColumn(0);
-        expect(spreadsheet.getRowCount()).toEqual(7);
-        expect(spreadsheet.getColCount()).toEqual(7);
+        spreadsheet.addRow(0);
+        spreadsheet.addColumn(0);
+        expect(spreadsheet.getRowCount()).toEqual(30);
+        expect(spreadsheet.getColCount()).toEqual(30);
       });
     })
 
@@ -125,8 +125,6 @@ describe('spreadsheet', (): void => {
       it('Setting a cell\'s value should be reflected by the cell\'s display and value and formula bar display', (): void => {
         spreadsheet = new Spreadsheet();
         spreadsheet.setCellAtKeyGivenInput("A1", "1");
-        expect(spreadsheet.getRowCount()).toEqual(3);
-        expect(spreadsheet.getColCount()).toEqual(3);
         expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("1");
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("1");
       });
@@ -136,8 +134,6 @@ describe('spreadsheet', (): void => {
       it('Setting a cell\'s value to a negative should be reflected by the cell\'s display and value and formula bar display', (): void => {
         spreadsheet = new Spreadsheet();
         spreadsheet.setCellAtKeyGivenInput("A1", "-1");
-        expect(spreadsheet.getRowCount()).toEqual(3);
-        expect(spreadsheet.getColCount()).toEqual(3);
         expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("-1");
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("-1");
       });
@@ -155,8 +151,6 @@ describe('spreadsheet', (): void => {
         spreadsheet.setCellAtKeyGivenInput("C1", "111");
         spreadsheet.setCellAtKeyGivenInput("C2", "222");
         spreadsheet.setCellAtKeyGivenInput("C3", "333");
-        expect(spreadsheet.getRowCount()).toEqual(3);
-        expect(spreadsheet.getColCount()).toEqual(3);
         expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("1");
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("1");
         expect(spreadsheet.getCellAtKeyDisplay("A2")).toEqual("2");
@@ -190,8 +184,6 @@ describe('spreadsheet', (): void => {
         spreadsheet.setCellAtKeyGivenInput("C1", "111");
         spreadsheet.setCellAtKeyGivenInput("C2", "222");
         spreadsheet.setCellAtKeyGivenInput("C3", "333");
-        expect(spreadsheet.getRowCount()).toEqual(3);
-        expect(spreadsheet.getColCount()).toEqual(3);
         expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("1");
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("1");
         expect(spreadsheet.getCellAtKeyDisplay("A2")).toEqual("2");
@@ -253,8 +245,8 @@ describe('spreadsheet', (): void => {
         spreadsheet.setCellAtKeyGivenInput("C1", "111");
         spreadsheet.setCellAtKeyGivenInput("C2", "222");
         spreadsheet.setCellAtKeyGivenInput("C3", "333");
-        expect(spreadsheet.getRowCount()).toEqual(3);
-        expect(spreadsheet.getColCount()).toEqual(3);
+        expect(spreadsheet.getRowCount()).toEqual(26);
+        expect(spreadsheet.getColCount()).toEqual(26);
         expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("1");
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("1");
         expect(spreadsheet.getCellAtKeyDisplay("A2")).toEqual("2");
@@ -275,8 +267,8 @@ describe('spreadsheet', (): void => {
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C3")).toEqual("333");
 
         spreadsheet.addRow(0);
-        expect(spreadsheet.getRowCount()).toEqual(4);
-        expect(spreadsheet.getColCount()).toEqual(3);
+        expect(spreadsheet.getRowCount()).toEqual(27);
+        expect(spreadsheet.getColCount()).toEqual(26);
         expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("");
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("");
         expect(spreadsheet.getCellAtKeyDisplay("B1")).toEqual("");
