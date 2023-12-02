@@ -172,6 +172,12 @@ export class Spreadsheet {
      * @param index index to remove row at
      */
     public removeRow(index : number) : void {
+        if (index < 0) {
+            throw new Error("ERROR: Spreadsheet.removeRow() given negative index: " + index.toString());
+        }
+        if (index > this.rowCount) {
+            throw new Error("ERROR: Spreadsheet.removeRow() given index greater than rowCount:" + index.toString());
+        }
         let cellsToRemove : Cell[] = this.getCellsGivenRange("A" + KeyHelper.getRowKeyFromIndex(index), 
                                                             KeyHelper.createKeyFromIndeces(this.colCount-1, index),
                                                             //CellHelper.getColKeyFromIndex(this.colCount-1) + CellHelper.getRowKeyFromIndex(index),
@@ -222,6 +228,12 @@ export class Spreadsheet {
      * @param index index to remove column at
      */
     public removeColumn(index : number) : void {
+        if (index < 0) {
+            throw new Error("ERROR: Spreadsheet.removeColumn() given negative index: " + index.toString());
+        }
+        if (index > this.colCount) {
+            throw new Error("ERROR: Spreadsheet.removeColumn() given index greater than colCount:" + index.toString());
+        }
         // Delete all cells in the removed column
         let cellsToRemove : Cell[] = this.getCellsGivenRange(KeyHelper.getColKeyFromIndex(index) + "1", 
                                                             KeyHelper.createKeyFromIndeces(index, this.rowCount-1), // KeyHelper.getColKeyFromIndex(index) + KeyHelper.getRowKeyFromIndex(this.rowCount-1),
@@ -271,6 +283,12 @@ export class Spreadsheet {
      * @param index index to clear row at
      */
     public clearRow(index : number) : void {
+        if (index < 0) {
+            throw new Error("ERROR: Spreadsheet.clearRow() given negative index: " + index.toString());
+        }
+        if (index > this.rowCount) {
+            throw new Error("ERROR: Spreadsheet.clearRow() given index greater than rowCount:" + index.toString());
+        }
         let cellsToChange : Cell[] = this.getCellsGivenRange("A" + KeyHelper.getRowKeyFromIndex(index), 
                                                             KeyHelper.createKeyFromIndeces(this.colCount-1, index),
                                                             // KeyHelper.getColKeyFromIndex(this.colCount-1) + CellHelper.getRowKeyFromIndex(index),
@@ -292,6 +310,12 @@ export class Spreadsheet {
      * @param index index to clear column at
      */
     public clearColumn(index : number) : void {
+        if (index < 0) {
+            throw new Error("ERROR: Spreadsheet.clearColumn() given negative index: " + index.toString());
+        }
+        if (index > this.colCount) {
+            throw new Error("ERROR: Spreadsheet.clearColumn() given index greater than colCount:" + index.toString());
+        }
         let cellsToChange : Cell[] = this.getCellsGivenRange(KeyHelper.getColKeyFromIndex(index) + "1", 
                                                             KeyHelper.createKeyFromIndeces(index, this.rowCount-1),
                                                             //CellHelper.getColKeyFromIndex(index) + CellHelper.getRowKeyFromIndex(this.rowCount-1),

@@ -1169,8 +1169,27 @@ describe('spreadsheet', (): void => {
       });
     })
 
-    describe('Cell Reference chains delete', (): void => {
-      it('Removing a cell that other cells observe should update those cells.', (): void => {
+    describe('Cell Reference remove row', (): void => {
+      it('Removing a row with a cell that other cells observe should update those cells.', (): void => {
+        spreadsheet.setCellAtKeyGivenInput("A1", "77");
+        spreadsheet.setCellAtKeyGivenInput("B2", "REF(A1)");
+        spreadsheet.setCellAtKeyGivenInput("C3", "REF(B2)");
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyDisplay("B2")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B2")).toEqual("REF(A1)");
+        expect(spreadsheet.getCellAtKeyDisplay("C3")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C3")).toEqual("REF(B2)");
+        spreadsheet.removeRow(0);
+        expect(spreadsheet.getCellAtKeyDisplay("B1")).toEqual("");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B1")).toEqual("REF(A1)");
+        expect(spreadsheet.getCellAtKeyDisplay("C2")).toEqual("");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C2")).toEqual("REF(B2)");
+      });
+    })
+
+    describe('Cell Reference remove column', (): void => {
+      it('Removing a column with a cell that other cells observe should update those cells.', (): void => {
         spreadsheet.setCellAtKeyGivenInput("A1", "77");
         spreadsheet.setCellAtKeyGivenInput("B2", "REF(A1)");
         spreadsheet.setCellAtKeyGivenInput("C3", "REF(B2)");
@@ -1185,6 +1204,69 @@ describe('spreadsheet', (): void => {
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A2")).toEqual("REF(A1)");
         expect(spreadsheet.getCellAtKeyDisplay("B3")).toEqual("");
         expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B3")).toEqual("REF(B2)");
+      });
+    })
+
+    describe('Cell Reference clear cell', (): void => {
+      it('Clearing a cell that other cells observe should update those cells.', (): void => {
+        spreadsheet.setCellAtKeyGivenInput("A1", "77");
+        spreadsheet.setCellAtKeyGivenInput("B2", "REF(A1)");
+        spreadsheet.setCellAtKeyGivenInput("C3", "REF(B2)");
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyDisplay("B2")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B2")).toEqual("REF(A1)");
+        expect(spreadsheet.getCellAtKeyDisplay("C3")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C3")).toEqual("REF(B2)");
+        spreadsheet.clearCell("A1");
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("");
+        expect(spreadsheet.getCellAtKeyDisplay("B2")).toEqual("");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B2")).toEqual("REF(A1)");
+        expect(spreadsheet.getCellAtKeyDisplay("C3")).toEqual("");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C3")).toEqual("REF(B2)");
+      });
+    })
+
+    describe('Cell Reference clear row', (): void => {
+      it('Clearing a row with a cell that other cells observe should update those cells.', (): void => {
+        spreadsheet.setCellAtKeyGivenInput("A1", "77");
+        spreadsheet.setCellAtKeyGivenInput("B2", "REF(A1)");
+        spreadsheet.setCellAtKeyGivenInput("C3", "REF(B2)");
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyDisplay("B2")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B2")).toEqual("REF(A1)");
+        expect(spreadsheet.getCellAtKeyDisplay("C3")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C3")).toEqual("REF(B2)");
+        spreadsheet.clearRow(0);
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("");
+        expect(spreadsheet.getCellAtKeyDisplay("B2")).toEqual("");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B2")).toEqual("REF(A1)");
+        expect(spreadsheet.getCellAtKeyDisplay("C3")).toEqual("");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C3")).toEqual("REF(B2)");
+      });
+    })
+
+    describe('Cell Reference remove column', (): void => {
+      it('Clearing a column with a cell that other cells observe should update those cells.', (): void => {
+        spreadsheet.setCellAtKeyGivenInput("A1", "77");
+        spreadsheet.setCellAtKeyGivenInput("B2", "REF(A1)");
+        spreadsheet.setCellAtKeyGivenInput("C3", "REF(B2)");
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyDisplay("B2")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B2")).toEqual("REF(A1)");
+        expect(spreadsheet.getCellAtKeyDisplay("C3")).toEqual("77");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C3")).toEqual("REF(B2)");
+        spreadsheet.clearColumn(0);
+        expect(spreadsheet.getCellAtKeyDisplay("A1")).toEqual("");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("A1")).toEqual("");
+        expect(spreadsheet.getCellAtKeyDisplay("B2")).toEqual("");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("B2")).toEqual("REF(A1)");
+        expect(spreadsheet.getCellAtKeyDisplay("C3")).toEqual("");
+        expect(spreadsheet.getCellAtKeyFormulaBarDisplay("C3")).toEqual("REF(B2)");
       });
     })
 
