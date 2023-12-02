@@ -12,10 +12,11 @@ import { ReactComponent as ScreenReaderSvg } from "graphics/ScreenReaderButton.s
 
 import { Spreadsheet } from "model/Spreadsheet";
 import { ScreenReader } from "model/ScreenReader";
-import { CellHelper } from "model/CellHelper";
+// import { CellHelper } from "model/CellHelper";
 
 import { UserContext } from "contexts/UserPropsContext";
 import { useContext } from "react";
+import { KeyHelper } from "model/KeyHelper";
 
 export const OptionsPane: React.FC = () => {
   const { activeCell, fileName, theme, setTheme, screenReaderUIActive, setScreenReaderUIActive } = useContext(UserContext);
@@ -102,9 +103,8 @@ export const OptionsPane: React.FC = () => {
           onMouseDown={() => handleButtonClick("insert-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const curPos = CellHelper.getRowAndColFromKey(activeCell);
-            const activeCellIdx = CellHelper.getIndexFromRowAndCol(curPos[0], curPos[1]);
-            spreadsheet.addRow(activeCellIdx[0]);
+            const activeCellIdx = KeyHelper.getIndexOfColFromKey(activeCell);
+            spreadsheet.addRow(activeCellIdx);
             ScreenReader.getInstance().speak("Insert Row");
           }}
         >
@@ -129,9 +129,8 @@ export const OptionsPane: React.FC = () => {
           onMouseDown={() => handleButtonClick("delete-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const curPos = CellHelper.getRowAndColFromKey(activeCell);
-            const activeCellIdx = CellHelper.getIndexFromRowAndCol(curPos[0], curPos[1]);
-            spreadsheet.removeRow(activeCellIdx[0]);
+            const activeCellIdx = KeyHelper.getIndexOfColFromKey(activeCell);
+            spreadsheet.removeRow(activeCellIdx);
             ScreenReader.getInstance().speak("Delete Row");
           }}
         >
@@ -156,9 +155,8 @@ export const OptionsPane: React.FC = () => {
           onMouseDown={() => handleButtonClick("clear-row-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const curPos = CellHelper.getRowAndColFromKey(activeCell);
-            const activeCellIdx = CellHelper.getIndexFromRowAndCol(curPos[0], curPos[1]);
-            spreadsheet.clearRow(activeCellIdx[0]);
+            const activeCellIdx = KeyHelper.getIndexOfColFromKey(activeCell);
+            spreadsheet.clearRow(activeCellIdx);
             ScreenReader.getInstance().speak("Clear Row");
           }}
         >
@@ -183,9 +181,8 @@ export const OptionsPane: React.FC = () => {
           onMouseDown={() => handleButtonClick("insert-col-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const curPos = CellHelper.getRowAndColFromKey(activeCell);
-            const activeCellIdx = CellHelper.getIndexFromRowAndCol(curPos[0], curPos[1]);
-            spreadsheet.addColumn(activeCellIdx[1]);
+            const activeCellIdx = KeyHelper.getIndexOfColFromKey(activeCell);
+            spreadsheet.addColumn(activeCellIdx);
             ScreenReader.getInstance().speak("Insert Column");
           }}
         >
@@ -211,9 +208,8 @@ export const OptionsPane: React.FC = () => {
           onMouseDown={() => handleButtonClick("delete-col-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const curPos = CellHelper.getRowAndColFromKey(activeCell);
-            const activeCellIdx = CellHelper.getIndexFromRowAndCol(curPos[0], curPos[1]);
-            spreadsheet.removeColumn(activeCellIdx[1]);
+            const activeCellIdx = KeyHelper.getIndexOfColFromKey(activeCell);
+            spreadsheet.removeColumn(activeCellIdx);
             ScreenReader.getInstance().speak("Delete Column");
           }}
         >
@@ -238,9 +234,8 @@ export const OptionsPane: React.FC = () => {
           onMouseDown={() => handleButtonClick("clear-col-button")}
           onMouseUp={() => setTimeout(() => setPressedButton(null), 100)}
           onClick={() => {
-            const curPos = CellHelper.getRowAndColFromKey(activeCell);
-            const activeCellIdx = CellHelper.getIndexFromRowAndCol(curPos[0], curPos[1]);
-            spreadsheet.clearColumn(activeCellIdx[1]);
+            const activeCellIdx = KeyHelper.getIndexOfColFromKey(activeCell);
+            spreadsheet.clearColumn(activeCellIdx);
             ScreenReader.getInstance().speak("Clear Column");
           }}
         >

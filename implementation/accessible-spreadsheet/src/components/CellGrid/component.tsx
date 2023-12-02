@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { Spreadsheet } from "model/Spreadsheet";
 import { ScreenReader } from "model/ScreenReader";
-import { CellHelper } from "model/CellHelper";
 
 import { UserContext } from "contexts/UserPropsContext";
 import { useContext } from "react";
+import { KeyHelper } from "model/KeyHelper";
 
 export const CellGrid: React.FC = () => {
     // TODO: we are currently re-rendering the entire spreadsheet on every update!
@@ -68,7 +68,7 @@ export const CellGrid: React.FC = () => {
                     {/* Generate column letters */}
                     {Array.from({ length: numCols }, (_, index) => (
                         <th key={index} className="sticky top-0 w-16 h-10 bg-cell-grid-header-color min-w-full min-h-full border border-cell-grid-header-border-color text-cell-grid-header-text-color">
-                            {CellHelper.getRowAndColKeyFromIndex(index)[1]}
+                            {KeyHelper.getColKeyFromIndex(index)}
                             {/* {spreadsheet.getRowAndColKeyFromIndex(index)[1]} */}
                         </th>
                     ))}
@@ -87,7 +87,7 @@ export const CellGrid: React.FC = () => {
 
                         {/* Generate cells */}
                         {Array.from({ length: numCols }, (_, colIndex) => {
-                            const cellKey: string = CellHelper.getRowAndColKeyFromIndex(colIndex)[1] + (rowIndex + 1);
+                            const cellKey: string = KeyHelper.createKeyFromIndeces(colIndex, (rowIndex))
                             // const cellKey: string = spreadsheet.getRowAndColKeyFromIndex(colIndex)[1] + (rowIndex + 1);
                             const isActive: boolean = cellKey === activeCell;
                             const isEditing: boolean = cellKey === activeEditCell;
