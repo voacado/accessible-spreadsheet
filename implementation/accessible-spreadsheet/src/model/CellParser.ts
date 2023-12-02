@@ -129,12 +129,12 @@ export class CellParser {
                     // Function missing parenthesis for arguments.
                     if (input.substring(i + j).charAt(0) != "(") {
                         // We skip MIN because it may still be MINIMUM, and if it is not, it will error elsewhere.
-                        if (functionName != "MIN") {
+                        if (functionName != "MIN" && functionName != "MAX" ) {
                             parsed = true;
                             return [["#ERR: Function " + functionName + "not given parenthesis."], []];
                         }
                     }
-                    if (input.substring(i + j).charAt(0) != "(" && functionName == "MIN") {
+                    if (input.substring(i + j).charAt(0) != "(" && (functionName == "MIN" || functionName == "MAX")) {
                         continue;
                     }
                     // Get arguments from parenthesis group.
