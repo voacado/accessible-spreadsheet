@@ -22,6 +22,10 @@ export class Spreadsheet {
         this.initialize(rowCount, colCount);
     }
 
+    /**
+     * Generate or return the instance of Spreadsheet
+     * @returns the instance of Spreadsheet
+     */
     public static getInstance(): Spreadsheet {
         if (!Spreadsheet.instance) {
             Spreadsheet.instance = new Spreadsheet(initRowCount, initColCount);
@@ -29,43 +33,68 @@ export class Spreadsheet {
         return Spreadsheet.instance;
     }
 
+    /**
+     * Add an observer to the list of observers
+     * @param observer - the observer to be added to the list of observers
+     */
     public subscribe(observer: () => void): void {
         this.observers.push(observer);
     }
 
+    /**
+     * Remove an observer from the list of observers
+     * @param observer - the observer to be removed from the list of observers
+     */
     public unsubscribe(observer: () => void): void {
         this.observers = this.observers.filter(obs => obs !== observer);
     }
 
+    /**
+     * Notify all observers that the spreadsheet has changed
+     */
     public notifyObservers(): void {
         this.observers.forEach(observer => observer());
     }
 
+    /**
+     * Initialize the spreadsheet
+     * @param rowCount number of rows in initial spreadsheet
+     * @param colCount number of columns in initial spreadsheet
+     */
     private initialize(rowCount : number, colCount : number) : void {
         this.cells = new Map<string, Cell>();
         this.rowCount = rowCount;
         this.colCount = colCount;
     }
 
+    /**
+     * Reset the spreadsheet to its initial state
+     */
     public resetSpreadsheet() {
         this.initialize(initRowCount, initColCount);
         this.notifyObservers();
     }
 
+    /**
+     * Get the number of rows in the spreadsheet
+     * @returns number of rows in spreadsheet
+     */
     public getRowCount() : number {
         return this.rowCount;
     }
 
+    /**
+     * Get the number of columns in the spreadsheet
+     * @returns number of columns in spreadsheet
+     */
     public getColCount() : number {
         return this.colCount;
     }
 
-    // public keyExists(key : string) : boolean {
-    //     return CellParserHelper.stringIsValidKey(key) && 
-    //             KeyHelper.getIndexOfColFromKey(key) < this.colCount &&
-    //             KeyHelper.getIndexOfRowFromKey(key) < this.rowCount
-    // }
-    
+    /**
+     * Add a row to the spreadsheet (cells dict) at the given index
+     * @param index index to add row at
+     */
     public addRow(index : number) : void {
         if (index < 0) {
             throw new Error("ERROR: Spreadsheet.addRow() given negative index: " + index.toString());
@@ -101,6 +130,10 @@ export class Spreadsheet {
         this.notifyObservers();
     }
     
+    /**
+     * Add a column to the spreadsheet (cells dict) at the given index
+     * @param index index to add column at
+     */
     public addColumn(index : number) : void {
         if (index < 0) {
             throw new Error("ERROR: Spreadsheet.addColumn() given negative index:" + index.toString());
@@ -134,6 +167,10 @@ export class Spreadsheet {
         this.notifyObservers();
     }
     
+    /**
+     * Remove a row from the spreadsheet (cells dict) at the given index
+     * @param index index to remove row at
+     */
     public removeRow(index : number) : void {
         let cellsToRemove : Cell[] = this.getCellsGivenRange("A" + KeyHelper.getRowKeyFromIndex(index), 
                                                             KeyHelper.createKeyFromIndeces(this.colCount-1, index),
@@ -180,6 +217,10 @@ export class Spreadsheet {
         this.notifyObservers();
     }
     
+    /**
+     * Remove a column from the spreadsheet (cells dict) at the given index
+     * @param index index to remove column at
+     */
     public removeColumn(index : number) : void {
         // Delete all cells in the removed column
         let cellsToRemove : Cell[] = this.getCellsGivenRange(KeyHelper.getColKeyFromIndex(index) + "1", 
@@ -225,6 +266,10 @@ export class Spreadsheet {
         this.notifyObservers();
     }
     
+    /**
+     * Clear a row from the spreadsheet (cells dict) at the given index
+     * @param index index to clear row at
+     */
     public clearRow(index : number) : void {
         let cellsToChange : Cell[] = this.getCellsGivenRange("A" + KeyHelper.getRowKeyFromIndex(index), 
                                                             KeyHelper.createKeyFromIndeces(this.colCount-1, index),
@@ -242,6 +287,10 @@ export class Spreadsheet {
         this.notifyObservers();
     }
     
+    /**
+     * Clear a column from the spreadsheet (cells dict) at the given index
+     * @param index index to clear column at
+     */
     public clearColumn(index : number) : void {
         let cellsToChange : Cell[] = this.getCellsGivenRange(KeyHelper.getColKeyFromIndex(index) + "1", 
                                                             KeyHelper.createKeyFromIndeces(index, this.rowCount-1),
@@ -259,6 +308,10 @@ export class Spreadsheet {
         this.notifyObservers();
     }
     
+    /**
+     *  Save the spreadsheet to a file
+     * @param fileName name of spreadsheet to use when saving to file
+     */
     public saveSpreadsheet(fileName: string): void {
         // Get data from spreadsheet into JSON format
 //        let cellData = new Map<string, string>();
@@ -293,6 +346,9 @@ export class Spreadsheet {
         URL.revokeObjectURL(url);
     }
     
+    /**
+     * Load the spreadsheet from a file to cells dict
+     */
     public loadSpreadsheet(): void { 
         // Prompt user for file to load
         this.cells = new Map<string, Cell>();
@@ -327,10 +383,20 @@ export class Spreadsheet {
         this.notifyObservers();
     }
 
+    /**
+     * Return Cell object at key position
+     * @param key index of Cell
+     * @returns Cell
+     */
     private getCellAtKeyIfExists(key : string) : Cell | undefined {
         return this.cells.get(key);
     }
     
+    /**
+     * Return Cell object at key position, creating it if it does not exist
+     * @param key index of Cell
+     * @returns Cell
+     */
     public getCellAtKey(key : string) : Cell {
         let cell : Cell = this.cells.get(key)!;
 
@@ -341,6 +407,11 @@ export class Spreadsheet {
         return cell;
     }
 
+    /**
+     * Return Cell object at key position, creating it if it does not exist
+     * @param key index of Cell
+     * @returns Cell
+     */
     public getCellsGivenRange(startKey : string, endKey : string, leftToRight : boolean=true) : Cell[] {
         let startRowIndex = KeyHelper.getIndexOfRowFromKey(startKey);
         let startColIndex = KeyHelper.getIndexOfColFromKey(startKey);
@@ -363,6 +434,10 @@ export class Spreadsheet {
         return cells.reverse();
     }
 
+    /**
+     * Clear cell at key position
+     * @param key position of cell
+     */
     public clearCell(key : string) {
         let cell : Cell | undefined = this.getCellAtKeyIfExists(key);
         if (cell !== undefined) {
@@ -371,12 +446,23 @@ export class Spreadsheet {
         } 
     }
 
+    /**
+     * Set the cell at key position to the given value
+     * @param key position of cell
+     * @param value value to set cell to (from user)
+     */
     public setCellAtKeyGivenInput(key : string, userInput : string) : void {
         let cell : Cell = this.getCellAtKey(key);
         cell.setCellValue(userInput);
         this.notifyObservers();
     }
 
+    /**
+     * Get display value of cell at key position
+     * The display value is post-formula evaluation
+     * @param key position of cell
+     * @returns display value of cell
+     */
     public getCellAtKeyDisplay(key : string) : string {
         let cell : Cell = this.getCellAtKey(key);
         if (cell !== undefined) {
@@ -385,6 +471,12 @@ export class Spreadsheet {
         return "";
     }
 
+    /**
+     * Get formula bar value of cell at key position
+     * The formula bar value is pre-formula evaluation
+     * @param key position of cell
+     * @returns formula bar value of cell
+     */
     public getCellAtKeyFormulaBarDisplay(key : string) : string {
         let cell : Cell = this.getCellAtKey(key);
         if (cell !== undefined) {
@@ -393,12 +485,20 @@ export class Spreadsheet {
         return "";
     }
 
+    /**
+     * Delete a given cell
+     * @param cell cell to be deleted
+     */
     private deleteCell(cell : Cell) : void {
         let oldKey : string = cell.getKey()
         cell.deleteCell();
         this.cells.delete(oldKey);
     }
 
+    /**
+     * Convert the spreadsheet into a string
+     * @returns string representation of spreadsheet
+     */
     public spreadsheetAsString() : string {
         let orderedCells : Cell[] = this.getCellsGivenRange("A1", 
                                                             KeyHelper.createKeyFromIndeces(this.colCount-1, this.rowCount-1),//KeyHelper.getColKeyFromIndex(this.colCount-1) + CellHelper.getRowKeyFromIndex(this.rowCount-1),
