@@ -366,9 +366,11 @@ export class Spreadsheet {
     }
 
     public clearCell(key : string) {
-        let cell : Cell = this.getCellAtKey(key);
-        cell.clearCell();
-        this.notifyObservers();
+        let cell : Cell | undefined = this.getCellAtKeyIfExists(key);
+        if (cell !== undefined) {
+            cell.clearCell();
+            this.notifyObservers();
+        } 
     }
 
     public setCellAtKeyGivenInput(key : string, userInput : string) : void {
@@ -379,12 +381,18 @@ export class Spreadsheet {
 
     public getCellAtKeyDisplay(key : string) : string {
         let cell : Cell = this.getCellAtKey(key);
-        return cell.getDisplayValue();
+        if (cell !== undefined) {
+            return cell.getDisplayValue();
+        } 
+        return "";
     }
 
     public getCellAtKeyFormulaBarDisplay(key : string) : string {
         let cell : Cell = this.getCellAtKey(key);
-        return cell.getFormulaBarDisplayValue();
+        if (cell !== undefined) {
+            return cell.getFormulaBarDisplayValue();
+        } 
+        return "";
     }
 
     private deleteCell(cell : Cell) : void {

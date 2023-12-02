@@ -1,14 +1,14 @@
 import { Spreadsheet } from '../../model/Spreadsheet';
 import { Cell } from "../../model/Cell";
-import { CellHelper } from "../model/CellHelper";
+// import { CellHelper } from "../model/CellHelper";
 
 describe('spreadsheet', (): void => {
   describe('Spreadsheet', (): void => {
     let spreadsheet: Spreadsheet;
 
     beforeEach((): void => {
-      spreadsheet.resetSpreadsheet();
       spreadsheet = Spreadsheet.getInstance();
+      spreadsheet.resetSpreadsheet();
     });
 
     afterEach((): void => {

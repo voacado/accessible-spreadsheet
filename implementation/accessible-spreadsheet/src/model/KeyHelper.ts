@@ -8,7 +8,6 @@ export class KeyHelper {
         }
         let matches: RegExpMatchArray = key.match(/([A-Z]+)(\d+)/)!;
         if (matches) {
-            console.log("getRowFromKey returned " + parseInt(matches[2]).toString());
             return parseInt(matches[2]).toString();
         } else {
             throw new Error("#ERR: Spreadsheet.getRowFromKey() given key with more than one row: " + key);
@@ -22,7 +21,6 @@ export class KeyHelper {
         }
         let matches: RegExpMatchArray = key.match(/([A-Z]+)(\d+)/)!;
         if (matches) {
-            console.log("getColFromKey returned " + matches[1]);
             return matches[1];
         } else {
             throw new Error("#ERR: Spreadsheet.getRowFromKey() given key with more than one row: " + key);
