@@ -2,6 +2,7 @@ import { createContext } from "react";
 import IUserProps from "interfaces/IUserProps";
 
 // Define default values for UserProps
+// Information about each property can be found in src/interfaces/IUserProps.ts
 const defaultUserProps: IUserProps = {
   activeCell: "A1",
   setActiveCell: () => {},

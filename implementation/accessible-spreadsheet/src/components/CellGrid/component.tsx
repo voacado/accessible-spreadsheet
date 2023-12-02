@@ -6,6 +6,10 @@ import { UserContext } from "contexts/UserPropsContext";
 import { useContext } from "react";
 import { KeyHelper } from "model/KeyHelper";
 
+/**
+ * CellGrid React component
+ * Handles displaying an interactable spreadsheet grid
+ */
 export const CellGrid: React.FC = () => {
     // TODO: we are currently re-rendering the entire spreadsheet on every update!
     const { activeCell, setActiveCell, activeEditCell, setActiveEditCell, editValue, setEditValue } = useContext(UserContext);

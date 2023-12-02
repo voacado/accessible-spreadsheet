@@ -6,6 +6,10 @@ import { ScreenReader } from "model/ScreenReader";
 import { UserContext } from "contexts/UserPropsContext";
 import { useContext } from "react";
 
+/**
+ * FormulaBar React component
+ * Handles input of cell data externally from the cell grid
+ */
 export const FormulaBar: React.FC = () => {
   const { activeCell, activeEditCell, editValue, setEditValue } = useContext(UserContext);
 

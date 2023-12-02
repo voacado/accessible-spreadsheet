@@ -2,6 +2,10 @@ import { ScreenReader } from "model/ScreenReader";
 import { UserContext } from "contexts/UserPropsContext";
 import { useContext } from "react";
 
+/**
+ * FileHeader React component
+ * Handles displaying file name and allowing user to edit it
+ */
 export const FileHeader: React.FC = () => {
   const { fileName, setFileName } = useContext(UserContext);
 
