@@ -138,7 +138,8 @@ export class Spreadsheet {
     
     public removeRow(index : number) : void {
         let cellsToRemove : Cell[] = this.getCellsGivenRange("A" + KeyHelper.getRowKeyFromIndex(index), 
-                                                            KeyHelper.createKeyFromIndeces(this.colCount-1, index), //CellHelper.getColKeyFromIndex(this.colCount-1) + CellHelper.getRowKeyFromIndex(index),
+                                                            KeyHelper.createKeyFromIndeces(this.colCount-1, index),
+                                                            //CellHelper.getColKeyFromIndex(this.colCount-1) + CellHelper.getRowKeyFromIndex(index),
                                                             true)
         let removedCellObservers : Cell[] = [];
         if (cellsToRemove.length !== 0) {
@@ -150,8 +151,9 @@ export class Spreadsheet {
                 this.deleteCell(cellsToRemove[i]);
             }
         }
-        let cellsToChange : Cell[] = this.getCellsGivenRange("A" + KeyHelper.getRowKeyFromIndex(index+1), 
-                                                            KeyHelper.createKeyFromIndeces(this.colCount-1, this.rowCount-1), // CellHelper.getColKeyFromIndex(this.colCount-1) + CellHelper.getRowKeyFromIndex(this.rowCount-1),
+        let cellsToChange : Cell[] = this.getCellsGivenRange("A" + KeyHelper.getRowKeyFromIndex(index), 
+                                                            KeyHelper.createKeyFromIndeces(this.colCount-1, this.rowCount-1),
+                                                            // CellHelper.getColKeyFromIndex(this.colCount-1) + CellHelper.getRowKeyFromIndex(this.rowCount-1),
                                                             true)
         
         this.rowCount--;
@@ -335,7 +337,7 @@ export class Spreadsheet {
         let cell : Cell = this.cells.get(key)!;
 
         if (cell === undefined) {
-            cell = new Cell(key, "", this)
+            cell = new Cell(key, "")
             this.cells.set(key, cell);
         }
         return cell;
@@ -347,9 +349,9 @@ export class Spreadsheet {
         let endRowIndex = KeyHelper.getIndexOfRowFromKey(endKey);
         let endColIndex = KeyHelper.getIndexOfColFromKey(endKey);
         let cells : Cell[] = [];
-        for (let i = startRowIndex; i <= endRowIndex; i++) {
-            for (let j = startColIndex; j <= endColIndex; j++) {
-                let key : string = KeyHelper.createKeyFromIndeces(i, j); // KeyHelper.getColKeyFromIndex(j) + KeyHelper.getRowKeyFromIndex(i);
+        for (let row = startRowIndex; row <= endRowIndex; row++) {
+            for (let col = startColIndex; col <= endColIndex; col++) {
+                let key : string = KeyHelper.createKeyFromIndeces(col, row); // KeyHelper.getColKeyFromIndex(j) + KeyHelper.getRowKeyFromIndex(i);
                 let cell : Cell | undefined = this.getCellAtKeyIfExists(key);
                 if (cell !== undefined) {
                     cells.push(cell);
