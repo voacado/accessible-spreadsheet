@@ -1,5 +1,5 @@
 import { Spreadsheet } from "./Spreadsheet";
-import { CellHelper } from "./CellHelper";
+import { CellParser } from "./CellParser";
 
 export class Cell {
     private key : string;
@@ -12,7 +12,7 @@ export class Cell {
         this.key = key;
         this.inputValue = input;
         this.mySpreadsheet = spreadsheet;
-        let processedData = CellHelper.getValueFromUserInput(this.inputValue, this.mySpreadsheet)
+        let processedData = CellParser.getValueFromUserInput(this.inputValue, this.mySpreadsheet)
         this.displayValue = processedData[0]
         for (let observeeKey of processedData[1]) {
             this.mySpreadsheet.getCellAtKey(observeeKey);
@@ -47,7 +47,7 @@ export class Cell {
     }
     
     public updateCellValue() {
-        let processedData = CellHelper.getValueFromUserInput(this.inputValue, this.mySpreadsheet)
+        let processedData = CellParser.getValueFromUserInput(this.inputValue, this.mySpreadsheet)
         this.displayValue = processedData[0]
         if (processedData[1].includes(this.getKey())) {
             this.displayValue = "#ERROR: self-ref.";
