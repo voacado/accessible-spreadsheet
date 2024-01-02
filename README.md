@@ -1,16 +1,16 @@
 <h1 align="center">
   Accessible Spreadsheet 📝
-  <br>
-  <img src="https://cdn-icons-png.flaticon.com/512/8445/8445741.png" alt="spreadsheet logo" title="spreadsheet logo" width="300">
-  <br>
 </h1>
+
+![Spreadsheet application in light mode](misc/ui_light_mode.png)
+
 <p align="center" style="font-size: 1.2rem;"><i>A Spreadsheet Application built with accessibility in mind.</i></p>
 
 ## The Problem
 
 Current spreadsheet applications, while robust in functionality, often fall short in terms of accessibility and user customization. A significant issue is their limited support for users with visual impairments or those who prefer auditory interaction. Most spreadsheet tools do not offer native features to read out the state of the spreadsheet, which can be a hurdle for those who rely on screen readers or auditory feedback. Additionally, the lack of theming options like dark mode or high contrast can strain the user's eyes, especially for those who work in low-light environments or have specific visual needs. This "one-size-fits-all" approach to spreadsheet design overlooks the diverse requirements of a wide range of users, making it challenging for everyone to work efficently and comfortably.
 
-## This Solution
+## The Solution
 
 This spreadsheet web app we have developed addredsses these accessibility and customization issues head-on. Firstly, it includes the ability to read anything highlighted, including not just user input, but also buttons as well. The goal here is to make it more accessible for users with visual impairments and those who process information easier audibly. This functionality aims to fix an oversight in existing spreadsheet tools, offering a more inclusive experience. In addition, our spreadsheet application introduces pre-defined theming options, including light, dark, and high contrast modes. This not only reduces eye strain vubt also caters to the varying visual needs of different users, allowing them to choose the theme that best suits their working environment or personal preference. By incorporating these features, our spreadsheet app aims to stand out as a more accessible and user-friendly tool that aligns with the needs of a diverse user base.
 
@@ -77,7 +77,7 @@ To check for code coverage, run `npm run coverage`.
   - Existing themes can be found under `./tailwind.config.js`, where the variable name explains what the hex code is refering to. Themes are selected through `./src/components/OptionsPane/component.tsx` -> Theme Button (in Function Cluster 4), which calls the `handleThemeChange()` function. By adding a new drop-down option, users can then select different themes they have added.
 
 - The version control looks a bit messed up. There are references to PRs, but why are there no PRs of any sort?
-  - This project was originally done under a GitHub organization as a university school project. With the approval of other collaborators, I copied the repo to my personal account which copied everything besides pull requests, GitHub issues, and GitHub milestones. I have screenshotted all previous PRs to `./prev-org`.
+  - This project was originally done under a GitHub organization as a university school project. With the approval of other collaborators, I copied the repo to my personal account which copied everything besides pull requests, GitHub issues, and GitHub milestones. I have screenshotted all previous PRs to `./misc/org_pull_requests.png`.
 
 - Remaining TODOs:
   - [ ] Proper Saving and Loading to CSV
