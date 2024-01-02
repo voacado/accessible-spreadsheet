@@ -6,6 +6,9 @@
 
 <p align="center" style="font-size: 1.2rem;"><i>A Spreadsheet Application built with accessibility in mind.</i></p>
 
+## Live Deployment
+Test out the spreadsheet application here: https://voacado.github.io/accessible-spreadsheet/
+
 ## The Problem
 
 Current spreadsheet applications, while robust in functionality, often fall short in terms of accessibility and user customization. A significant issue is their limited support for users with visual impairments or those who prefer auditory interaction. Most spreadsheet tools do not offer native features to read out the state of the spreadsheet, which can be a hurdle for those who rely on screen readers or auditory feedback. Additionally, the lack of theming options like dark mode or high contrast can strain the user's eyes, especially for those who work in low-light environments or have specific visual needs. This "one-size-fits-all" approach to spreadsheet design overlooks the diverse requirements of a wide range of users, making it challenging for everyone to work efficently and comfortably.
