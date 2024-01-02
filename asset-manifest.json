@@ -1,0 +1,28 @@
+{
+  "files": {
+    "main.css": "/accessible-spreadsheet/static/css/main.257520e0.css",
+    "main.js": "/accessible-spreadsheet/static/js/main.66a6f343.js",
+    "static/js/787.dcdfc976.chunk.js": "/accessible-spreadsheet/static/js/787.dcdfc976.chunk.js",
+    "static/media/fxIcon.svg": "/accessible-spreadsheet/static/media/fxIcon.1bffd7798d083086c4f52b2f12ec0420.svg",
+    "static/media/Paperclip.png": "/accessible-spreadsheet/static/media/Paperclip.a2d6ee97395a3d01e75e.png",
+    "static/media/SaveFileButton.svg": "/accessible-spreadsheet/static/media/SaveFileButton.0d7b0298b54349d82fdec34dffd6cb9c.svg",
+    "static/media/ThemeButtonButton.svg": "/accessible-spreadsheet/static/media/ThemeButtonButton.28b1a989a8e0d348b269d6fb11166b59.svg",
+    "static/media/DeleteColButton.svg": "/accessible-spreadsheet/static/media/DeleteColButton.d4e45012e5a3c551cbc9d77e08783a59.svg",
+    "static/media/DeleteRowButton.svg": "/accessible-spreadsheet/static/media/DeleteRowButton.5237419c0eebea0b22bd9cf2d01ef8b0.svg",
+    "static/media/ScreenReaderButton.svg": "/accessible-spreadsheet/static/media/ScreenReaderButton.2cca15eed6f520f7ca40a9849d689a35.svg",
+    "static/media/InsertColButton.svg": "/accessible-spreadsheet/static/media/InsertColButton.a130a47f70597809f169011952408f7a.svg",
+    "static/media/InsertRowButton.svg": "/accessible-spreadsheet/static/media/InsertRowButton.546fa1919d533354264bed54cb9c7d93.svg",
+    "static/media/ClearColumnButton.svg": "/accessible-spreadsheet/static/media/ClearColumnButton.a412ef62d80a2bf8f4854e2cd559e04a.svg",
+    "static/media/ClearCellButton.svg": "/accessible-spreadsheet/static/media/ClearCellButton.5d1ba6bbfebeb0e091658af549dbd8e3.svg",
+    "static/media/ClearRowButton.svg": "/accessible-spreadsheet/static/media/ClearRowButton.b07bba7f065e759cd35a069d69d50fe1.svg",
+    "static/media/LoadFileButton.svg": "/accessible-spreadsheet/static/media/LoadFileButton.bb0499f8e9c4f3bc3c71a128b95cb612.svg",
+    "index.html": "/accessible-spreadsheet/index.html",
+    "main.257520e0.css.map": "/accessible-spreadsheet/static/css/main.257520e0.css.map",
+    "main.66a6f343.js.map": "/accessible-spreadsheet/static/js/main.66a6f343.js.map",
+    "787.dcdfc976.chunk.js.map": "/accessible-spreadsheet/static/js/787.dcdfc976.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.257520e0.css",
+    "static/js/main.66a6f343.js"
+  ]
+}
